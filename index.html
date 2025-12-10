@@ -890,8 +890,9 @@
         const themeToggleBtn = document.getElementById('theme-toggle');
         const htmlElement = document.documentElement;
 
-        // Check local storage or system preference on load
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        // Check local storage or default to dark
+        // Changed logic: Defaults to dark if 'theme' is not in localStorage
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage))) {
             htmlElement.classList.add('dark');
         } else {
             htmlElement.classList.remove('dark');
