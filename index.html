@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyperion Labs Studio | Ship Software Faster</title>
+    
+    <!-- Fonts: Added Space Grotesk & Outfit, Kept JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],           // Modern geometric sans for UI
+                        display: ['Space Grotesk', 'sans-serif'], // Unique tech font for headings
+                        mono: ['JetBrains Mono', 'monospace'],    // Preserved for code/IDE
+                    },
+                    colors: {
+                        background: '#09090b', // Zinc 950
+                        surface: '#18181b',    // Zinc 900
+                        surfaceHighlight: '#27272a', // Zinc 800
+                        primary: '#6366f1',    // Indigo 500
+                        primaryGlow: 'rgba(99, 102, 241, 0.15)',
+                        accent: '#a855f7',     // Purple 500
+                        brand: '#10b981',      // Emerald 500 (Supabase-like green)
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #27272a 1px, transparent 1px), linear-gradient(to bottom, #27272a 1px, transparent 1px)",
+                        'radial-glow': 'radial-gradient(circle at center, var(--tw-gradient-stops))',
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'slide-up': 'slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'marquee': 'marquee 25s linear infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 3s linear infinite', // Added for pricing card hover effect
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(40px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+
+        /* Grid Background Utility */
+        .bg-grid {
+            background-size: 40px 40px;
+            mask-image: linear-gradient(to bottom, transparent, 10%, black, 90%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, 5%, black, 95%, transparent);
+        }
+
+        /* Glow Effects */
+        .glow-text {
+            text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+        }
+        
+        .card-hoverable {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Removed the hover translate effect for flatter feel on cards too, though kept the glow for visibility */
+        .card-hoverable::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+        .card-hoverable:hover {
+            background-color: #27272a;
+        }
+        .card-hoverable:hover::before {
+            opacity: 1;
+            background: linear-gradient(45deg, transparent, #6366f1, transparent);
+        }
+
+        /* Code Syntax Highlighting Simulation */
+        .token-keyword { color: #c084fc; } /* Purple */
+        .token-function { color: #60a5fa; } /* Blue */
+        .token-string { color: #4ade80; }   /* Green */
+        .token-comment { color: #71717a; font-style: italic; } /* Zinc 500 */
+    </style>
+</head>
+<body class="bg-background text-white antialiased selection:bg-brand selection:text-white overflow-x-hidden font-sans">
+
+    <!-- Navigation (Supabase Style) -->
+    <nav class="fixed w-full z-50 top-0 border-b border-white/5 bg-[#09090b]/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            
+            <!-- Left Side: Logo & Links -->
+            <div class="flex items-center gap-8">
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-2 group">
+                    <span class="font-display font-bold text-xl tracking-tight text-white">Hyperion</span>
+                </a>
+
+                <!-- Desktop Nav Links -->
+                <div class="hidden md:flex items-center gap-6 text-sm font-medium text-zinc-400">
+                    <div class="group relative cursor-pointer hover:text-white transition-colors flex items-center gap-1">
+                        Product <i data-lucide="chevron-down" class="w-3 h-3 opacity-50 group-hover:rotate-180 transition-transform"></i>
+                    </div>
+                    <div class="group relative cursor-pointer hover:text-white transition-colors flex items-center gap-1">
+                        Developers <i data-lucide="chevron-down" class="w-3 h-3 opacity-50 group-hover:rotate-180 transition-transform"></i>
+                    </div>
+                    <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
+                    <a href="#" class="hover:text-white transition-colors">Docs</a>
+                    <a href="#" class="hover:text-white transition-colors">Blog</a>
+                </div>
+            </div>
+
+            <!-- Right Side: Actions -->
+            <div class="flex items-center gap-3">
+                <!-- GitHub Star Button (Hidden on small mobile) -->
+                <a href="#" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-zinc-900 hover:bg-zinc-800 transition-colors text-xs font-medium text-zinc-300 group border border-transparent hover:border-zinc-700">
+                    <i data-lucide="github" class="w-3.5 h-3.5 text-zinc-400 group-hover:text-white transition-colors"></i>
+                    <span>Star</span>
+                    <span class="bg-zinc-800 px-1.5 py-0.5 rounded text-[10px] text-zinc-400 group-hover:text-zinc-300">12.4k</span>
+                </a>
+
+                <!-- Desktop Actions (Hidden on Mobile) -->
+                <div class="hidden md:flex items-center gap-3">
+                    <a href="#" class="text-sm text-zinc-400 hover:text-white font-medium transition-colors px-2">Sign In</a>
+                    <a href="#" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-[4px] text-sm font-semibold transition-colors">
+                        Start your project
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 text-zinc-400 hover:text-white transition-colors">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-white/5 bg-[#09090b]">
+            <div class="px-4 py-6 space-y-4">
+                <a href="#" class="block text-zinc-400 hover:text-white font-medium">Product</a>
+                <a href="#" class="block text-zinc-400 hover:text-white font-medium">Developers</a>
+                <a href="#pricing" class="block text-zinc-400 hover:text-white font-medium">Pricing</a>
+                <a href="#" class="block text-zinc-400 hover:text-white font-medium">Docs</a>
+                <a href="#" class="block text-zinc-400 hover:text-white font-medium">Blog</a>
+                <div class="border-t border-white/5 pt-4 flex flex-col gap-3">
+                    <a href="#" class="block text-zinc-400 hover:text-white font-medium">Sign In</a>
+                    <a href="#" class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-[4px] text-sm font-semibold transition-colors text-center">
+                        Start your project
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
+        <!-- Background Effects -->
+        <div class="absolute inset-0 bg-grid opacity-[0.03] pointer-events-none"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/20 blur-[120px] rounded-full pointer-events-none opacity-50"></div>
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10 text-center">
+            
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-primary mb-8 animate-fade-in-up" style="animation-delay: 0.1s">
+                <span class="flex h-2 w-2 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+                v2.0 is now live
+            </div>
+
+            <!-- Header dengan animasi Slide Up terpisah -->
+            <h1 class="text-5xl md:text-8xl font-display font-bold tracking-tighter mb-8 min-h-[160px] md:min-h-[240px]">
+                <!-- Baris 1: PLAN, DOC, & SHIP -->
+                <span class="block text-zinc-300 tracking-wide mb-2 text-2xl md:text-4xl opacity-0 animate-slide-up" style="animation-delay: 0.2s">
+                    PLAN, DOC, & SHIP
+                </span>
+                
+                <!-- Baris 2: Typewriter Effect -->
+                <span class="block opacity-0 animate-slide-up" style="animation-delay: 0.4s">
+                    <span id="typewriter-text" class="bg-clip-text text-transparent bg-gradient-to-r from-zinc-500 via-white to-zinc-400 drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]"></span>
+                    <span class="inline-block w-3 h-8 md:w-6 md:h-20 bg-white ml-1 md:ml-2 animate-pulse align-middle shadow-[0_0_20px_rgba(255,255,255,0.8)] rounded-sm"></span>
+                </span>
+            </h1>
+
+            <p class="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed opacity-0 animate-slide-up" style="animation-delay: 0.6s">
+                The intelligent studio for modern developers. Generate comprehensive PRDs, automate documentation, and code with AI context-awareness.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0 animate-slide-up" style="animation-delay: 0.8s">
+                <!-- Flat Primary Button -->
+                <a href="#" class="w-full sm:w-auto px-8 py-4 bg-primary hover:bg-indigo-500 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="zap" class="w-4 h-4"></i> Start Building Free
+                </a>
+                <!-- Flat Secondary Button -->
+                <a href="#" class="w-full sm:w-auto px-8 py-4 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="play-circle" class="w-4 h-4"></i> Watch Demo
+                </a>
+            </div>
+
+            <!-- Code/Studio Preview -->
+            <div class="mt-20 relative mx-auto max-w-5xl animate-fade-in-up" style="animation-delay: 0.6s">
+                <div class="rounded-xl border border-white/10 bg-[#0c0c0e] shadow-2xl overflow-hidden backdrop-blur-sm group">
+                    <!-- Window Controls -->
+                    <div class="h-10 border-b border-white/5 bg-white/[0.02] flex items-center px-4 justify-between">
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50"></div>
+                        </div>
+                        <div class="text-xs text-zinc-500 font-mono flex gap-4">
+                            <span class="text-zinc-300">prd_generator.ts</span>
+                            <span>database_schema.sql</span>
+                            <span>api_routes.ts</span>
+                        </div>
+                        <div class="w-16"></div> 
+                    </div>
+                    
+                    <!-- Editor Content -->
+                    <div class="grid grid-cols-1 md:grid-cols-[250px_1fr] h-[400px] text-left">
+                        <!-- Sidebar: Kept as font-mono (JetBrains Mono) for IDE aesthetic -->
+                        <div class="hidden md:block border-r border-white/5 bg-zinc-900/30 p-4 text-sm font-mono text-zinc-500">
+                            <div class="mb-4 text-xs font-bold uppercase tracking-wider text-zinc-600">Project Files</div>
+                            <ul class="space-y-2">
+                                <li class="flex items-center gap-2 text-primary bg-primary/10 p-1 rounded -mx-1"><i data-lucide="file-code" class="w-4 h-4"></i> generator.ts</li>
+                                <li class="flex items-center gap-2 hover:text-zinc-300 cursor-pointer"><i data-lucide="database" class="w-4 h-4"></i> schema.prisma</li>
+                                <li class="flex items-center gap-2 hover:text-zinc-300 cursor-pointer"><i data-lucide="layout" class="w-4 h-4"></i> page.tsx</li>
+                                <li class="flex items-center gap-2 hover:text-zinc-300 cursor-pointer"><i data-lucide="settings" class="w-4 h-4"></i> config.json</li>
+                            </ul>
+                            
+                            <div class="mt-8 mb-4 text-xs font-bold uppercase tracking-wider text-zinc-600">AI Agents</div>
+                            <ul class="space-y-2">
+                                <li class="flex items-center gap-2 text-green-400"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Doc Writer</li>
+                                <li class="flex items-center gap-2 text-zinc-400"><span class="w-2 h-2 bg-zinc-700 rounded-full"></span> Code Reviewer</li>
+                            </ul>
+                        </div>
+
+                        <!-- Code Area -->
+                        <div class="p-6 font-mono text-sm overflow-hidden relative">
+                            <!-- Typing cursor animation simulation via CSS not shown for simplicity, static code below -->
+                            <div class="text-zinc-300 leading-relaxed">
+                                <p><span class="token-keyword">import</span> { AI, Agent } <span class="token-keyword">from</span> <span class="token-string">'@hyperion/sdk'</span>;</p>
+                                <br>
+                                <p><span class="token-comment">// Initialize the documentation agent</span></p>
+                                <p><span class="token-keyword">const</span> docAgent = <span class="token-keyword">new</span> Agent({</p>
+                                <p class="pl-4">role: <span class="token-string">'Technical Writer'</span>,</p>
+                                <p class="pl-4">model: <span class="token-string">'claude-3-opus'</span>,</p>
+                                <p class="pl-4">context: <span class="token-keyword">await</span> loadProjectContext()</p>
+                                <p>});</p>
+                                <br>
+                                <p><span class="token-comment">// Generate PRD based on user prompt</span></p>
+                                <p><span class="token-keyword">export async function</span> <span class="token-function">generateSpecs</span>(prompt: <span class="token-keyword">string</span>) {</p>
+                                <p class="pl-4"><span class="token-keyword">const</span> specs = <span class="token-keyword">await</span> docAgent.<span class="token-function">analyze</span>(prompt);</p>
+                                <p class="pl-4"><span class="token-keyword">return</span> specs.formatAsMarkdown();</p>
+                                <p>}</p>
+                            </div>
+                            
+                            <!-- Floating AI Action -->
+                            <div class="absolute bottom-6 right-6 bg-zinc-800/90 backdrop-blur border border-white/10 p-3 rounded-lg shadow-xl flex items-center gap-3 animate-bounce shadow-primary/10 font-sans">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+                                    <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
+                                </div>
+                                <div class="text-xs">
+                                    <div class="font-semibold text-white">Generating API docs...</div>
+                                    <div class="text-zinc-400">2 files created</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Glow behind container -->
+                <div class="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-xl blur opacity-20 -z-10 group-hover:opacity-30 transition duration-1000"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Logo Cloud / Integration -->
+    <section class="py-10 border-y border-white/5 bg-white/[0.02] overflow-hidden relative">
+        <div class="max-w-7xl mx-auto px-6 mb-8">
+            <p class="text-center text-zinc-500 text-sm font-medium tracking-wide">POWERING NEXT-GEN TEAMS & TOOLS</p>
+        </div>
+        
+        <!-- Marquee Container -->
+        <div class="relative flex overflow-x-hidden group mask-image-gradient">
+            <!-- Gradient Mask (Inline style for simplicity in this context, or use Tailwind utility if config allows) -->
+            <div class="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-[#09090b] to-transparent z-10"></div>
+            <div class="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-[#09090b] to-transparent z-10"></div>
+
+            <!-- First Logo Set -->
+            <div class="animate-marquee flex items-center gap-12 whitespace-nowrap px-6 shrink-0 opacity-50 grayscale hover:grayscale-0 transition-all duration-500 font-display">
+                <div class="flex items-center gap-2 text-xl font-bold text-white"><i data-lucide="github" class="w-6 h-6"></i> GitHub</div>
+                <div class="flex items-center gap-2 text-xl font-bold text-white"><i data-lucide="codepen" class="w-6 h-6"></i> Vercel</div>
+                <div class="flex items-center gap-2 text-xl font-bold text-white"><i data-lucide="figma" class="w-6 h-6"></i> Supabase</div>
+                <div class="flex items-center gap-2 text-xl font-bold text-white"><i data-lucide="chrome" class="w-6 h-6"></i> Google Gemini</div>
+                <div class="flex items-center gap-2 text-xl font-bold text-white"><i data-lucide="box" class="w-6 h-6"></i> Linear</div>
+                <div class="flex items-center gap-2 text-xl font-bold text-white"><i data-lucide="cpu" class="w-6 h-6"></i> OpenAI</div>
+                <div class="flex items-center gap-2 text-xl font-bold text-white"><i data-lucide="cloud" class="w-6 h-6"></i> Cloudflare</div>
+            </div>
+
+            <!-- Duplicate Logo Set (for seamless loop) -->
+            <div class="animate-marquee flex items-center gap-12 whitespace-nowrap px-6 shrink-0 opacity-50 grayscale hover:grayscale-0 transition-all duration-500 font-display">
+                <div class="flex items-center gap-2 text-xl font-bold text-white"><i data-lucide="github" class="w-6 h-6"></i> GitHub</div>
+                <div class="flex items-center gap-2 text-xl font-bold text-white"><i data-lucide="codepen" class="w-6 h-6"></i> Vercel</div>
+                <div class="flex items-center gap-2 text-xl font-bold text-white"><i data-lucide="figma" class="w-6 h-6"></i> Supabase</div>
+                <div class="flex items-center gap-2 text-xl font-bold text-white"><i data-lucide="chrome" class="w-6 h-6"></i> Google Gemini</div>
+                <div class="flex items-center gap-2 text-xl font-bold text-white"><i data-lucide="box" class="w-6 h-6"></i> Linear</div>
+                <div class="flex items-center gap-2 text-xl font-bold text-white"><i data-lucide="cpu" class="w-6 h-6"></i> OpenAI</div>
+                <div class="flex items-center gap-2 text-xl font-bold text-white"><i data-lucide="cloud" class="w-6 h-6"></i> Cloudflare</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Bento Grid -->
+    <section id="features" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="mb-16 md:text-center max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-display font-bold mb-4">Everything you need to <span class="text-primary">build better</span></h2>
+                <p class="text-zinc-400">Stop wrestling with blank pages. Hyperion Labs provides the structure, documentation, and AI agents to turn ideas into deployable code.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Large Card -->
+                <div class="md:col-span-2 bg-surface border border-white/5 rounded-2xl p-8 card-hoverable relative min-h-[300px] flex flex-col justify-between">
+                    <div class="relative z-20">
+                        <div class="w-12 h-12 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6 text-blue-400">
+                            <i data-lucide="file-text" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-xl font-display font-bold mb-2">Auto-Generated PRDs</h3>
+                        <!-- Adjusted max-width to prevent overlap with the right-side visual -->
+                        <p class="text-zinc-400 text-sm max-w-[45%] leading-relaxed">Transform a simple sentence into a comprehensive Product Requirements Document. Our AI agents ask the right questions to fill in the gaps.</p>
+                    </div>
+                    
+                    <!-- Design Box with Cyclic Animation -->
+                    <div class="absolute right-0 bottom-0 w-1/2 h-full opacity-80 mask-image-gradient hidden md:block pointer-events-none">
+                        <!-- Abstract UI representation -->
+                        <div class="w-full h-full bg-zinc-800/30 border-t border-l border-white/5 rounded-tl-2xl p-6 transform translate-y-4 translate-x-4 flex flex-col gap-4">
+                            
+                            <!-- Static Skeleton Lines -->
+                            <div class="space-y-3 opacity-50">
+                                <div class="h-2 w-3/4 bg-zinc-600 rounded"></div>
+                                <div class="h-2 w-1/2 bg-zinc-600 rounded"></div>
+                                <div class="h-2 w-5/6 bg-zinc-600 rounded"></div>
+                            </div>
+
+                            <!-- "Singleton" Box with Cyclic Animation -->
+                            <div class="h-32 w-full bg-zinc-950/80 rounded-lg border border-white/10 p-4 relative overflow-hidden shadow-2xl transition-all duration-500 group" id="design-singleton">
+                                <!-- Loading Header -->
+                                <div class="flex items-center gap-2 mb-3 border-b border-white/5 pb-2">
+                                    <div class="w-2 h-2 rounded-full bg-zinc-700"></div>
+                                    <div class="h-1.5 w-12 bg-zinc-800 rounded"></div>
+                                </div>
+                                
+                                <!-- Page Content (Toggles Opacity/Blur) -->
+                                <div id="design-content" class="space-y-2 transition-all duration-500 ease-in-out">
+                                    <div class="h-2 w-full bg-zinc-800/50 rounded animate-pulse"></div>
+                                    <div class="h-2 w-2/3 bg-zinc-800/50 rounded animate-pulse" style="animation-delay: 0.1s"></div>
+                                    <div class="h-2 w-4/5 bg-zinc-800/50 rounded animate-pulse" style="animation-delay: 0.2s"></div>
+                                </div>
+
+                                <!-- Loading Overlay (Toggles Opacity) -->
+                                <div id="design-loader" class="absolute inset-0 flex items-center justify-center bg-zinc-950/60 backdrop-blur-[2px] transition-all duration-500 opacity-0 z-10">
+                                    <div class="relative transform transition-transform duration-500 scale-90" id="design-spinner-container">
+                                        <div class="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tall Card -->
+                <div class="bg-surface border border-white/5 rounded-2xl p-8 card-hoverable md:row-span-2 flex flex-col">
+                    <div class="w-12 h-12 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-6 text-purple-400">
+                        <i data-lucide="bot" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-display font-bold mb-2">Agentic Workflow</h3>
+                    <p class="text-zinc-400 mb-8">Deploy autonomous agents that plan, review, and even write code for you in the background.</p>
+                    
+                    <div class="flex-1 bg-[#0c0c0e] rounded-xl border border-white/5 p-4 relative overflow-hidden flex flex-col">
+                        <!-- Header with Status -->
+                        <div class="flex items-center justify-between mb-4 border-b border-white/5 pb-2">
+                            <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Agent-01</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="relative flex h-2 w-2">
+                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                  <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                </span>
+                                <span class="text-[10px] font-medium text-green-400">Active</span>
+                            </div>
+                        </div>
+
+                        <!-- Chat Area -->
+                        <div class="space-y-5 font-sans text-sm relative z-10">
+                            
+                            <!-- User Message -->
+                            <div class="flex gap-3 flex-row-reverse items-end animate-fade-in-up" style="animation-delay: 0.1s">
+                                <div class="w-6 h-6 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center shrink-0">
+                                    <i data-lucide="user" class="w-3 h-3 text-zinc-400"></i>
+                                </div>
+                                <div class="bg-zinc-800/50 p-3 rounded-2xl rounded-br-none border border-white/5 text-xs text-zinc-300">
+                                    Build a dashboard with Tailwind & Recharts.
+                                </div>
+                            </div>
+
+                            <!-- AI Response Block -->
+                            <div class="flex gap-3 items-start animate-fade-in-up" style="animation-delay: 0.3s">
+                                <div class="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shrink-0 mt-1 shadow-lg shadow-primary/20">
+                                    <i data-lucide="sparkles" class="w-3 h-3 text-white"></i>
+                                </div>
+                                <div class="space-y-2 w-full">
+                                    <!-- Thought Process Bubble -->
+                                    <div class="bg-surfaceHighlight/30 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/10 w-full">
+                                        <div class="flex items-center gap-2 mb-3 text-[11px] font-semibold text-zinc-400 border-b border-white/5 pb-2">
+                                            <i data-lucide="workflow" class="w-3 h-3"></i> Execution Plan
+                                        </div>
+                                        <div class="space-y-2">
+                                            <div class="flex items-center justify-between text-[10px] bg-black/20 p-1.5 rounded border border-white/5">
+                                                <span class="text-zinc-300 flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-green-500"></i> Install dependencies</span>
+                                                <span class="text-zinc-600">2s</span>
+                                            </div>
+                                            <div class="flex items-center justify-between text-[10px] bg-black/20 p-1.5 rounded border border-white/5">
+                                                <span class="text-zinc-300 flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-green-500"></i> Setup components</span>
+                                                <span class="text-zinc-600">800ms</span>
+                                            </div>
+                                            <div class="flex items-center justify-between text-[10px] bg-primary/10 p-1.5 rounded border border-primary/20">
+                                                <span class="text-primary-200 flex items-center gap-2">
+                                                    <div class="w-2 h-2 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                                                    Generating charts...
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Background decoration -->
+                        <div class="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-primary/5 to-transparent pointer-events-none"></div>
+                    </div>
+                </div>
+
+                <!-- Small Card 1: Starter Kits (Modernized) -->
+                <div class="bg-surface border border-white/5 rounded-2xl p-8 card-hoverable relative overflow-hidden group">
+                    <!-- Content -->
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center mb-6 text-green-400 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
+                            <i data-lucide="layers" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-xl font-display font-bold mb-2">Starter Kits</h3>
+                        <p class="text-zinc-400 text-sm max-w-[80%]">Launch in seconds. Pre-configured stacks for SaaS, AI, and e-commerce.</p>
+                    </div>
+
+                    <!-- Visual: 3D Stacked Cards on Bottom Right -->
+                    <div class="absolute -right-6 -bottom-8 w-40 h-40 transform group-hover:scale-105 transition-transform duration-500 ease-out">
+                        <!-- Bottom Layer -->
+                        <div class="absolute bottom-0 right-0 w-28 h-28 bg-zinc-800 rounded-xl border border-white/5 shadow-xl transform translate-x-4 translate-y-4 rotate-12 group-hover:rotate-6 group-hover:translate-x-6 transition-all duration-500 flex items-center justify-center">
+                            <i data-lucide="database" class="w-10 h-10 text-zinc-600 opacity-50"></i>
+                        </div>
+                        <!-- Middle Layer -->
+                        <div class="absolute bottom-3 right-6 w-28 h-28 bg-zinc-800/80 backdrop-blur-md rounded-xl border border-white/10 shadow-xl transform translate-x-2 translate-y-2 rotate-6 group-hover:rotate-3 group-hover:translate-x-3 transition-all duration-500 delay-75 flex items-center justify-center">
+                            <i data-lucide="credit-card" class="w-10 h-10 text-zinc-500 opacity-60"></i>
+                        </div>
+                        <!-- Top Layer -->
+                        <div class="absolute bottom-6 right-12 w-28 h-28 bg-gradient-to-br from-green-500/10 to-zinc-900 backdrop-blur-md rounded-xl border border-green-500/30 shadow-2xl transform rotate-0 group-hover:-rotate-3 group-hover:translate-y-[-5px] transition-all duration-500 delay-100 flex items-center justify-center">
+                            <span class="font-display font-bold text-green-400 text-2xl">Next</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Small Card 2: Git Integrated (Modernized) -->
+                <div class="bg-surface border border-white/5 rounded-2xl p-8 card-hoverable relative overflow-hidden group">
+                    <!-- Background Graph Visual -->
+                    <svg class="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none" viewBox="0 0 200 200">
+                        <path d="M 160 0 V 200" stroke="#fff" stroke-width="1" stroke-dasharray="4 4" fill="none" />
+                        <path d="M 160 40 C 160 40, 100 60, 100 100 V 200" stroke="#f97316" stroke-width="2" fill="none" />
+                        <circle cx="160" cy="40" r="3" fill="#52525b" />
+                        <circle cx="100" cy="100" r="3" fill="#f97316" />
+                        <circle cx="100" cy="150" r="3" fill="#f97316" />
+                    </svg>
+
+                    <!-- Content -->
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center mb-6 text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.1)]">
+                            <i data-lucide="git-branch" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-xl font-display font-bold mb-2">Git Integrated</h3>
+                        <p class="text-zinc-400 text-sm mb-6">Two-way sync. Push to main, and your docs update automatically.</p>
+                        
+                        <!-- Live Indicator -->
+                        <div class="inline-flex items-center gap-2 px-2.5 py-1 bg-orange-500/5 border border-orange-500/20 rounded-full">
+                            <span class="relative flex h-1.5 w-1.5">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-orange-500"></span>
+                            </span>
+                            <span class="text-[10px] font-mono text-orange-300 tracking-tight">Listening for hooks...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Block / Visual Break -->
+    <section class="py-20 bg-zinc-900 border-y border-white/5 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
+            <div class="flex-1">
+                <h2 class="text-3xl font-display font-bold mb-6">Stop Hallucinations. <br>Start Shipping.</h2>
+                <ul class="space-y-4">
+                    <li class="flex items-start gap-3">
+                        <div class="mt-1 p-1 bg-green-500/10 rounded-full text-green-400"><i data-lucide="check" class="w-3 h-3"></i></div>
+                        <div>
+                            <strong class="text-white block">Context-Aware Generation</strong>
+                            <p class="text-zinc-400 text-sm">Hyperion Labs reads your entire file tree so suggestions actually make sense.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <div class="mt-1 p-1 bg-green-500/10 rounded-full text-green-400"><i data-lucide="check" class="w-3 h-3"></i></div>
+                        <div>
+                            <strong class="text-white block">Token Optimization</strong>
+                            <p class="text-zinc-400 text-sm">Smart context filtering saves you money on LLM API costs.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <div class="mt-1 p-1 bg-green-500/10 rounded-full text-green-400"><i data-lucide="check" class="w-3 h-3"></i></div>
+                        <div>
+                            <strong class="text-white block">Multi-Model Support</strong>
+                            <p class="text-zinc-400 text-sm">Switch between Claude 3.5, GPT-4o, and Gemini Pro instantly.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="flex-1 w-full relative">
+                <div class="absolute -inset-4 bg-primary/20 blur-2xl rounded-full opacity-20"></div>
+                <div class="relative bg-[#0F1117] border border-white/10 rounded-xl p-6 font-mono text-xs md:text-sm shadow-2xl h-[320px] flex flex-col">
+                    <div class="flex justify-between items-center mb-4 pb-4 border-b border-white/5 text-zinc-500 shrink-0">
+                        <span>terminal — zsh</span>
+                        <div class="flex gap-1.5">
+                            <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
+                        </div>
+                    </div>
+                    <!-- Terminal Content Container -->
+                    <div id="terminal-container" class="space-y-2 overflow-y-auto flex-1 font-mono">
+                        <!-- Content injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-24 relative">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 blur-[100px] rounded-full pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-display font-bold mb-4">Simple, transparent pricing</h2>
+                <p class="text-zinc-400">Pay for the value you create, not the seats you fill.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Free Tier -->
+                <div class="relative group rounded-2xl bg-white/5 p-[1px] overflow-hidden transition-all hover:scale-[1.01]">
+                    <!-- Animated Border (Visible on Hover) -->
+                    <div class="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0_340deg,#a855f7_360deg)] opacity-0 group-hover:opacity-100 group-hover:animate-spin-slow origin-center transition-opacity duration-500"></div>
+                    
+                    <!-- Card Content -->
+                    <div class="relative bg-surface rounded-xl p-8 flex flex-col h-full z-10">
+                        <div class="mb-4">
+                            <h3 class="font-bold font-display text-lg">Hobby</h3>
+                            <div class="text-3xl font-bold mt-2 font-display">$0 <span class="text-sm text-zinc-500 font-normal font-sans">/ month</span></div>
+                        </div>
+                        <p class="text-zinc-400 text-sm mb-6">Perfect for side projects and learning.</p>
+                        <ul class="space-y-3 mb-8 flex-1">
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-zinc-600"></i> 1 Project</li>
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-zinc-600"></i> Basic PRD Generator</li>
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-zinc-600"></i> Community Support</li>
+                        </ul>
+                        <a href="#" class="w-full py-2 rounded bg-zinc-800 hover:bg-zinc-700 text-white text-center text-sm font-medium transition-colors">Start Free</a>
+                    </div>
+                </div>
+
+                <!-- Pro Tier (Highlighted) -->
+                <div class="relative group transition-all hover:scale-[1.01] transform md:-translate-y-4 shadow-2xl shadow-primary/10 rounded-2xl">
+                    
+                    <!-- Badge Moved Outside to prevent clipping -->
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-primary text-white text-[10px] uppercase font-bold px-3 py-1 rounded-full tracking-wider font-display shadow-lg shadow-primary/50">Most Popular</div>
+
+                    <!-- Inner Container for Border Masking -->
+                    <div class="relative rounded-2xl p-[1px] overflow-hidden h-full">
+                        <!-- Static Border for Pro Tier (Visible by default) -->
+                        <div class="absolute inset-0 bg-primary/50 rounded-2xl group-hover:opacity-0 transition-opacity"></div>
+                        
+                        <!-- Animated Border (Visible on Hover) -->
+                        <div class="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0_340deg,#6366f1_360deg)] opacity-0 group-hover:opacity-100 group-hover:animate-spin-slow origin-center transition-opacity duration-500"></div>
+                        
+                        <!-- Card Content -->
+                        <div class="relative bg-[#1c1c21] rounded-xl p-8 flex flex-col h-full z-10">
+                            <div class="mb-4 mt-2">
+                                <h3 class="font-bold font-display text-lg text-white">Developer</h3>
+                                <div class="text-3xl font-bold mt-2 font-display">$29 <span class="text-sm text-zinc-500 font-normal font-sans">/ month</span></div>
+                            </div>
+                            <p class="text-zinc-400 text-sm mb-6">For serious builders shipping products.</p>
+                            <ul class="space-y-3 mb-8 flex-1">
+                                <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-primary"></i> Unlimited Projects</li>
+                                <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-primary"></i> Advanced Agentic Flows</li>
+                                <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-primary"></i> GitHub Integration</li>
+                                <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-primary"></i> Priority Support</li>
+                            </ul>
+                            <!-- Flat CTA -->
+                            <a href="#" class="w-full py-2 rounded bg-primary hover:bg-indigo-500 text-white text-center text-sm font-medium transition-colors shadow-lg shadow-primary/25">Get Started</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Tier -->
+                <div class="relative group rounded-2xl bg-white/5 p-[1px] overflow-hidden transition-all hover:scale-[1.01]">
+                    <!-- Animated Border (Visible on Hover) -->
+                    <div class="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0_340deg,#10b981_360deg)] opacity-0 group-hover:opacity-100 group-hover:animate-spin-slow origin-center transition-opacity duration-500"></div>
+                    
+                    <!-- Card Content -->
+                    <div class="relative bg-surface rounded-xl p-8 flex flex-col h-full z-10">
+                        <div class="mb-4">
+                            <h3 class="font-bold font-display text-lg">Team</h3>
+                            <div class="text-3xl font-bold mt-2 font-display">$99 <span class="text-sm text-zinc-500 font-normal font-sans">/ month</span></div>
+                        </div>
+                        <p class="text-zinc-400 text-sm mb-6">Collaborative workspace for startups.</p>
+                        <ul class="space-y-3 mb-8 flex-1">
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-zinc-600"></i> Everything in Pro</li>
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-zinc-600"></i> Shared Workspaces</li>
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-zinc-600"></i> Admin Controls</li>
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="w-4 h-4 text-zinc-600"></i> API Access</li>
+                        </ul>
+                        <a href="#" class="w-full py-2 rounded bg-zinc-800 hover:bg-zinc-700 text-white text-center text-sm font-medium transition-colors">Contact Sales</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 bg-zinc-950 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+                <div class="col-span-2 md:col-span-1">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-6 h-6 rounded bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white text-xs font-bold font-mono">H</div>
+                        <span class="font-semibold font-display tracking-tight">Hyperion Labs</span>
+                    </div>
+                    <p class="text-zinc-500 text-sm">Building the future of software development with intelligent autonomous agents.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4 text-sm text-white font-display">Product</h4>
+                    <ul class="space-y-2 text-sm text-zinc-500">
+                        <li><a href="#" class="hover:text-primary transition-colors">Features</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Integrations</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Pricing</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Changelog</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4 text-sm text-white font-display">Resources</h4>
+                    <ul class="space-y-2 text-sm text-zinc-500">
+                        <li><a href="#" class="hover:text-primary transition-colors">Documentation</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">API Reference</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Community</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Blog</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4 text-sm text-white font-display">Company</h4>
+                    <ul class="space-y-2 text-sm text-zinc-500">
+                        <li><a href="#" class="hover:text-primary transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Legal</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-zinc-600 text-xs">
+                    &copy; 2025 Hyperion Labs Studio Clone. All rights reserved.
+                </div>
+                <div class="flex gap-4">
+                    <a href="#" class="text-zinc-500 hover:text-white transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+                    <a href="#" class="text-zinc-500 hover:text-white transition-colors"><i data-lucide="github" class="w-4 h-4"></i></a>
+                    <a href="#" class="text-zinc-500 hover:text-white transition-colors"><i data-lucide="discord" class="w-4 h-4"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Mobile Menu Toggle
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Smooth reveal animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.remove('opacity-0', 'translate-y-10');
+                }
+            });
+        }, observerOptions);
+
+        // Apply fade-in animation to cards
+        document.querySelectorAll('.card-hoverable').forEach(el => {
+            el.classList.add('opacity-0', 'translate-y-10', 'transition-all', 'duration-700', 'ease-out');
+            observer.observe(el);
+        });
+
+        // Main Header Typewriter Animation
+        (function() {
+            const textElement = document.getElementById('typewriter-text');
+            const phrases = [
+                "Smart Agents. Smart Actions.",
+                "Your Team, Supercharged by AI Agents",
+                "Dispatch Agents. Deploy Results.",
+                "AI Agents That Work While You Sleep",
+                "Execution-First AI Agents"
+            ];
+            
+            // Start with a random phrase
+            let phraseIndex = Math.floor(Math.random() * phrases.length);
+            let charIndex = 0;
+            let isDeleting = false;
+            let typeSpeed = 100;
+
+            function type() {
+                const currentPhrase = phrases[phraseIndex];
+                
+                if (isDeleting) {
+                    textElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                    charIndex--;
+                    typeSpeed = 50; // Deleting speed
+                } else {
+                    textElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                    charIndex++;
+                    typeSpeed = 100; // Typing speed
+                }
+
+                if (!isDeleting && charIndex === currentPhrase.length) {
+                    isDeleting = true;
+                    typeSpeed = 2000; // Pause at end
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    
+                    // Pick a random next phrase, avoiding the one just shown
+                    let nextIndex;
+                    do {
+                        nextIndex = Math.floor(Math.random() * phrases.length);
+                    } while (nextIndex === phraseIndex && phrases.length > 1);
+                    phraseIndex = nextIndex;
+
+                    typeSpeed = 500; // Pause before new word
+                }
+
+                setTimeout(type, typeSpeed);
+            }
+
+            // Start after initial slide-up animation (approx 1s delay)
+            setTimeout(type, 1000);
+        })();
+
+        // Terminal Animation Script
+        (function() {
+            const container = document.getElementById('terminal-container');
+            const steps = [
+                { type: 'command', text: 'hyperion init new-project' },
+                { type: 'wait', delay: 400 },
+                { type: 'output', text: '➜ Analyzing requirements...', color: 'text-blue-400' },
+                { type: 'wait', delay: 300 },
+                { type: 'output', text: '➜ Detecting tech stack preference...', color: 'text-blue-400' },
+                { type: 'wait', delay: 300 },
+                { type: 'output', text: '✔ Stack selected: Next.js + Tailwind + PostgreSQL', color: 'text-green-400' },
+                { type: 'wait', delay: 600 },
+                { type: 'command', text: 'hyperion generate docs' },
+                { type: 'wait', delay: 400 },
+                { type: 'output', text: '➜ Scanning project structure...', color: 'text-purple-400' },
+                { type: 'wait', delay: 200 },
+                { type: 'output', text: '➜ 3 documents generated in /docs', color: 'text-white' },
+                { type: 'wait', delay: 2000 } // Pause before loop
+            ];
+
+            async function typeLine(text, element) {
+                for (let i = 0; i < text.length; i++) {
+                    element.textContent += text[i];
+                    // Random typing speed between 30ms and 70ms
+                    await new Promise(resolve => setTimeout(resolve, 30 + Math.random() * 40));
+                }
+            }
+
+            async function runTerminal() {
+                while(true) {
+                    container.innerHTML = ''; // Clear terminal
+                    
+                    for (const step of steps) {
+                        if (step.type === 'wait') {
+                            await new Promise(resolve => setTimeout(resolve, step.delay));
+                            continue;
+                        }
+
+                        const p = document.createElement('p');
+                        
+                        if (step.type === 'command') {
+                            p.className = 'text-zinc-400 flex items-center';
+                            const prompt = document.createElement('span');
+                            prompt.textContent = '$ ';
+                            prompt.className = 'mr-2';
+                            
+                            const cmdText = document.createElement('span');
+                            cmdText.className = 'text-white';
+                            
+                            const cursor = document.createElement('span');
+                            cursor.className = 'animate-pulse bg-zinc-500 w-2 h-4 inline-block ml-1';
+                            
+                            p.appendChild(prompt);
+                            p.appendChild(cmdText);
+                            p.appendChild(cursor);
+                            container.appendChild(p);
+
+                            // Scroll to bottom
+                            container.scrollTop = container.scrollHeight;
+
+                            await typeLine(step.text, cmdText);
+                            cursor.remove(); // Remove cursor after typing
+                        } else {
+                            p.className = `${step.color || 'text-zinc-300'}`;
+                            p.textContent = step.text;
+                            container.appendChild(p);
+                            container.scrollTop = container.scrollHeight;
+                        }
+                    }
+
+                    // Blinking cursor at the end before restart
+                    const endCursorLine = document.createElement('p');
+                    endCursorLine.className = 'text-zinc-400';
+                    endCursorLine.innerHTML = '$ <span class="animate-pulse bg-zinc-500 w-2 h-4 inline-block align-middle ml-1"></span>';
+                    container.appendChild(endCursorLine);
+                    container.scrollTop = container.scrollHeight;
+
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+            }
+
+            // Start animation when section is visible
+            const terminalObserver = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    runTerminal();
+                    terminalObserver.disconnect(); // Run once
+                }
+            }, { threshold: 0.1 });
+            
+            terminalObserver.observe(container);
+        })();
+
+        // Design Box Cyclic Animation (Show Page -> Loading -> Show Page)
+        (function() {
+            const content = document.getElementById('design-content');
+            const loader = document.getElementById('design-loader');
+            const spinnerContainer = document.getElementById('design-spinner-container');
+            
+            // Loop: View(2s) -> Loading(1.5s) -> View(2s)...
+            function cycleDesignAnimation() {
+                // Phase 1: Showing Page (Start state)
+                setTimeout(() => {
+                    // Switch to Phase 2: Loading
+                    content.classList.add('opacity-30', 'blur-[1px]');
+                    loader.classList.remove('opacity-0');
+                    spinnerContainer.classList.remove('scale-90');
+                    spinnerContainer.classList.add('scale-100');
+                    
+                    setTimeout(() => {
+                        // Switch back to Phase 1: Showing Page
+                        content.classList.remove('opacity-30', 'blur-[1px]');
+                        loader.classList.add('opacity-0');
+                        spinnerContainer.classList.add('scale-90');
+                        spinnerContainer.classList.remove('scale-100');
+                        
+                        // Restart Loop
+                        cycleDesignAnimation();
+                    }, 2000); // Duration of "Loading" state
+                }, 2500); // Duration of "View" state
+            }
+            
+            // Start the cycle
+            cycleDesignAnimation();
+        })();
+    </script>
+</body>
+</html>
