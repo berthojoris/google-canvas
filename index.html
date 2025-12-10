@@ -55,12 +55,12 @@
                     },
                     keyframes: {
                         fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                            '0%': { opacity: '0', transform: 'translateY(20px)', filter: 'blur(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)', filter: 'blur(0)' },
                         },
                         slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(40px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                            '0%': { opacity: '0', transform: 'translateY(40px)', filter: 'blur(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)', filter: 'blur(0)' },
                         },
                         marquee: {
                             '0%': { transform: 'translateX(0%)' },
@@ -119,7 +119,6 @@
         }
         ::-webkit-scrollbar-thumb {
             background: var(--bg-surface-highlight);
-            /* Removed rounded from scrollbar thumb too for consistency */
         }
         ::-webkit-scrollbar-thumb:hover {
             background: #a1a1aa;
@@ -129,13 +128,15 @@
         .reveal-element {
             opacity: 0;
             transform: translateY(30px);
-            transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1);
-            will-change: opacity, transform;
+            filter: blur(5px); /* Added blur for smoother reveal */
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+            will-change: opacity, transform, filter;
         }
         
         .reveal-element.revealed {
             opacity: 1;
             transform: translateY(0);
+            filter: blur(0);
         }
 
         /* Grid Background Utility */
@@ -270,6 +271,9 @@
         <!-- Background Effects -->
         <div class="absolute inset-0 bg-grid opacity-[0.03] pointer-events-none"></div>
         
+        <!-- NEW: Meteor/Shooting Star Canvas (Trae.ai style) -->
+        <canvas id="meteor-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-0 mix-blend-screen opacity-60"></canvas>
+
         <!-- NEW: Distant Ambient Light (Cahaya dari kejauhan) -->
         <!-- Primary Glow (Center Top) - Updated to Silver/White/Black Gradient -->
         <div class="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/15 via-zinc-400/10 to-transparent blur-[100px] pointer-events-none z-0 opacity-80 dark:opacity-50"></div>
@@ -1179,7 +1183,100 @@
             prdObserver.observe(prdContainer);
         })();
 
-        // (Deleted Hero Light Mouse Follow Animation Script)
+        // Meteor/Shooting Star Animation (Trae.ai Style)
+        (function() {
+            const canvas = document.getElementById('meteor-canvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let meteors = [];
+
+            function resize() {
+                width = canvas.width = canvas.offsetWidth;
+                height = canvas.height = canvas.offsetHeight;
+            }
+
+            function createMeteor() {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                // Move diagonally downwards
+                const angle = Math.PI / 4; 
+                // Increased length for visibility
+                const length = Math.random() * 150 + 50; 
+                // Slightly faster speed
+                const speed = Math.random() * 4 + 2; 
+                
+                meteors.push({
+                    x: Math.random() * width, // Random start X
+                    y: Math.random() * -200,  // Start higher above screen
+                    length,
+                    speed,
+                    angle,
+                    opacity: 1
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                
+                // Increased spawn rate (0.05 -> 0.1) for more stars
+                if (Math.random() < 0.1) { 
+                    createMeteor();
+                }
+
+                // Get theme color
+                const isDark = document.documentElement.classList.contains('dark');
+                // Use brighter white/primary for better visibility
+                const meteorColor = isDark ? '255, 255, 255' : '99, 102, 241'; 
+
+                meteors.forEach((m, index) => {
+                    m.x += m.speed * Math.cos(m.angle);
+                    m.y += m.speed * Math.sin(m.angle);
+                    // Slower fade out for longer trails
+                    m.opacity -= 0.008; 
+
+                    if (m.opacity <= 0) {
+                        meteors.splice(index, 1);
+                    } else {
+                        // Draw Meteor Tail (Gradient Line)
+                        const gradient = ctx.createLinearGradient(
+                            m.x, m.y, 
+                            m.x - m.length * Math.cos(m.angle), 
+                            m.y - m.length * Math.sin(m.angle)
+                        );
+                        // More solid start of the tail
+                        gradient.addColorStop(0, `rgba(${meteorColor}, ${m.opacity})`);
+                        gradient.addColorStop(0.5, `rgba(${meteorColor}, ${m.opacity * 0.5})`);
+                        gradient.addColorStop(1, `rgba(${meteorColor}, 0)`);
+
+                        ctx.beginPath();
+                        ctx.moveTo(m.x, m.y);
+                        ctx.lineTo(m.x - m.length * Math.cos(m.angle), m.y - m.length * Math.sin(m.angle));
+                        ctx.strokeStyle = gradient;
+                        // Increased thickness
+                        ctx.lineWidth = 2.5; 
+                        ctx.lineCap = "round";
+                        ctx.stroke();
+                        
+                        // Glowing Head (Larger)
+                        ctx.beginPath();
+                        ctx.arc(m.x, m.y, 2, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(${meteorColor}, ${m.opacity})`;
+                        ctx.shadowBlur = 10;
+                        ctx.shadowColor = `rgba(${meteorColor}, 1)`;
+                        ctx.fill();
+                        ctx.shadowBlur = 0; // Reset shadow for performance
+                    }
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            animate();
+        })();
     </script>
 </body>
 </html>
