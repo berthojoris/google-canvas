@@ -233,9 +233,9 @@
                 <!-- Desktop Actions (Hidden on Mobile) -->
                 <div class="hidden md:flex items-center gap-3">
                     <a href="#" class="text-sm text-textMuted hover:text-textMain font-medium transition-colors px-2">Sign In</a>
-                    <!-- CTA Button (Removed rounded-[4px] and shadow) -->
-                    <a href="#" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 text-sm font-semibold transition-colors">
-                        Launch Console
+                    <!-- CTA Button (Added Icon) -->
+                    <a href="#" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 text-sm font-semibold transition-colors flex items-center gap-2">
+                        <i data-lucide="zap" class="w-4 h-4"></i> Launch Console
                     </a>
                 </div>
 
@@ -256,9 +256,9 @@
                 <a href="#" class="block text-textMuted hover:text-textMain font-medium">Blog</a>
                 <div class="border-t border-border pt-4 flex flex-col gap-3">
                     <a href="#" class="block text-textMuted hover:text-textMain font-medium">Sign In</a>
-                    <!-- Mobile CTA (Removed rounded-[4px]) -->
-                    <a href="#" class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 text-sm font-semibold transition-colors text-center">
-                        Launch Console
+                    <!-- Mobile CTA (Added Icon and Flex centering) -->
+                    <a href="#" class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 text-sm font-semibold transition-colors text-center flex items-center justify-center gap-2">
+                        <i data-lucide="zap" class="w-4 h-4"></i> Launch Console
                     </a>
                 </div>
             </div>
@@ -308,12 +308,10 @@
             </p>
 
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0 animate-slide-up" style="animation-delay: 0.8s">
-                <!-- Flat Primary Button (Updated to match 'Start your project' color: Emerald) -->
-                <a href="#" class="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition-colors flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20">
-                    <i data-lucide="zap" class="w-4 h-4"></i> Start Building Free
-                </a>
-                <!-- Flat Secondary Button (Removed rounded-lg) -->
-                <a href="#" class="w-full sm:w-auto px-8 py-4 bg-surface hover:bg-surfaceHighlight border border-border text-textMain font-semibold transition-colors flex items-center justify-center gap-2">
+                <!-- "Start Building Free" Removed as requested -->
+                
+                <!-- Flat Secondary Button (Centered) -->
+                <a href="#" class="w-full sm:w-auto px-10 py-4 bg-surface hover:bg-surfaceHighlight border border-border text-textMain font-semibold transition-colors flex items-center justify-center gap-2">
                     <i data-lucide="play-circle" class="w-4 h-4"></i> Watch Demo
                 </a>
             </div>
