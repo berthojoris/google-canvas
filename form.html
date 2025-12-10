@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Input & Pencarian Email | MAC TERMINAL LOG</title>
+    <!-- Memuat Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Menggunakan font monospace untuk tampilan terminal otentik -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Menggunakan Font Monospace dan Terminal Dark Mode */
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #1A1A1A; /* Latar belakang hitam pekat */
+            color: #E0E0E0; /* Warna teks dasar terang */
+        }
+        
+        /* Definisi Warna Aksen Utama: Terminal Green */
+        .primary-accent {
+            color: #4CAF50; /* Terminal Green */
+        }
+        
+        /* Terminal Window Container */
+        .terminal-window {
+            background-color: #1E1E1E; /* Background utama terminal */
+            border: 1px solid #4D4D4D; /* Border halus */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Header Terminal (Title Bar) */
+        .terminal-header {
+            background-color: #3C3C3C;
+            height: 28px;
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #4D4D4D;
+        }
+
+        /* Traffic Light Controls */
+        .traffic-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        /* Input Style: Flat, Sharp, dan Dark */
+        .sharp-input {
+            border-width: 1px;
+            border-color: #4D4D4D;
+            background-color: #1E1E1E;
+            color: #F8F8F2;
+            padding: 0.5rem 1rem;
+            transition: border-color 0.15s;
+        }
+
+        /* Style untuk fokus input: Border Terminal Green */
+        .sharp-input:focus {
+            border-color: #4CAF50; 
+            outline: none;
+            box-shadow: none; /* Hilangkan semua bayangan */
+            transform: none;
+        }
+
+        /* Button Style: Flat dan Monokromatik */
+        .sharp-btn {
+            background-color: #4CAF50; /* Terminal Green */
+            color: #1E1E1E; 
+            font-weight: 700;
+            border-radius: 0;
+            transition: background-color 0.15s;
+            border: 1px solid #388E3C;
+            box-shadow: none;
+        }
+
+        .sharp-btn:hover {
+            background-color: #388E3C; /* Darker Green */
+            color: #fff;
+        }
+        
+        /* List Item Style: Menyerupai Output Shell */
+        .list-item-style {
+            background-color: #1E1E1E; /* Sama dengan background terminal */
+            border-left: 3px solid #666; /* Bar abu-abu untuk pemisah */
+            border-bottom: 1px dashed #333; /* Garis putus-putus */
+            transition: all 0.2s;
+        }
+
+        .list-item-style:hover {
+            background-color: #2D2D2D;
+            border-left-color: #4CAF50; /* Highlight hijau saat hover */
+        }
+    </style>
+</head>
+<body>
+
+<div class="min-h-screen flex flex-col items-center p-4 sm:p-8 bg-black">
+
+    <!-- Kontainer Utama: Terminal Window -->
+    <div class="w-full max-w-4xl terminal-window mb-8">
+
+        <!-- Header Simulasi Traffic Light -->
+        <div class="terminal-header">
+            <div class="traffic-light" style="background-color: #FF5F56;"></div> <!-- Red (Close) -->
+            <div class="traffic-light" style="background-color: #FFBD2E;"></div> <!-- Yellow (Minimize) -->
+            <div class="traffic-light" style="background-color: #27C93F;"></div> <!-- Green (Maximize) -->
+            <span class="text-xs text-gray-400 ml-4 font-mono">user@Akses-Log: ~/data/kredensial</span>
+        </div>
+
+        <div class="p-6 sm:p-10">
+            <!-- Title -->
+            <h1 class="text-xl font-bold primary-accent mb-6">
+                ~ $ SCRIPT_INPUT_KREDENSIAL.sh
+            </h1>
+
+            <!-- Form Input Email & Password -->
+            <div class="border-b-2 border-gray-700 pb-8 mb-8">
+                <h2 class="text-sm font-semibold text-gray-400 mb-6 uppercase tracking-widest">
+                    > Enter new key:
+                </h2>
+                <form id="accountForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="emailInput" class="block text-xs font-bold text-gray-500 mb-2 uppercase">Email ADDRESS</label>
+                        <input type="email" id="emailInput" name="email" required placeholder="email@server.com"
+                               class="w-full sharp-input">
+                    </div>
+                    <div>
+                        <label for="passwordInput" class="block text-xs font-bold text-gray-500 mb-2 uppercase">ENCRYPTED KEY</label>
+                        <input type="password" id="passwordInput" name="password" required placeholder="************"
+                               class="w-full sharp-input">
+                    </div>
+                    <div class="md:col-span-2 flex justify-end pt-4">
+                        <button type="submit"
+                                class="w-full sm:w-auto px-8 py-2 sharp-btn">
+                            EXECUTE >>
+                        </button>
+                    </div>
+                </form>
+                <div id="messageBox" class="mt-6 p-3 hidden text-xs font-mono border-l-4"></div>
+            </div>
+
+            <!-- Bagian Pencarian dan List Email -->
+            <div class="mt-8">
+                <h2 class="text-sm font-bold text-gray-400 mb-6 uppercase tracking-widest">
+                    ~ $ QUERY_DATA_LOG.sh
+                </h2>
+                
+                <!-- Input Pencarian -->
+                <div class="mb-6">
+                    <label for="searchInput" class="block text-xs font-bold text-gray-500 mb-2 uppercase">SEARCH PARAMETER (EMAIL)</label>
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="grep email..."
+                               class="w-full pl-12 pr-4 sharp-input">
+                        <!-- Icon Terminal Style -->
+                        <span class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500">></span>
+                    </div>
+                </div>
+
+                <!-- List Hasil Pencarian -->
+                <div class="bg-black p-4 border border-gray-800">
+                    <ul id="emailList" class="space-y-2">
+                        <!-- Email akan dimasukkan di sini oleh JavaScript -->
+                        <li id="emptyState" class="text-gray-500 text-sm py-4 border-dashed border-gray-700">[[ OUTPUT: NO MATCHING RECORDS FOUND ]]</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Inisialisasi daftar akun (simulasi database)
+    let accounts = [];
+
+    const accountForm = document.getElementById('accountForm');
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const emailList = document.getElementById('emailList');
+    const searchInput = document.getElementById('searchInput');
+    const messageBox = document.getElementById('messageBox');
+    const emptyState = document.getElementById('emptyState');
+    
+    // Konfigurasi warna pesan terminal: Green untuk Sukses, Red untuk Error
+    const successClasses = ['bg-green-900/40', 'text-green-300', 'border-green-500'];
+    const errorClasses = ['bg-red-900/40', 'text-red-300', 'border-red-500'];
+    const allMessageClasses = ['bg-green-900/40', 'text-green-300', 'border-green-500', 'bg-red-900/40', 'text-red-300', 'border-red-500', 'hidden'];
+
+
+    // Fungsi untuk menampilkan pesan (simulasi alert)
+    function showMessage(text, isSuccess = true) {
+        messageBox.classList.remove(...allMessageClasses);
+        messageBox.textContent = text;
+        
+        if (isSuccess) {
+            messageBox.classList.add(...successClasses);
+        } else {
+            messageBox.classList.add(...errorClasses);
+        }
+        
+        setTimeout(() => {
+            messageBox.classList.add('hidden');
+        }, 4000);
+    }
+
+    // Fungsi untuk merender daftar email
+    function renderEmailList(filter = '') {
+        emailList.innerHTML = '';
+        
+        const filteredAccounts = accounts.filter(account => 
+            account.email.toLowerCase().includes(filter.toLowerCase())
+        );
+
+        if (filteredAccounts.length === 0) {
+            emailList.appendChild(emptyState);
+            emptyState.classList.remove('hidden');
+        } else {
+            emptyState.classList.add('hidden');
+            
+            filteredAccounts.forEach((account, index) => {
+                const listItem = document.createElement('li');
+                // Gaya list item terminal
+                listItem.className = 'flex items-center justify-between p-2 list-item-style';
+                listItem.innerHTML = `
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold primary-accent truncate">RESULT [${index + 1}]: ${account.email}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">Key Length: ${account.password.length} characters</p>
+                    </div>
+                    <button data-index="${index}" class="delete-btn ml-4 p-1 text-red-400 hover:bg-red-600 hover:text-white border-red-500 border-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                `;
+                emailList.appendChild(listItem);
+            });
+            
+             // Menambahkan event listener untuk tombol hapus
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const index = Array.from(e.currentTarget.closest('ul').children).indexOf(e.currentTarget.closest('li'));
+                    deleteAccount(index);
+                });
+            });
+        }
+    }
+
+    // Fungsi untuk menghapus akun (berdasarkan index dari daftar yang difilter)
+    function deleteAccount(indexInFilteredList) {
+         const filter = searchInput.value.trim();
+         
+        const filteredAccounts = accounts.filter(account => 
+            account.email.toLowerCase().includes(filter.toLowerCase())
+        );
+        
+        if (indexInFilteredList >= filteredAccounts.length) return;
+
+        const emailToDelete = filteredAccounts[indexInFilteredList].email;
+
+        const originalIndex = accounts.findIndex(account => account.email === emailToDelete);
+
+        if (originalIndex > -1) {
+            accounts.splice(originalIndex, 1);
+            showMessage(`~ $ LOG: Data ${emailToDelete} successfully deleted.`, false);
+            renderEmailList(filter);
+        }
+    }
+
+
+    // Event Listener untuk submit form
+    accountForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        if (accounts.some(account => account.email === email)) {
+            showMessage('~ $ ERROR: Record already exists in database.', false);
+            return;
+        }
+        
+        if (!email || !password) {
+             showMessage('~ $ ERROR: Missing required parameters (Email/Key).', false);
+            return;
+        }
+
+        accounts.push({ email, password });
+        
+        emailInput.value = '';
+        passwordInput.value = '';
+        
+        showMessage(`~ $ UPLOAD SUCCESS: Key for ${email} stored.`, true);
+        renderEmailList(searchInput.value.trim());
+    });
+
+    // Event Listener untuk input pencarian
+    searchInput.addEventListener('input', (e) => {
+        const filterText = e.target.value.trim();
+        renderEmailList(filterText);
+    });
+
+    // Inisialisasi awal (tambahkan data dummy)
+    accounts = [
+        { email: 'command_line@system.local', password: 'secure_auth' },
+        { email: 'admin_shell@terminal.dev', password: 'root_key' },
+        { email: 'guest_user@access.io', password: 'public_pass' },
+    ];
+    renderEmailList();
+
+</script>
+
+</body>
+</html>
