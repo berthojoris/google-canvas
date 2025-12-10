@@ -702,7 +702,7 @@
                 </div>
 
                 <!-- Global Map Visual -->
-                <div class="w-full h-[500px] bg-[#0c0c0e] rounded-3xl border border-white/5 relative overflow-hidden group shadow-2xl">
+                <div class="w-full h-[600px] bg-[#0c0c0e] rounded-3xl border border-white/5 relative overflow-hidden group shadow-2xl">
                     
                     <!-- Abstract Map Background (Dots) -->
                     <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#3f3f46 1.5px, transparent 1.5px); background-size: 30px 30px;"></div>
@@ -710,71 +710,117 @@
                     <!-- World Overlay Gradient -->
                     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0c0c0e] pointer-events-none"></div>
 
-                    <!-- Connection Lines (SVG) -->
-                    <svg class="absolute inset-0 w-full h-full pointer-events-none">
-                        <!-- Curve from US to EU -->
-                        <path d="M 250 200 Q 400 100 550 180" stroke="url(#lineGradient)" stroke-width="2" fill="none" class="opacity-50" stroke-dasharray="5 5">
-                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="2s" repeatCount="indefinite" />
-                        </path>
-                        <!-- Curve from EU to Asia -->
-                        <path d="M 550 180 Q 700 250 850 220" stroke="url(#lineGradient)" stroke-width="2" fill="none" class="opacity-50" stroke-dasharray="5 5">
-                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="3s" repeatCount="indefinite" />
-                        </path>
-                         <!-- Curve from US to Asia (Trans-pacific) -->
-                         <path d="M 250 200 Q 550 400 850 220" stroke="url(#lineGradient2)" stroke-width="2" fill="none" class="opacity-30" stroke-dasharray="8 8">
-                            <animate attributeName="stroke-dashoffset" from="200" to="0" dur="5s" repeatCount="indefinite" />
-                        </path>
-
+                    <!-- Connection Lines (SVG) - Coords mapped to 1000x600 viewbox -->
+                    <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
                         <defs>
                             <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                                 <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0" />
-                                <stop offset="50%" style="stop-color:#6366f1;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#6366f1;stop-opacity:0.6" />
                                 <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0" />
                             </linearGradient>
-                            <linearGradient id="lineGradient2" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" style="stop-color:#10b981;stop-opacity:0" />
-                                <stop offset="50%" style="stop-color:#10b981;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#10b981;stop-opacity:0" />
-                            </linearGradient>
                         </defs>
+
+                        <!-- US -> EU -->
+                        <path d="M 250 240 Q 375 150 520 210" stroke="url(#lineGradient)" stroke-width="1.5" fill="none" class="opacity-40" stroke-dasharray="4 4">
+                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="3s" repeatCount="indefinite" />
+                        </path>
+                        <!-- EU -> Asia -->
+                        <path d="M 520 210 Q 650 180 800 270" stroke="url(#lineGradient)" stroke-width="1.5" fill="none" class="opacity-40" stroke-dasharray="4 4">
+                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="4s" repeatCount="indefinite" />
+                        </path>
+                        <!-- US -> SA -->
+                        <path d="M 250 240 Q 220 350 320 450" stroke="url(#lineGradient)" stroke-width="1.5" fill="none" class="opacity-40" stroke-dasharray="4 4">
+                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="3.5s" repeatCount="indefinite" />
+                        </path>
+                        <!-- EU -> Africa -->
+                        <path d="M 520 210 Q 530 315 550 420" stroke="url(#lineGradient)" stroke-width="1.5" fill="none" class="opacity-40" stroke-dasharray="4 4">
+                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="3s" repeatCount="indefinite" />
+                        </path>
+                        <!-- Asia -> Oceania -->
+                        <path d="M 800 270 Q 850 380 900 480" stroke="url(#lineGradient)" stroke-width="1.5" fill="none" class="opacity-40" stroke-dasharray="4 4">
+                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="2.5s" repeatCount="indefinite" />
+                        </path>
+                        <!-- SA -> Africa (Trans-atlantic) -->
+                        <path d="M 320 450 Q 435 500 550 420" stroke="url(#lineGradient)" stroke-width="1.5" fill="none" class="opacity-30" stroke-dasharray="4 4">
+                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="5s" repeatCount="indefinite" />
+                        </path>
                     </svg>
 
-                    <!-- Node 1: North America -->
-                    <div class="absolute top-[40%] left-[20%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-4 group/node">
-                        <div class="relative w-16 h-16 flex items-center justify-center">
+                    <!-- Node 1: North America (US-EAST) -->
+                    <div class="absolute top-[40%] left-[25%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 group/node cursor-pointer">
+                        <div class="relative w-12 h-12 flex items-center justify-center">
                             <div class="absolute inset-0 bg-primary/20 rounded-full animate-ping"></div>
-                            <div class="w-12 h-12 bg-zinc-900 border border-primary/50 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_20px_rgba(99,102,241,0.4)]">
-                                <i data-lucide="server" class="w-5 h-5 text-primary"></i>
+                            <div class="w-8 h-8 bg-zinc-900 border border-primary/50 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(99,102,241,0.5)]">
+                                <i data-lucide="server" class="w-4 h-4 text-primary"></i>
                             </div>
                         </div>
-                        <div class="bg-zinc-900/90 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-300 backdrop-blur-md opacity-0 group-hover/node:opacity-100 transition-opacity translate-y-2 group-hover/node:translate-y-0 duration-300">
-                            <span class="text-primary font-bold">US-EAST</span> • 12ms
+                        <div class="bg-zinc-900/90 border border-white/10 px-2 py-1 rounded text-[10px] font-mono text-zinc-300 backdrop-blur-md opacity-80 group-hover/node:opacity-100 transition-all translate-y-1 group-hover/node:translate-y-0">
+                            <span class="text-primary font-bold">N. AMERICA</span> • <span class="text-green-400">12ms</span>
                         </div>
                     </div>
 
-                    <!-- Node 2: Europe -->
-                    <div class="absolute top-[35%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-4 group/node">
+                    <!-- Node 2: South America (SA-EAST) -->
+                    <div class="absolute top-[75%] left-[32%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 group/node cursor-pointer">
+                        <div class="relative w-12 h-12 flex items-center justify-center">
+                            <div class="absolute inset-0 bg-orange-500/20 rounded-full animate-ping" style="animation-delay: 0.5s"></div>
+                            <div class="w-8 h-8 bg-zinc-900 border border-orange-500/50 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(249,115,22,0.5)]">
+                                <i data-lucide="network" class="w-4 h-4 text-orange-400"></i>
+                            </div>
+                        </div>
+                        <div class="bg-zinc-900/90 border border-white/10 px-2 py-1 rounded text-[10px] font-mono text-zinc-300 backdrop-blur-md opacity-80 group-hover/node:opacity-100 transition-all translate-y-1 group-hover/node:translate-y-0">
+                            <span class="text-orange-400 font-bold">S. AMERICA</span> • <span class="text-green-400">65ms</span>
+                        </div>
+                    </div>
+
+                    <!-- Node 3: Europe (EU-CENTRAL) -->
+                    <div class="absolute top-[35%] left-[52%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 group/node cursor-pointer">
                         <div class="relative w-12 h-12 flex items-center justify-center">
                             <div class="absolute inset-0 bg-purple-500/20 rounded-full animate-pulse"></div>
-                            <div class="w-8 h-8 bg-zinc-900 border border-purple-500/50 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_20px_rgba(168,85,247,0.4)]">
-                                <i data-lucide="network" class="w-4 h-4 text-purple-400"></i>
+                            <div class="w-8 h-8 bg-zinc-900 border border-purple-500/50 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(168,85,247,0.5)]">
+                                <i data-lucide="globe" class="w-4 h-4 text-purple-400"></i>
                             </div>
                         </div>
-                        <div class="bg-zinc-900/90 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-300 backdrop-blur-md">
-                            <span class="text-purple-400 font-bold">EU-CENTRAL</span> • 24ms
+                        <div class="bg-zinc-900/90 border border-white/10 px-2 py-1 rounded text-[10px] font-mono text-zinc-300 backdrop-blur-md opacity-80 group-hover/node:opacity-100 transition-all translate-y-1 group-hover/node:translate-y-0">
+                            <span class="text-purple-400 font-bold">EUROPE</span> • <span class="text-green-400">24ms</span>
                         </div>
                     </div>
 
-                    <!-- Node 3: Asia -->
-                    <div class="absolute top-[45%] left-[80%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-4 group/node">
-                        <div class="relative w-16 h-16 flex items-center justify-center">
-                            <div class="absolute inset-0 bg-emerald-500/20 rounded-full animate-ping" style="animation-delay: 1s;"></div>
-                            <div class="w-12 h-12 bg-zinc-900 border border-emerald-500/50 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_20px_rgba(16,185,129,0.4)]">
-                                <i data-lucide="globe" class="w-5 h-5 text-emerald-400"></i>
+                    <!-- Node 4: Africa (AF-SOUTH) -->
+                    <div class="absolute top-[70%] left-[55%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 group/node cursor-pointer">
+                        <div class="relative w-12 h-12 flex items-center justify-center">
+                            <div class="absolute inset-0 bg-yellow-500/20 rounded-full animate-ping" style="animation-delay: 1.2s"></div>
+                            <div class="w-8 h-8 bg-zinc-900 border border-yellow-500/50 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(234,179,8,0.5)]">
+                                <i data-lucide="zap" class="w-4 h-4 text-yellow-400"></i>
                             </div>
                         </div>
-                        <div class="bg-zinc-900/90 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-300 backdrop-blur-md opacity-0 group-hover/node:opacity-100 transition-opacity translate-y-2 group-hover/node:translate-y-0 duration-300">
-                            <span class="text-emerald-400 font-bold">ASIA-PACIFIC</span> • 89ms
+                        <div class="bg-zinc-900/90 border border-white/10 px-2 py-1 rounded text-[10px] font-mono text-zinc-300 backdrop-blur-md opacity-80 group-hover/node:opacity-100 transition-all translate-y-1 group-hover/node:translate-y-0">
+                            <span class="text-yellow-400 font-bold">AFRICA</span> • <span class="text-green-400">92ms</span>
+                        </div>
+                    </div>
+
+                    <!-- Node 5: Asia (ASIA-PACIFIC) -->
+                    <div class="absolute top-[45%] left-[80%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 group/node cursor-pointer">
+                        <div class="relative w-12 h-12 flex items-center justify-center">
+                            <div class="absolute inset-0 bg-emerald-500/20 rounded-full animate-ping" style="animation-delay: 0.8s"></div>
+                            <div class="w-8 h-8 bg-zinc-900 border border-emerald-500/50 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(16,185,129,0.5)]">
+                                <i data-lucide="cpu" class="w-4 h-4 text-emerald-400"></i>
+                            </div>
+                        </div>
+                        <div class="bg-zinc-900/90 border border-white/10 px-2 py-1 rounded text-[10px] font-mono text-zinc-300 backdrop-blur-md opacity-80 group-hover/node:opacity-100 transition-all translate-y-1 group-hover/node:translate-y-0">
+                            <span class="text-emerald-400 font-bold">ASIA</span> • <span class="text-green-400">89ms</span>
+                        </div>
+                    </div>
+
+                    <!-- Node 6: Oceania (OC-SYDNEY) -->
+                    <div class="absolute top-[80%] left-[90%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 group/node cursor-pointer">
+                        <div class="relative w-12 h-12 flex items-center justify-center">
+                            <div class="absolute inset-0 bg-blue-400/20 rounded-full animate-ping" style="animation-delay: 1.5s"></div>
+                            <div class="w-8 h-8 bg-zinc-900 border border-blue-400/50 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(96,165,250,0.5)]">
+                                <i data-lucide="wifi" class="w-4 h-4 text-blue-400"></i>
+                            </div>
+                        </div>
+                        <div class="bg-zinc-900/90 border border-white/10 px-2 py-1 rounded text-[10px] font-mono text-zinc-300 backdrop-blur-md opacity-80 group-hover/node:opacity-100 transition-all translate-y-1 group-hover/node:translate-y-0">
+                            <span class="text-blue-400 font-bold">OCEANIA</span> • <span class="text-green-400">104ms</span>
                         </div>
                     </div>
 
@@ -786,8 +832,8 @@
                         </div>
                         <div class="h-8 w-[1px] bg-white/10"></div>
                         <div>
-                            <div class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-1">Global Requests</div>
-                            <div class="text-2xl font-display font-bold text-primary">1.2B<span class="text-sm text-zinc-500 ml-1">/day</span></div>
+                            <div class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-1">Global Latency</div>
+                            <div class="text-2xl font-display font-bold text-green-400">~38ms<span class="text-sm text-zinc-500 ml-1 font-normal">avg</span></div>
                         </div>
                     </div>
 
