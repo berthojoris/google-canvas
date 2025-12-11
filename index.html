@@ -201,7 +201,6 @@
             <div class="flex items-center gap-8">
                 <!-- Logo -->
                 <a href="#" class="flex items-center gap-2 group">
-                    <!-- Changed from "Hyperion" to "Hyperion AI" -->
                     <span class="font-display font-bold text-xl tracking-tight text-textMain">Hyperion AI</span>
                 </a>
 
@@ -856,56 +855,84 @@
     </section>
 
     <!-- Footer -->
-    <footer class="border-t border-border bg-background pt-16 pb-8 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-6">
+    <footer class="relative border-t border-white/5 bg-gradient-to-b from-[#0B0F19] to-black pt-0 pb-8 overflow-hidden group/footer" id="ai-footer">
+        
+        <!-- 1. AI Pulse Waveform Canvas -->
+        <div class="absolute top-0 left-0 w-full h-[120px] pointer-events-none z-0">
+            <canvas id="footer-pulse" class="w-full h-full opacity-40"></canvas>
+        </div>
+
+        <!-- 2. Interactive Tooltip Area (Invisible hover zone over the pulse) -->
+        <div class="absolute top-0 left-0 w-full h-12 z-20 cursor-help" id="pulse-hover-zone"></div>
+        
+        <!-- Tooltip (Hidden by default) -->
+        <div id="pulse-tooltip" class="absolute top-14 left-1/2 -translate-x-1/2 bg-zinc-900/90 border border-indigo-500/50 text-indigo-300 text-xs px-3 py-1.5 rounded-full backdrop-blur-md opacity-0 transition-opacity duration-300 pointer-events-none z-30 shadow-[0_0_15px_rgba(99,102,241,0.3)]">
+            <span class="w-2 h-2 bg-indigo-500 rounded-full inline-block mr-2 animate-pulse"></span>
+            System Status: <span class="text-white font-mono" id="pulse-status-text">All Systems Nominal</span>
+        </div>
+
+        <!-- 3. Floating Agent Badges (Dynamic) -->
+        <div id="agent-badges-container" class="absolute top-4 right-6 flex flex-col gap-2 items-end z-10 pointer-events-none">
+            <!-- Badges will be injected here by JS -->
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10 pt-16">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
                 <div class="col-span-2 md:col-span-1 reveal-element">
                     <div class="flex items-center gap-2 mb-4">
-                        <!-- Logo "H" removed -->
-                        <span class="font-semibold font-display tracking-tight text-textMain">Hyperion Labs</span>
+                        <span class="font-semibold font-display tracking-tight text-white">Hyperion AI</span>
                     </div>
-                    <p class="text-textMuted text-sm">Building the future of software development with intelligent autonomous agents.</p>
+                    <p class="text-zinc-500 text-sm mb-4">Building the future of software development with intelligent autonomous agents.</p>
+                    
+                    <!-- Live Status Indicator -->
+                    <div class="inline-flex items-center gap-2 px-2 py-1 rounded bg-indigo-500/10 border border-indigo-500/20">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                        </span>
+                        <span class="text-[10px] font-mono text-indigo-300">AI ENGINE ONLINE</span>
+                    </div>
                 </div>
                 
                 <div class="reveal-element delay-100">
-                    <h4 class="font-semibold mb-4 text-sm text-textMain font-display">Product</h4>
-                    <ul class="space-y-2 text-sm text-textMuted">
-                        <li><a href="#" class="hover:text-primary transition-colors">Features</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Integrations</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Pricing</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Changelog</a></li>
+                    <h4 class="font-semibold mb-4 text-sm text-white font-display">Product</h4>
+                    <ul class="space-y-2 text-sm text-zinc-500">
+                        <li><a href="#" class="footer-link hover:text-indigo-400 transition-colors duration-300">Features</a></li>
+                        <li><a href="#" class="footer-link hover:text-indigo-400 transition-colors duration-300">Integrations</a></li>
+                        <li><a href="#" class="footer-link hover:text-indigo-400 transition-colors duration-300">Pricing</a></li>
+                        <li><a href="#" class="footer-link hover:text-indigo-400 transition-colors duration-300">Changelog</a></li>
                     </ul>
                 </div>
                 
                 <div class="reveal-element delay-200">
-                    <h4 class="font-semibold mb-4 text-sm text-textMain font-display">Resources</h4>
-                    <ul class="space-y-2 text-sm text-textMuted">
-                        <li><a href="#" class="hover:text-primary transition-colors">Documentation</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">API Reference</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Community</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Blog</a></li>
+                    <h4 class="font-semibold mb-4 text-sm text-white font-display">Resources</h4>
+                    <ul class="space-y-2 text-sm text-zinc-500">
+                        <li><a href="#" class="footer-link hover:text-indigo-400 transition-colors duration-300">Documentation</a></li>
+                        <li><a href="#" class="footer-link hover:text-indigo-400 transition-colors duration-300">API Reference</a></li>
+                        <li><a href="#" class="footer-link hover:text-indigo-400 transition-colors duration-300">Community</a></li>
+                        <li><a href="#" class="footer-link hover:text-indigo-400 transition-colors duration-300">Blog</a></li>
                     </ul>
                 </div>
                 
                 <div class="reveal-element delay-300">
-                    <h4 class="font-semibold mb-4 text-sm text-textMain font-display">Company</h4>
-                    <ul class="space-y-2 text-sm text-textMuted">
-                        <li><a href="#" class="hover:text-primary transition-colors">About</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Careers</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Legal</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Contact</a></li>
+                    <h4 class="font-semibold mb-4 text-sm text-white font-display">Company</h4>
+                    <ul class="space-y-2 text-sm text-zinc-500">
+                        <li><a href="#" class="footer-link hover:text-indigo-400 transition-colors duration-300">About</a></li>
+                        <li><a href="#" class="footer-link hover:text-indigo-400 transition-colors duration-300">Careers</a></li>
+                        <li><a href="#" class="footer-link hover:text-indigo-400 transition-colors duration-300">Legal</a></li>
+                        <li><a href="#" class="footer-link hover:text-indigo-400 transition-colors duration-300">Contact</a></li>
                     </ul>
                 </div>
             </div>
             
-            <div class="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4 reveal-element delay-500">
-                <div class="text-textMuted text-xs">
+            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 reveal-element delay-500">
+                <div class="text-zinc-600 text-xs">
                     &copy; 2025 Hyperion Labs. All rights reserved.
                 </div>
                 <div class="flex gap-4">
-                    <a href="#" class="text-textMuted hover:text-textMain transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
-                    <a href="#" class="text-textMuted hover:text-textMain transition-colors"><i data-lucide="github" class="w-4 h-4"></i></a>
-                    <a href="#" class="text-textMuted hover:text-textMain transition-colors"><i data-lucide="discord" class="w-4 h-4"></i></a>
+                    <a href="#" class="text-zinc-500 hover:text-white transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+                    <a href="#" class="text-zinc-500 hover:text-white transition-colors"><i data-lucide="github" class="w-4 h-4"></i></a>
+                    <a href="#" class="text-zinc-500 hover:text-white transition-colors"><i data-lucide="discord" class="w-4 h-4"></i></a>
                 </div>
             </div>
         </div>
@@ -920,7 +947,6 @@
         const htmlElement = document.documentElement;
 
         // Check local storage or default to dark
-        // Changed logic: Defaults to dark if 'theme' is not in localStorage
         if (localStorage.theme === 'dark' || (!('theme' in localStorage))) {
             htmlElement.classList.add('dark');
         } else {
@@ -948,24 +974,21 @@
             });
         }
 
-        // --- NEW REVEAL ANIMATION OBSERVER ---
-        // This handles the new .reveal-element animations
+        // Reveal Animations
         const revealObserverOptions = {
-            threshold: 0.1, // Trigger when 10% visible
-            rootMargin: "0px 0px -50px 0px" // Offset slightly so it triggers before bottom
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
         };
 
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('revealed');
-                    // Optional: Unobserve to run animation only once
                     revealObserver.unobserve(entry.target);
                 }
             });
         }, revealObserverOptions);
 
-        // Target all elements with .reveal-element class
         document.querySelectorAll('.reveal-element').forEach(el => {
             revealObserver.observe(el);
         });
@@ -1642,6 +1665,153 @@
                     }
                 });
             }
+        })();
+
+        // --- AI PULSE FOOTER ANIMATION ---
+        (function() {
+            const canvas = document.getElementById('footer-pulse');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const hoverZone = document.getElementById('pulse-hover-zone');
+            const tooltip = document.getElementById('pulse-tooltip');
+            const statusText = document.getElementById('pulse-status-text');
+            const footerLinks = document.querySelectorAll('.footer-link');
+            const badgeContainer = document.getElementById('agent-badges-container');
+
+            let width, height;
+            let time = 0;
+            let pulseIntensity = 1; // Base intensity
+            let targetIntensity = 1;
+            
+            // Configuration
+            const waves = [
+                { amplitude: 20, frequency: 0.02, speed: 0.05, color: 'rgba(99, 102, 241, 0.5)' }, // Indigo
+                { amplitude: 15, frequency: 0.01, speed: 0.03, color: 'rgba(168, 85, 247, 0.3)' }, // Purple
+                { amplitude: 10, frequency: 0.03, speed: 0.07, color: 'rgba(56, 189, 248, 0.3)' }  // Cyan
+            ];
+
+            function resize() {
+                width = canvas.width = canvas.offsetWidth;
+                height = canvas.height = canvas.offsetHeight;
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                time += 1;
+
+                // Smooth intensity transition
+                pulseIntensity += (targetIntensity - pulseIntensity) * 0.1;
+
+                waves.forEach((wave, i) => {
+                    ctx.beginPath();
+                    ctx.moveTo(0, height / 2);
+
+                    for (let x = 0; x < width; x++) {
+                        // Calculate Y with sine wave formula + some noise
+                        const y = height / 4 + // Raised slightly to top
+                                Math.sin(x * wave.frequency + time * wave.speed) * wave.amplitude * pulseIntensity +
+                                Math.sin(x * wave.frequency * 2 + time * wave.speed * 1.5) * (wave.amplitude / 2) * pulseIntensity;
+                        
+                        ctx.lineTo(x, y);
+                    }
+
+                    // Gradient fill for the wave
+                    const gradient = ctx.createLinearGradient(0, 0, width, 0);
+                    gradient.addColorStop(0, "transparent");
+                    gradient.addColorStop(0.5, wave.color);
+                    gradient.addColorStop(1, "transparent");
+
+                    ctx.strokeStyle = gradient;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            // --- Interactions ---
+
+            // 1. Tooltip Hover
+            hoverZone.addEventListener('mouseenter', () => {
+                tooltip.classList.remove('opacity-0');
+                targetIntensity = 0.5; // Calm down wave when inspecting
+            });
+            
+            hoverZone.addEventListener('mousemove', (e) => {
+                // Update tooltip position relative to mouse X
+                const rect = hoverZone.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                tooltip.style.left = `${x}px`;
+                
+                // Randomize status text occasionally
+                if (Math.random() < 0.05) {
+                    const statuses = [
+                        "Docs Engine Active", 
+                        "Context-Sync Running", 
+                        "Analyzing Codebase", 
+                        "Agent-03 Idle"
+                    ];
+                    statusText.textContent = statuses[Math.floor(Math.random() * statuses.length)];
+                }
+            });
+
+            hoverZone.addEventListener('mouseleave', () => {
+                tooltip.classList.add('opacity-0');
+                targetIntensity = 1; // Return to normal
+            });
+
+            // 2. Link Hover Effect (Excites the wave)
+            footerLinks.forEach(link => {
+                link.addEventListener('mouseenter', () => {
+                    targetIntensity = 2.5; // Spike the wave
+                });
+                link.addEventListener('mouseleave', () => {
+                    targetIntensity = 1;
+                });
+            });
+
+            // 3. Agent Activity Badges (Random Popups)
+            const agents = [
+                { name: "Doc Writer", color: "text-green-400", icon: "file-text" },
+                { name: "Code Reviewer", color: "text-purple-400", icon: "search" },
+                { name: "Security Bot", color: "text-red-400", icon: "shield" },
+                { name: "Deploy Agent", color: "text-blue-400", icon: "rocket" }
+            ];
+
+            function spawnBadge() {
+                const agent = agents[Math.floor(Math.random() * agents.length)];
+                const badge = document.createElement('div');
+                badge.className = "flex items-center gap-2 bg-zinc-900/80 border border-white/10 px-3 py-1.5 rounded-md text-[10px] backdrop-blur-md shadow-lg transform translate-x-4 opacity-0 transition-all duration-500";
+                badge.innerHTML = `
+                    <i data-lucide="${agent.icon}" class="w-3 h-3 ${agent.color}"></i>
+                    <span class="text-zinc-300">${agent.name} active</span>
+                `;
+                
+                badgeContainer.appendChild(badge);
+                lucide.createIcons(); // Refresh icons for new element
+
+                // Animate In
+                requestAnimationFrame(() => {
+                    badge.classList.remove('translate-x-4', 'opacity-0');
+                });
+
+                // Remove after few seconds
+                setTimeout(() => {
+                    badge.classList.add('translate-x-4', 'opacity-0');
+                    setTimeout(() => badge.remove(), 500);
+                }, 3000);
+
+                // Schedule next badge
+                setTimeout(spawnBadge, Math.random() * 5000 + 3000);
+            }
+
+            // Init
+            window.addEventListener('resize', resize);
+            resize();
+            animate();
+            setTimeout(spawnBadge, 2000); // Start badge loop
+
         })();
     </script>
 </body>
