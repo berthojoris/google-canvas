@@ -201,7 +201,8 @@
             <div class="flex items-center gap-8">
                 <!-- Logo -->
                 <a href="#" class="flex items-center gap-2 group">
-                    <span class="font-display font-bold text-xl tracking-tight text-textMain">Hyperion</span>
+                    <!-- Changed from "Hyperion" to "Hyperion AI" -->
+                    <span class="font-display font-bold text-xl tracking-tight text-textMain">Hyperion AI</span>
                 </a>
 
                 <!-- Desktop Nav Links -->
@@ -240,10 +241,10 @@
                 <!-- Desktop Actions (Hidden on Mobile) -->
                 <div class="hidden md:flex items-center gap-3">
                     <a href="#" class="text-sm text-textMuted hover:text-textMain font-medium transition-colors px-2">Sign In</a>
-                    <!-- CTA Button (Updated Icon to terminal) -->
-                    <a href="#" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 text-sm font-semibold transition-colors flex items-center gap-2">
+                    <!-- CTA Button (Updated Icon to terminal, triggers modal) -->
+                    <button id="desktop-launch-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 text-sm font-semibold transition-colors flex items-center gap-2">
                         <i data-lucide="terminal" class="w-4 h-4"></i> Launch Console
-                    </a>
+                    </button>
                 </div>
 
                 <!-- Mobile Menu Button -->
@@ -263,14 +264,64 @@
                 <a href="#" class="block text-textMuted hover:text-textMain font-medium">Blog</a>
                 <div class="border-t border-border pt-4 flex flex-col gap-3">
                     <a href="#" class="block text-textMuted hover:text-textMain font-medium">Sign In</a>
-                    <!-- Mobile CTA (Updated Icon to terminal) -->
-                    <a href="#" class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 text-sm font-semibold transition-colors text-center flex items-center justify-center gap-2">
+                    <!-- Mobile CTA (Updated Icon to terminal, triggers modal) -->
+                    <button id="mobile-launch-btn" class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 text-sm font-semibold transition-colors text-center flex items-center justify-center gap-2">
                         <i data-lucide="terminal" class="w-4 h-4"></i> Launch Console
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
     </nav>
+
+    <!-- CONSOLE MODAL (Hidden by default) -->
+    <div id="console-modal" class="fixed inset-0 z-[100] hidden opacity-0 transition-opacity duration-300" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" id="console-backdrop"></div>
+
+        <!-- Modal Panel -->
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-lg bg-[#1e1e1e] text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl border border-zinc-700">
+                
+                <!-- Mac Terminal Header -->
+                <div class="bg-[#2d2d2d] px-4 py-2 border-b border-black flex items-center justify-between handle">
+                    <div class="flex items-center gap-2">
+                        <!-- Close Button -->
+                        <div class="w-3 h-3 rounded-full bg-[#ff5f56] hover:bg-[#ff5f56]/80 cursor-pointer" id="close-console-btn"></div>
+                        <!-- Minimize (Dummy) -->
+                        <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+                        <!-- Maximize (Dummy) -->
+                        <div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+                    </div>
+                    <div class="text-zinc-400 text-xs font-mono select-none">user — -zsh — 80x24</div>
+                    <div class="w-10"></div> <!-- Spacer to center text -->
+                </div>
+
+                <!-- Terminal Content Area -->
+                <div class="bg-[#1e1e1e] p-4 h-[400px] overflow-y-auto font-mono text-sm text-zinc-300" id="terminal-window" onclick="document.getElementById('hidden-input').focus()">
+                    <div class="mb-4">
+                        <p class="text-zinc-400">Last login: <span id="login-time"></span> on ttys001</p>
+                        <p>Welcome to Hyperion AI Console v2.0</p>
+                        <p class="text-emerald-500">System initialized. Ready for input.</p>
+                        <p class="text-zinc-500 mb-2">Type 'help' for available commands.</p>
+                    </div>
+                    
+                    <!-- Dynamic Output Area -->
+                    <div id="terminal-output"></div>
+
+                    <!-- Input Line -->
+                    <div class="flex items-center">
+                        <span class="text-emerald-500 mr-2">➜</span>
+                        <span class="text-blue-400 mr-2">~</span>
+                        <span id="typed-text" class="text-white whitespace-pre-wrap"></span>
+                        <span class="w-2 h-4 bg-zinc-400 animate-pulse ml-0.5" id="cursor"></span>
+                    </div>
+                    
+                    <!-- Hidden Input for Mobile Keyboard Support -->
+                    <input type="text" id="hidden-input" class="absolute opacity-0 top-0 left-0 h-0 w-0" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Hero Section -->
     <section id="hero-section" class="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
@@ -289,7 +340,7 @@
 
         <div class="max-w-7xl mx-auto px-6 relative z-10 text-center">
             
-            <!-- Badge (Updated text color to Emerald Green) -->
+            <!-- Badge (Removed rounded-full, made it flat square) -->
             <div class="inline-flex items-center gap-2 px-3 py-1 bg-surface border border-border text-xs font-mono text-emerald-600 mb-8 animate-fade-in-up" style="animation-delay: 0.1s">
                 <span class="flex h-2 w-2 relative">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
@@ -1391,6 +1442,97 @@
             }, { threshold: 0.1 });
             
             observer.observe(term1Box);
+        })();
+
+        // CONSOLE MODAL LOGIC
+        (function() {
+            const openBtns = [document.getElementById('desktop-launch-btn'), document.getElementById('mobile-launch-btn')];
+            const modal = document.getElementById('console-modal');
+            const closeBtn = document.getElementById('close-console-btn');
+            const backdrop = document.getElementById('console-backdrop');
+            const hiddenInput = document.getElementById('hidden-input');
+            const typedTextSpan = document.getElementById('typed-text');
+            const terminalOutput = document.getElementById('terminal-output');
+            const loginTimeSpan = document.getElementById('login-time');
+
+            // Open Modal Function
+            function openModal() {
+                modal.classList.remove('hidden');
+                // Trigger reflow
+                void modal.offsetWidth;
+                modal.classList.remove('opacity-0');
+                
+                // Set login time
+                const now = new Date();
+                if(loginTimeSpan) loginTimeSpan.textContent = now.toLocaleString();
+                
+                // Focus input
+                if(hiddenInput) hiddenInput.focus();
+            }
+
+            // Close Modal Function
+            function closeModal() {
+                modal.classList.add('opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+
+            // Event Listeners
+            openBtns.forEach(btn => {
+                if(btn) btn.addEventListener('click', openModal);
+            });
+
+            if(closeBtn) closeBtn.addEventListener('click', closeModal);
+            if(backdrop) backdrop.addEventListener('click', closeModal);
+
+            // Terminal Typing Logic
+            if(hiddenInput && typedTextSpan) {
+                hiddenInput.addEventListener('input', (e) => {
+                    typedTextSpan.textContent = e.target.value;
+                });
+
+                hiddenInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        const command = hiddenInput.value.trim();
+                        
+                        // Add previous command to output
+                        const cmdLine = document.createElement('div');
+                        cmdLine.className = "mb-1";
+                        cmdLine.innerHTML = `<span class="text-emerald-500 mr-2">➜</span><span class="text-blue-400 mr-2">~</span><span class="text-white">${command}</span>`;
+                        terminalOutput.appendChild(cmdLine);
+
+                        // Process command (Simple Simulation)
+                        if (command) {
+                            const responseLine = document.createElement('div');
+                            responseLine.className = "mb-3 text-zinc-300";
+                            
+                            if (command === 'help') {
+                                responseLine.innerHTML = `Available commands:<br>  - help: Show this help<br>  - clear: Clear terminal<br>  - status: Check system status<br>  - version: Show version`;
+                            } else if (command === 'clear') {
+                                terminalOutput.innerHTML = '';
+                                responseLine.remove(); // Don't append empty line
+                            } else if (command === 'version') {
+                                responseLine.textContent = "Hyperion AI Console v2.0.4 (stable)";
+                            } else if (command === 'status') {
+                                responseLine.innerHTML = `<span class="text-green-400">● Systems Operational</span><br>Latency: 34ms<br>Uptime: 99.99%`;
+                            } else {
+                                responseLine.textContent = `zsh: command not found: ${command}`;
+                            }
+                            
+                            if(command !== 'clear') terminalOutput.appendChild(responseLine);
+                        }
+
+                        // Reset input
+                        hiddenInput.value = '';
+                        typedTextSpan.textContent = '';
+                        
+                        // Scroll to bottom
+                        const terminalWindow = document.getElementById('terminal-window');
+                        terminalWindow.scrollTop = terminalWindow.scrollHeight;
+                    }
+                });
+            }
         })();
     </script>
 </body>
