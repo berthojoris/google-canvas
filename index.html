@@ -27,7 +27,6 @@
                         mono: ['JetBrains Mono', 'monospace'],    
                     },
                     colors: {
-                        // Using CSS variables for dynamic theming
                         background: 'var(--bg-background)', 
                         surface: 'var(--bg-surface)',    
                         surfaceHighlight: 'var(--bg-surface-highlight)', 
@@ -85,56 +84,42 @@
     </script>
 
     <style>
-        /* CSS Variables for Theming */
         :root {
-            /* Light Mode Default */
             --bg-background: #ffffff;
-            --bg-surface: #f4f4f5; /* Zinc 100 */
-            --bg-surface-highlight: #e4e4e7; /* Zinc 200 */
+            --bg-surface: #f4f4f5; 
+            --bg-surface-highlight: #e4e4e7;
             --border-color: #e4e4e7;
-            --text-main: #18181b; /* Zinc 900 */
-            --text-muted: #71717a; /* Zinc 500 */
+            --text-main: #18181b; 
+            --text-muted: #71717a; 
             --grid-color: #e4e4e7;
             --card-glass: rgba(255, 255, 255, 0.7);
         }
 
-        /* Dark Mode Overrides */
         .dark {
-            --bg-background: #09090b; /* Zinc 950 */
-            --bg-surface: #18181b; /* Zinc 900 */
-            --bg-surface-highlight: #27272a; /* Zinc 800 */
+            --bg-background: #09090b; 
+            --bg-surface: #18181b; 
+            --bg-surface-highlight: #27272a; 
             --border-color: rgba(255, 255, 255, 0.1);
             --text-main: #ffffff;
-            --text-muted: #a1a1aa; /* Zinc 400 */
+            --text-muted: #a1a1aa; 
             --grid-color: #27272a;
             --card-glass: rgba(24, 24, 27, 0.6);
         }
 
-        /* FIX: Enforce 100% width globally to prevent mobile zoom/overflow issues */
         html, body {
             overflow-x: hidden;
             max-width: 100%;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-background);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--bg-surface-highlight);
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a1a1aa;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-background); }
+        ::-webkit-scrollbar-thumb { background: var(--bg-surface-highlight); }
+        ::-webkit-scrollbar-thumb:hover { background: #a1a1aa; }
 
-        /* Reveal Animation Utility */
         .reveal-element {
             opacity: 0;
             transform: translateY(30px);
-            filter: blur(5px); /* Added blur for smoother reveal */
+            filter: blur(5px);
             transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
             will-change: opacity, transform, filter;
         }
@@ -145,17 +130,13 @@
             filter: blur(0);
         }
 
-        /* Grid Background Utility */
         .bg-grid {
             background-size: 40px 40px;
             mask-image: linear-gradient(to bottom, transparent, 10%, black, 90%, transparent);
             -webkit-mask-image: linear-gradient(to bottom, transparent, 5%, black, 95%, transparent);
         }
 
-        /* Glow Effects */
-        .glow-text {
-            text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
-        }
+        .glow-text { text-shadow: 0 0 20px rgba(99, 102, 241, 0.5); }
         
         .card-hoverable {
             transition: all 0.3s ease;
@@ -176,94 +157,65 @@
             opacity: 0.5;
             transition: opacity 0.3s ease;
         }
-        .card-hoverable:hover {
-            background-color: var(--bg-surface-highlight);
-        }
+        .card-hoverable:hover { background-color: var(--bg-surface-highlight); }
         .card-hoverable:hover::before {
             opacity: 1;
             background: linear-gradient(45deg, transparent, #6366f1, transparent);
         }
 
-        /* Code Syntax Highlighting Simulation */
-        .token-keyword { color: #c084fc; } /* Purple */
-        .token-function { color: #60a5fa; } /* Blue */
-        .token-string { color: #4ade80; }   /* Green */
-        .token-comment { color: #71717a; font-style: italic; } /* Zinc 500 */
+        .token-keyword { color: #c084fc; }
+        .token-function { color: #60a5fa; }
+        .token-string { color: #4ade80; }
+        .token-comment { color: #71717a; font-style: italic; }
     </style>
 </head>
 <body class="bg-background text-textMain antialiased selection:bg-brand selection:text-white overflow-x-hidden font-sans transition-colors duration-300">
 
-    <!-- Navigation (Supabase Style) -->
+    <!-- Navigation -->
     <nav class="fixed w-full z-50 top-0 border-b border-border bg-background/80 backdrop-blur-md transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            
-            <!-- Left Side: Logo & Links -->
             <div class="flex items-center gap-8">
-                <!-- Logo -->
                 <a href="#" class="flex items-center gap-2 group">
                     <span class="font-display font-bold text-xl tracking-tight text-textMain">Hyperion AI</span>
                 </a>
-
-                <!-- Desktop Nav Links -->
                 <div class="hidden md:flex items-center gap-6 text-sm font-medium text-textMuted">
-                    <div class="group relative cursor-pointer hover:text-textMain transition-colors flex items-center gap-1">
-                        Product <i data-lucide="chevron-down" class="w-3 h-3 opacity-50 group-hover:rotate-180 transition-transform"></i>
-                    </div>
-                    <div class="group relative cursor-pointer hover:text-textMain transition-colors flex items-center gap-1">
-                        Developers <i data-lucide="chevron-down" class="w-3 h-3 opacity-50 group-hover:rotate-180 transition-transform"></i>
-                    </div>
+                    <div class="group relative cursor-pointer hover:text-textMain transition-colors flex items-center gap-1">Product <i data-lucide="chevron-down" class="w-3 h-3 opacity-50 group-hover:rotate-180 transition-transform"></i></div>
+                    <div class="group relative cursor-pointer hover:text-textMain transition-colors flex items-center gap-1">Developers <i data-lucide="chevron-down" class="w-3 h-3 opacity-50 group-hover:rotate-180 transition-transform"></i></div>
                     <a href="#pricing" class="hover:text-textMain transition-colors">Pricing</a>
                     <a href="#" class="hover:text-textMain transition-colors">Docs</a>
                     <a href="#" class="hover:text-textMain transition-colors">Blog</a>
                 </div>
             </div>
-
-            <!-- Right Side: Actions -->
             <div class="flex items-center gap-3">
-                
-                <!-- Theme Switcher Button (Removed rounded-full) -->
-                <button id="theme-toggle" class="p-2 text-textMuted hover:text-textMain hover:bg-surfaceHighlight transition-colors focus:outline-none" aria-label="Toggle Theme">
-                    <!-- Sun Icon (Visible in Dark) -->
+                <button id="theme-toggle" class="p-2 text-textMuted hover:text-textMain hover:bg-surfaceHighlight transition-colors focus:outline-none">
                     <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
-                    <!-- Moon Icon (Visible in Light) -->
                     <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
                 </button>
-
-                <!-- GitHub Star Button (Removed rounded-md) -->
                 <a href="#" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-surface border border-border hover:bg-surfaceHighlight transition-colors text-xs font-medium text-textMuted group">
                     <i data-lucide="github" class="w-3.5 h-3.5 text-textMuted group-hover:text-textMain transition-colors"></i>
                     <span>Star</span>
-                    <!-- Span inside (Removed rounded) -->
                     <span class="bg-surfaceHighlight px-1.5 py-0.5 text-[10px] text-textMuted group-hover:text-textMain border border-border">12.4k</span>
                 </a>
-
-                <!-- Desktop Actions (Hidden on Mobile) -->
                 <div class="hidden md:flex items-center gap-3">
                     <a href="#" class="text-sm text-textMuted hover:text-textMain font-medium transition-colors px-2">Sign In</a>
-                    <!-- CTA Button (Updated Icon to terminal, triggers modal) -->
                     <button id="desktop-launch-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 text-sm font-semibold transition-colors flex items-center gap-2">
                         <i data-lucide="terminal" class="w-4 h-4"></i> Launch Console
                     </button>
                 </div>
-
-                <!-- Mobile Menu Button -->
                 <button id="mobile-menu-btn" class="md:hidden p-2 text-textMuted hover:text-textMain transition-colors">
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
             </div>
         </div>
-
-        <!-- Mobile Menu (Hidden by default) -->
+        <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden border-t border-border bg-background transition-colors duration-300">
             <div class="px-4 py-6 space-y-4">
                 <a href="#" class="block text-textMuted hover:text-textMain font-medium">Product</a>
                 <a href="#" class="block text-textMuted hover:text-textMain font-medium">Developers</a>
                 <a href="#pricing" class="block text-textMuted hover:text-textMain font-medium">Pricing</a>
                 <a href="#" class="block text-textMuted hover:text-textMain font-medium">Docs</a>
-                <a href="#" class="block text-textMuted hover:text-textMain font-medium">Blog</a>
                 <div class="border-t border-border pt-4 flex flex-col gap-3">
                     <a href="#" class="block text-textMuted hover:text-textMain font-medium">Sign In</a>
-                    <!-- Mobile CTA (Updated Icon to terminal, triggers modal) -->
                     <button id="mobile-launch-btn" class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 text-sm font-semibold transition-colors text-center flex items-center justify-center gap-2">
                         <i data-lucide="terminal" class="w-4 h-4"></i> Launch Console
                     </button>
@@ -272,30 +224,20 @@
         </div>
     </nav>
 
-    <!-- CONSOLE MODAL (Hidden by default) -->
+    <!-- CONSOLE MODAL -->
     <div id="console-modal" class="fixed inset-0 z-[100] hidden opacity-0 transition-opacity duration-300" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <!-- Backdrop -->
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" id="console-backdrop"></div>
-
-        <!-- Modal Panel -->
         <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <div class="relative transform overflow-hidden rounded-lg bg-[#1e1e1e] text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl border border-zinc-700">
-                
-                <!-- Mac Terminal Header -->
                 <div class="bg-[#2d2d2d] px-4 py-2 border-b border-black flex items-center justify-between handle">
                     <div class="flex items-center gap-2">
-                        <!-- Close Button -->
                         <div class="w-3 h-3 rounded-full bg-[#ff5f56] hover:bg-[#ff5f56]/80 cursor-pointer" id="close-console-btn"></div>
-                        <!-- Minimize (Dummy) -->
                         <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-                        <!-- Maximize (Dummy) -->
                         <div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
                     </div>
                     <div class="text-zinc-400 text-xs font-mono select-none">user — -zsh — 80x24</div>
-                    <div class="w-10"></div> <!-- Spacer to center text -->
+                    <div class="w-10"></div>
                 </div>
-
-                <!-- Terminal Content Area -->
                 <div class="bg-[#1e1e1e] p-4 h-[400px] overflow-y-auto font-mono text-sm text-zinc-300" id="terminal-window" onclick="document.getElementById('hidden-input').focus()">
                     <div class="mb-4">
                         <p class="text-zinc-400">Last login: <span id="login-time"></span> on ttys001</p>
@@ -303,19 +245,13 @@
                         <p class="text-emerald-500">System initialized. Ready for input.</p>
                         <p class="text-zinc-500 mb-2">Type 'help' for available commands.</p>
                     </div>
-                    
-                    <!-- Dynamic Output Area -->
                     <div id="terminal-output"></div>
-
-                    <!-- Input Line -->
                     <div class="flex items-center">
                         <span class="text-emerald-500 mr-2">➜</span>
                         <span class="text-blue-400 mr-2">~</span>
                         <span id="typed-text" class="text-white whitespace-pre-wrap"></span>
                         <span class="w-2 h-4 bg-zinc-400 animate-pulse ml-0.5" id="cursor"></span>
                     </div>
-                    
-                    <!-- Hidden Input for Mobile Keyboard Support -->
                     <input type="text" id="hidden-input" class="absolute opacity-0 top-0 left-0 h-0 w-0" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
                 </div>
             </div>
@@ -324,22 +260,13 @@
 
     <!-- Hero Section -->
     <section id="hero-section" class="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
-        <!-- Background Effects -->
         <div class="absolute inset-0 bg-grid opacity-[0.03] pointer-events-none"></div>
-        
-        <!-- NEW: Meteor/Shooting Star Canvas (Trae.ai style) -->
+        <!-- Ultron Swarm Canvas -->
         <canvas id="meteor-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-0 mix-blend-screen opacity-60"></canvas>
-
-        <!-- NEW: Distant Ambient Light (Cahaya dari kejauhan) -->
-        <!-- Primary Glow (Center Top) - Updated to Silver/White/Black Gradient -->
         <div class="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/15 via-zinc-400/10 to-transparent blur-[100px] pointer-events-none z-0 opacity-80 dark:opacity-50"></div>
-        
-        <!-- Secondary Accent Glow (Subtle Silver) -->
         <div class="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-zinc-500/10 rounded-full blur-[120px] pointer-events-none z-0 mix-blend-overlay"></div>
 
         <div class="max-w-7xl mx-auto px-6 relative z-10 text-center">
-            
-            <!-- Badge (Removed rounded-full, made it flat square) -->
             <div class="inline-flex items-center gap-2 px-3 py-1 bg-surface border border-border text-xs font-mono text-emerald-600 mb-8 animate-fade-in-up" style="animation-delay: 0.1s">
                 <span class="flex h-2 w-2 relative">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
@@ -348,17 +275,10 @@
                 v2.0 is now live
             </div>
 
-            <!-- Header dengan animasi Slide Up terpisah -->
             <h1 class="text-5xl md:text-8xl font-display font-bold tracking-tighter mb-8 min-h-[160px] md:min-h-[240px]">
-                <!-- Baris 1: PLAN, DOC, & SHIP -->
-                <span class="block text-textMuted tracking-wide mb-2 text-2xl md:text-4xl opacity-0 animate-slide-up" style="animation-delay: 0.2s">
-                    PLAN, DOC, & SHIP
-                </span>
-                
-                <!-- Baris 2: Typewriter Effect -->
+                <span class="block text-textMuted tracking-wide mb-2 text-2xl md:text-4xl opacity-0 animate-slide-up" style="animation-delay: 0.2s">PLAN, DOC, & SHIP</span>
                 <span class="block opacity-0 animate-slide-up" style="animation-delay: 0.4s">
                     <span id="typewriter-text" class="bg-clip-text text-transparent bg-gradient-to-r from-zinc-500 via-textMain to-zinc-400 drop-shadow-[0_0_20px_rgba(100,100,100,0.2)] dark:drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]"></span>
-                    <!-- Cursor (Removed rounded-sm) -->
                     <span class="inline-block w-3 h-8 md:w-6 md:h-20 bg-textMain ml-1 md:ml-2 animate-pulse align-middle shadow-[0_0_20px_rgba(0,0,0,0.2)] dark:shadow-[0_0_20px_rgba(255,255,255,0.8)]"></span>
                 </span>
             </h1>
@@ -368,18 +288,13 @@
             </p>
 
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0 animate-slide-up" style="animation-delay: 0.8s">
-                <!-- "Start Building Free" Removed as requested -->
-                
-                <!-- Flat Secondary Button (Centered) -->
                 <a href="#" class="w-full sm:w-auto px-10 py-4 bg-surface hover:bg-surfaceHighlight border border-border text-textMain font-semibold transition-colors flex items-center justify-center gap-2">
                     <i data-lucide="play-circle" class="w-4 h-4"></i> Watch Demo
                 </a>
             </div>
 
-            <!-- Code/Studio Preview -->
             <div class="mt-20 relative mx-auto max-w-5xl animate-fade-in-up" style="animation-delay: 0.6s">
                 <div class="rounded-xl border border-border bg-[#0c0c0e] shadow-2xl overflow-hidden backdrop-blur-sm group">
-                    <!-- Window Controls (Always dark for terminal aesthetic) -->
                     <div class="h-10 border-b border-white/5 bg-white/[0.02] flex items-center px-4 justify-between">
                         <div class="flex gap-2">
                             <div class="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50"></div>
@@ -393,10 +308,7 @@
                         </div>
                         <div class="w-16"></div> 
                     </div>
-                    
-                    <!-- Editor Content (Always dark for IDE aesthetic) -->
                     <div class="grid grid-cols-1 md:grid-cols-[250px_1fr] h-[400px] text-left bg-[#0c0c0e]">
-                        <!-- Sidebar: Kept as font-mono (JetBrains Mono) for IDE aesthetic -->
                         <div class="hidden md:block border-r border-white/5 bg-zinc-900/30 p-4 text-sm font-mono text-zinc-500">
                             <div class="mb-4 text-xs font-bold uppercase tracking-wider text-zinc-600">Project Files</div>
                             <ul class="space-y-2">
@@ -405,17 +317,13 @@
                                 <li class="flex items-center gap-2 hover:text-zinc-300 cursor-pointer"><i data-lucide="layout" class="w-4 h-4"></i> page.tsx</li>
                                 <li class="flex items-center gap-2 hover:text-zinc-300 cursor-pointer"><i data-lucide="settings" class="w-4 h-4"></i> config.json</li>
                             </ul>
-                            
                             <div class="mt-8 mb-4 text-xs font-bold uppercase tracking-wider text-zinc-600">AI Agents</div>
                             <ul class="space-y-2">
                                 <li class="flex items-center gap-2 text-green-400"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Doc Writer</li>
                                 <li class="flex items-center gap-2 text-zinc-400"><span class="w-2 h-2 bg-zinc-700 rounded-full"></span> Code Reviewer</li>
                             </ul>
                         </div>
-
-                        <!-- Code Area -->
                         <div class="p-6 font-mono text-sm overflow-hidden relative">
-                            <!-- Typing cursor animation simulation via CSS not shown for simplicity, static code below -->
                             <div class="text-zinc-300 leading-relaxed">
                                 <p><span class="token-keyword">import</span> { AI, Agent } <span class="token-keyword">from</span> <span class="token-string">'@hyperion/sdk'</span>;</p>
                                 <br>
@@ -432,8 +340,6 @@
                                 <p class="pl-4"><span class="token-keyword">return</span> specs.formatAsMarkdown();</p>
                                 <p>}</p>
                             </div>
-                            
-                            <!-- Floating AI Action -->
                             <div class="absolute bottom-6 right-6 bg-zinc-800/90 backdrop-blur border border-white/10 p-3 rounded-lg shadow-xl flex items-center gap-3 animate-bounce shadow-primary/10 font-sans">
                                 <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
                                     <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
@@ -446,26 +352,19 @@
                         </div>
                     </div>
                 </div>
-                <!-- Glow behind container -->
                 <div class="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-xl blur opacity-20 -z-10 group-hover:opacity-30 transition duration-1000"></div>
             </div>
         </div>
     </section>
 
-    <!-- Logo Cloud / Integration -->
-    <section id="features" class="py-10 border-y border-border bg-surface/[0.5] overflow-hidden relative reveal-element delay-100 transition-colors duration-300">
+    <!-- Logo Cloud -->
+    <section class="py-10 border-y border-border bg-surface/[0.5] overflow-hidden relative reveal-element delay-100 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-6 mb-8">
             <p class="text-center text-textMuted text-sm font-medium tracking-wide">POWERING NEXT-GEN TEAMS & TOOLS</p>
         </div>
-        
-        <!-- Marquee Container -->
         <div class="relative flex overflow-x-hidden group mask-image-gradient">
-            <!-- Gradient Mask (Inline style replaced with theme-aware utility classes where possible, but hard to do purely with tailwind config for gradient stops dynamically) -->
-            <!-- Using absolute divs with theme-aware background gradients for masking -->
             <div class="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-background to-transparent z-10"></div>
             <div class="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-background to-transparent z-10"></div>
-
-            <!-- First Logo Set -->
             <div class="animate-marquee flex items-center gap-12 whitespace-nowrap px-6 shrink-0 opacity-50 grayscale hover:grayscale-0 transition-all duration-500 font-display">
                 <div class="flex items-center gap-2 text-xl font-bold text-textMain"><i data-lucide="github" class="w-6 h-6"></i> GitHub</div>
                 <div class="flex items-center gap-2 text-xl font-bold text-textMain"><i data-lucide="codepen" class="w-6 h-6"></i> Vercel</div>
@@ -475,8 +374,6 @@
                 <div class="flex items-center gap-2 text-xl font-bold text-textMain"><i data-lucide="cpu" class="w-6 h-6"></i> OpenAI</div>
                 <div class="flex items-center gap-2 text-xl font-bold text-textMain"><i data-lucide="cloud" class="w-6 h-6"></i> Cloudflare</div>
             </div>
-
-            <!-- Duplicate Logo Set (for seamless loop) -->
             <div class="animate-marquee flex items-center gap-12 whitespace-nowrap px-6 shrink-0 opacity-50 grayscale hover:grayscale-0 transition-all duration-500 font-display">
                 <div class="flex items-center gap-2 text-xl font-bold text-textMain"><i data-lucide="github" class="w-6 h-6"></i> GitHub</div>
                 <div class="flex items-center gap-2 text-xl font-bold text-textMain"><i data-lucide="codepen" class="w-6 h-6"></i> Vercel</div>
@@ -489,41 +386,30 @@
         </div>
     </section>
 
-    <!-- Features Bento Grid -->
+    <!-- Features -->
     <section id="features" class="py-24 relative">
         <div class="max-w-7xl mx-auto px-6">
             <div class="mb-16 md:text-center max-w-3xl mx-auto reveal-element">
-                <!-- Changed text-primary (Indigo) to text-emerald-600 (Green) to match buttons -->
                 <h2 class="text-3xl md:text-4xl font-display font-bold mb-4 text-textMain">Everything you need to <span class="text-emerald-600">build better</span></h2>
                 <p class="text-textMuted">Stop wrestling with blank pages. Hyperion Labs provides the structure, documentation, and AI agents to turn ideas into deployable code.</p>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Large Card -->
+                <!-- Auto-Gen PRD -->
                 <div class="md:col-span-2 bg-surface border border-border rounded-2xl p-8 card-hoverable relative min-h-[300px] flex flex-col justify-between reveal-element delay-100">
                     <div class="relative z-20">
                         <div class="w-12 h-12 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6 text-blue-400">
                             <i data-lucide="file-text" class="w-6 h-6"></i>
                         </div>
                         <h3 class="text-xl font-display font-bold mb-2 text-textMain">Auto-Generated PRDs</h3>
-                        <!-- Adjusted max-width to prevent overlap with the right-side visual -->
                         <p class="text-textMuted text-sm max-w-[45%] leading-relaxed">Transform a simple sentence into a comprehensive Product Requirements Document. Our AI agents ask the right questions to fill in the gaps.</p>
                     </div>
-                    
-                    <!-- Design Box with AI Typing Animation -->
                     <div class="absolute right-0 bottom-0 w-1/2 h-full opacity-100 mask-image-gradient hidden md:block pointer-events-none">
-                        <!-- Abstract UI representation -->
                         <div class="w-full h-full bg-zinc-800/30 border-t border-l border-white/5 rounded-tl-2xl p-6 transform translate-y-4 translate-x-4 flex flex-col gap-4">
-                            
-                            <!-- Static Skeleton Lines (Background Context) -->
                             <div class="space-y-3 opacity-30">
                                 <div class="h-2 w-3/4 bg-zinc-600 rounded"></div>
                                 <div class="h-2 w-1/2 bg-zinc-600 rounded"></div>
                             </div>
-
-                            <!-- "File Attachment" Box with Typing Animation (Always Dark for Context) -->
                             <div class="w-full bg-[#0F1117] rounded-lg border border-white/10 p-4 relative overflow-hidden shadow-2xl flex flex-col gap-3 min-h-[160px]" id="prd-generation-card">
-                                <!-- File Header -->
                                 <div class="flex items-center gap-3 border-b border-white/5 pb-3">
                                     <div class="w-8 h-8 rounded bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
                                         <i data-lucide="file-json" class="w-4 h-4"></i>
@@ -540,30 +426,20 @@
                                     </div>
                                     <div class="text-zinc-600 text-[10px]">75%</div>
                                 </div>
-                                
-                                <!-- Typing Area -->
-                                <!-- Added max-h-[150px] to enforce scrolling constraint -->
-                                <div id="prd-content" class="font-mono text-[10px] leading-relaxed text-zinc-400 space-y-1 overflow-hidden max-h-[150px]">
-                                    <!-- Content injected by JS -->
-                                </div>
-
-                                <!-- Progress Bar Bottom -->
+                                <div id="prd-content" class="font-mono text-[10px] leading-relaxed text-zinc-400 space-y-1 overflow-hidden max-h-[150px]"></div>
                                 <div class="absolute bottom-0 left-0 h-0.5 bg-blue-500/50 w-3/4 animate-pulse"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Tall Card -->
+                <!-- Agentic Workflow -->
                 <div class="bg-surface border border-border rounded-2xl p-8 card-hoverable md:row-span-2 flex flex-col reveal-element delay-200">
                     <div class="w-12 h-12 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-6 text-purple-400">
                         <i data-lucide="bot" class="w-6 h-6"></i>
                     </div>
                     <h3 class="text-xl font-display font-bold mb-2 text-textMain">Agentic Workflow</h3>
                     <p class="text-textMuted mb-8">Deploy autonomous agents that plan, review, and even write code for you in the background.</p>
-                    
                     <div class="flex-1 bg-[#0c0c0e] rounded-xl border border-white/5 p-4 relative overflow-hidden flex flex-col">
-                        <!-- Header with Status -->
                         <div class="flex items-center justify-between mb-4 border-b border-white/5 pb-2">
                             <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Agent-01</span>
                             <div class="flex items-center gap-1.5">
@@ -574,11 +450,7 @@
                                 <span class="text-[10px] font-medium text-green-400">Active</span>
                             </div>
                         </div>
-
-                        <!-- Chat Area (Always Dark) -->
                         <div class="space-y-5 font-sans text-sm relative z-10">
-                            
-                            <!-- User Message -->
                             <div class="flex gap-3 flex-row-reverse items-end animate-fade-in-up" style="animation-delay: 0.1s">
                                 <div class="w-6 h-6 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center shrink-0">
                                     <i data-lucide="user" class="w-3 h-3 text-zinc-400"></i>
@@ -587,14 +459,11 @@
                                     Build a dashboard with Tailwind & Recharts.
                                 </div>
                             </div>
-
-                            <!-- AI Response Block -->
                             <div class="flex gap-3 items-start animate-fade-in-up" style="animation-delay: 0.3s">
                                 <div class="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shrink-0 mt-1 shadow-lg shadow-primary/20">
                                     <i data-lucide="sparkles" class="w-3 h-3 text-white"></i>
                                 </div>
                                 <div class="space-y-2 w-full">
-                                    <!-- Thought Process Bubble -->
                                     <div class="bg-zinc-800/30 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none border border-white/10 w-full">
                                         <div class="flex items-center gap-2 mb-3 text-[11px] font-semibold text-zinc-400 border-b border-white/5 pb-2">
                                             <i data-lucide="workflow" class="w-3 h-3"></i> Execution Plan
@@ -619,15 +488,11 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Background decoration -->
                         <div class="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-primary/5 to-transparent pointer-events-none"></div>
                     </div>
                 </div>
-
-                <!-- Small Card 1: Starter Kits (Modernized) -->
+                <!-- Starter Kits -->
                 <div class="bg-surface border border-border rounded-2xl p-8 card-hoverable relative overflow-hidden group reveal-element delay-300">
-                    <!-- Content -->
                     <div class="relative z-10">
                         <div class="w-12 h-12 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center mb-6 text-green-400 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
                             <i data-lucide="layers" class="w-6 h-6"></i>
@@ -635,27 +500,20 @@
                         <h3 class="text-xl font-display font-bold mb-2 text-textMain">Starter Kits</h3>
                         <p class="text-textMuted text-sm max-w-[80%]">Launch in seconds. Pre-configured stacks for SaaS, AI, and e-commerce.</p>
                     </div>
-
-                    <!-- Visual: 3D Stacked Cards on Bottom Right -->
                     <div class="absolute -right-6 -bottom-8 w-40 h-40 transform group-hover:scale-105 transition-transform duration-500 ease-out">
-                        <!-- Bottom Layer -->
                         <div class="absolute bottom-0 right-0 w-28 h-28 bg-zinc-800 rounded-xl border border-white/5 shadow-xl transform translate-x-4 translate-y-4 rotate-12 group-hover:rotate-6 group-hover:translate-x-6 transition-all duration-500 flex items-center justify-center">
                             <i data-lucide="database" class="w-10 h-10 text-zinc-600 opacity-50"></i>
                         </div>
-                        <!-- Middle Layer -->
                         <div class="absolute bottom-3 right-6 w-28 h-28 bg-zinc-800/80 backdrop-blur-md rounded-xl border border-white/10 shadow-xl transform translate-x-2 translate-y-2 rotate-6 group-hover:rotate-3 group-hover:translate-x-3 transition-all duration-500 delay-75 flex items-center justify-center">
                             <i data-lucide="credit-card" class="w-10 h-10 text-zinc-500 opacity-60"></i>
                         </div>
-                        <!-- Top Layer -->
                         <div class="absolute bottom-6 right-12 w-28 h-28 bg-gradient-to-br from-green-500/10 to-zinc-900 backdrop-blur-md rounded-xl border border-green-500/30 shadow-2xl transform rotate-0 group-hover:-rotate-3 group-hover:translate-y-[-5px] transition-all duration-500 delay-100 flex items-center justify-center">
                             <span class="font-display font-bold text-green-400 text-2xl">Next</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Small Card 2: Git Integrated (Modernized) -->
+                <!-- Git Integrated -->
                 <div class="bg-surface border border-border rounded-2xl p-8 card-hoverable relative overflow-hidden group reveal-element delay-300">
-                    <!-- Background Graph Visual -->
                     <svg class="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none" viewBox="0 0 200 200">
                         <path d="M 160 0 V 200" class="stroke-textMuted/20" stroke-width="1" stroke-dasharray="4 4" fill="none" />
                         <path d="M 160 40 C 160 40, 100 60, 100 100 V 200" stroke="#f97316" stroke-width="2" fill="none" />
@@ -663,16 +521,12 @@
                         <circle cx="100" cy="100" r="3" fill="#f97316" />
                         <circle cx="100" cy="150" r="3" fill="#f97316" />
                     </svg>
-
-                    <!-- Content -->
                     <div class="relative z-10">
                         <div class="w-12 h-12 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center mb-6 text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.1)]">
                             <i data-lucide="git-branch" class="w-6 h-6"></i>
                         </div>
                         <h3 class="text-xl font-display font-bold mb-2 text-textMain">Git Integrated</h3>
                         <p class="text-textMuted text-sm mb-6">Two-way sync. Push to main, and your docs update automatically.</p>
-                        
-                        <!-- Live Indicator -->
                         <div class="inline-flex items-center gap-2 px-2.5 py-1 bg-orange-500/5 border border-orange-500/20 rounded-full">
                             <span class="relative flex h-1.5 w-1.5">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
@@ -686,7 +540,7 @@
         </div>
     </section>
 
-    <!-- Code Block / Visual Break -->
+    <!-- Code Block -->
     <section class="py-20 bg-background border-y border-border overflow-hidden transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
             <div class="flex-1 reveal-element">
@@ -715,7 +569,6 @@
                     </li>
                 </ul>
             </div>
-            
             <div class="flex-1 w-full relative reveal-element delay-500">
                 <div class="absolute -inset-4 bg-primary/20 blur-2xl rounded-full opacity-20"></div>
                 <div class="relative bg-[#0F1117] border border-white/10 rounded-xl p-6 font-mono text-xs md:text-sm shadow-2xl h-[320px] flex flex-col">
@@ -726,61 +579,40 @@
                             <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
                         </div>
                     </div>
-                    <!-- Terminal Content Container -->
-                    <div id="terminal-container" class="space-y-2 overflow-y-auto flex-1 font-mono">
-                        <!-- Content injected by JS -->
-                    </div>
+                    <div id="terminal-container" class="space-y-2 overflow-y-auto flex-1 font-mono"></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Global Network Section (Redesigned for Clarity and Impact) -->
+    <!-- Global Network Section -->
     <section id="pricing" class="py-24 relative">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 blur-[100px] rounded-full pointer-events-none"></div>
-        
         <div class="max-w-7xl mx-auto px-6 relative z-10">
-            
-            <!-- Header focused on feature-first approach -->
             <div class="text-center mb-12 reveal-element">
                 <h2 class="text-3xl md:text-5xl font-display font-bold mb-4 text-textMain">Lightning-Fast Global Deployment</h2>
                 <p class="text-textMuted max-w-3xl mx-auto">Your code deployed across 29 edge locations worldwide.</p>
             </div>
-            
-            <!-- Key Metrics List -->
             <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-                <!-- Sub-second deployment -->
                 <div class="text-center bg-surface border border-border p-5 reveal-element delay-100">
                     <div class="text-4xl font-display font-bold text-primary mb-1">0.8s</div>
                     <div class="text-xs text-textMuted uppercase font-bold tracking-widest">Sub-second Deployment</div>
                 </div>
-                <!-- Active Nodes -->
                 <div class="text-center bg-surface border border-border p-5 reveal-element delay-200">
                     <div class="text-4xl font-display font-bold text-textMain mb-1">4,291</div>
                     <div class="text-xs text-textMuted uppercase font-bold tracking-widest">Active Nodes Serving Millions Daily</div>
                 </div>
-                <!-- Optimized Latency -->
                 <div class="text-center bg-surface border border-border p-5 reveal-element delay-300">
                     <div class="text-4xl font-display font-bold text-brand mb-1">38ms</div>
                     <div class="text-xs text-textMuted uppercase font-bold tracking-widest">Optimized Global Latency (Avg)</div>
                 </div>
             </div>
-
-
-            <!-- NEW: Live Data Exchange Visualization -->
             <div class="reveal-element delay-400">
                 <div class="w-full bg-[#0c0c0e] rounded-3xl border border-white/5 relative overflow-hidden group shadow-2xl p-4 md:p-12">
-                    
-                    <!-- Abstract Background -->
                     <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#3f3f46 1.5px, transparent 1.5px); background-size: 30px 30px;"></div>
                     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0c0c0e] pointer-events-none"></div>
-
-                    <!-- Layout Container -->
                     <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 h-full min-h-[400px]">
-                        
-                        <!-- Terminal 1: Sender (US-EAST) -->
                         <div class="w-full md:w-[45%] h-[320px] bg-[#0F1117] rounded-xl border border-white/10 shadow-2xl flex flex-col relative overflow-hidden transition-all duration-300 hover:border-primary/30" id="term-1-box">
-                            <!-- Header -->
                             <div class="h-8 border-b border-white/5 bg-white/[0.02] flex items-center px-3 justify-between">
                                 <div class="flex gap-1.5">
                                     <div class="w-2.5 h-2.5 rounded-full bg-red-500/20 border border-red-500/50"></div>
@@ -791,41 +623,26 @@
                                     <i data-lucide="server" class="w-3 h-3"></i> NODE-01:US-EAST
                                 </div>
                             </div>
-                            <!-- Content -->
-                            <div class="p-4 font-mono text-xs md:text-sm overflow-hidden flex-1" id="term-1-content">
-                                <!-- JS injected content -->
-                            </div>
-                            <!-- Status Bar -->
+                            <div class="p-4 font-mono text-xs md:text-sm overflow-hidden flex-1" id="term-1-content"></div>
                             <div class="h-6 bg-primary/5 border-t border-white/5 flex items-center px-3 text-[10px] text-primary/80 justify-between font-mono">
                                 <span>STATUS: ONLINE</span>
                                 <span id="term-1-status">IDLE</span>
                             </div>
                         </div>
-
-                        <!-- Connection Visualization (Middle) -->
                         <div class="flex-1 w-full md:w-auto h-16 md:h-auto flex flex-col md:flex-row items-center justify-center relative">
-                            <!-- Line -->
                             <div class="absolute inset-0 flex items-center justify-center">
-                                <!-- Horizontal Line (Desktop) -->
                                 <div class="hidden md:block w-full h-[2px] bg-zinc-800 relative overflow-hidden rounded-full">
-                                    <!-- Animated Data Packet -->
                                     <div id="data-packet" class="absolute top-0 left-0 w-24 h-full bg-gradient-to-r from-transparent via-primary to-transparent opacity-0"></div>
                                 </div>
-                                <!-- Vertical Line (Mobile) -->
                                 <div class="md:hidden h-full w-[2px] bg-zinc-800 relative overflow-hidden rounded-full">
                                     <div id="data-packet-mobile" class="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-transparent via-primary to-transparent opacity-0"></div>
                                 </div>
                             </div>
-                            
-                            <!-- Central Hub Icon -->
                             <div class="relative z-10 w-12 h-12 bg-[#0c0c0e] border border-zinc-700 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.2)] transition-all duration-300" id="hub-icon">
                                 <i data-lucide="globe" class="w-5 h-5 text-zinc-500 transition-colors duration-300" id="hub-svg"></i>
                             </div>
                         </div>
-
-                        <!-- Terminal 2: Receiver (AP-SOUTHEAST) -->
                         <div class="w-full md:w-[45%] h-[320px] bg-[#0F1117] rounded-xl border border-white/10 shadow-2xl flex flex-col relative overflow-hidden transition-all duration-300 hover:border-emerald-500/30" id="term-2-box">
-                            <!-- Header -->
                             <div class="h-8 border-b border-white/5 bg-white/[0.02] flex items-center px-3 justify-between">
                                 <div class="flex gap-1.5">
                                     <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
@@ -836,46 +653,29 @@
                                     <i data-lucide="hard-drive" class="w-3 h-3"></i> NODE-02:AP-SOUTHEAST
                                 </div>
                             </div>
-                            <!-- Content -->
-                            <div class="p-4 font-mono text-xs md:text-sm overflow-hidden flex-1" id="term-2-content">
-                                <!-- JS injected content -->
-                            </div>
-                            <!-- Status Bar -->
+                            <div class="p-4 font-mono text-xs md:text-sm overflow-hidden flex-1" id="term-2-content"></div>
                             <div class="h-6 bg-emerald-500/5 border-t border-white/5 flex items-center px-3 text-[10px] text-emerald-500/80 justify-between font-mono">
                                 <span>STATUS: LISTENING</span>
                                 <span id="term-2-status">WAITING</span>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
-
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="relative border-t border-white/5 bg-gradient-to-b from-[#0B0F19] to-black pt-0 pb-8 overflow-hidden group/footer" id="ai-footer">
-        
-        <!-- 1. AI Pulse Waveform Canvas -->
         <div class="absolute top-0 left-0 w-full h-[120px] pointer-events-none z-0">
             <canvas id="footer-pulse" class="w-full h-full opacity-40"></canvas>
         </div>
-
-        <!-- 2. Interactive Tooltip Area (Invisible hover zone over the pulse) -->
         <div class="absolute top-0 left-0 w-full h-12 z-20 cursor-help" id="pulse-hover-zone"></div>
-        
-        <!-- Tooltip (Hidden by default) -->
         <div id="pulse-tooltip" class="absolute top-14 left-1/2 -translate-x-1/2 bg-zinc-900/90 border border-indigo-500/50 text-indigo-300 text-xs px-3 py-1.5 rounded-full backdrop-blur-md opacity-0 transition-opacity duration-300 pointer-events-none z-30 shadow-[0_0_15px_rgba(99,102,241,0.3)]">
             <span class="w-2 h-2 bg-indigo-500 rounded-full inline-block mr-2 animate-pulse"></span>
             System Status: <span class="text-white font-mono" id="pulse-status-text">All Systems Nominal</span>
         </div>
-
-        <!-- 3. Floating Agent Badges (Dynamic) -->
-        <div id="agent-badges-container" class="absolute top-4 right-6 flex flex-col gap-2 items-end z-10 pointer-events-none">
-            <!-- Badges will be injected here by JS -->
-        </div>
-
+        <div id="agent-badges-container" class="absolute top-4 right-6 flex flex-col gap-2 items-end z-10 pointer-events-none"></div>
         <div class="max-w-7xl mx-auto px-6 relative z-10 pt-16">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
                 <div class="col-span-2 md:col-span-1 reveal-element">
@@ -883,8 +683,6 @@
                         <span class="font-semibold font-display tracking-tight text-white">Hyperion AI</span>
                     </div>
                     <p class="text-zinc-500 text-sm mb-4">Building the future of software development with intelligent autonomous agents.</p>
-                    
-                    <!-- Live Status Indicator -->
                     <div class="inline-flex items-center gap-2 px-2 py-1 rounded bg-indigo-500/10 border border-indigo-500/20">
                         <span class="relative flex h-2 w-2">
                           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
@@ -893,7 +691,6 @@
                         <span class="text-[10px] font-mono text-indigo-300">AI ENGINE ONLINE</span>
                     </div>
                 </div>
-                
                 <div class="reveal-element delay-100">
                     <h4 class="font-semibold mb-4 text-sm text-white font-display">Product</h4>
                     <ul class="space-y-2 text-sm text-zinc-500">
@@ -903,7 +700,6 @@
                         <li><a href="#" class="footer-link hover:text-indigo-400 transition-colors duration-300">Changelog</a></li>
                     </ul>
                 </div>
-                
                 <div class="reveal-element delay-200">
                     <h4 class="font-semibold mb-4 text-sm text-white font-display">Resources</h4>
                     <ul class="space-y-2 text-sm text-zinc-500">
@@ -913,7 +709,6 @@
                         <li><a href="#" class="footer-link hover:text-indigo-400 transition-colors duration-300">Blog</a></li>
                     </ul>
                 </div>
-                
                 <div class="reveal-element delay-300">
                     <h4 class="font-semibold mb-4 text-sm text-white font-display">Company</h4>
                     <ul class="space-y-2 text-sm text-zinc-500">
@@ -924,7 +719,6 @@
                     </ul>
                 </div>
             </div>
-            
             <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 reveal-element delay-500">
                 <div class="text-zinc-600 text-xs">
                     &copy; 2025 Hyperion Labs. All rights reserved.
@@ -939,47 +733,35 @@
     </footer>
 
     <script>
-        // Initialize Icons
         lucide.createIcons();
 
-        // Theme Toggle Logic
+        // Theme Toggle
         const themeToggleBtn = document.getElementById('theme-toggle');
         const htmlElement = document.documentElement;
-
-        // Check local storage or default to dark
         if (localStorage.theme === 'dark' || (!('theme' in localStorage))) {
             htmlElement.classList.add('dark');
         } else {
             htmlElement.classList.remove('dark');
         }
-
         if (themeToggleBtn) {
             themeToggleBtn.addEventListener('click', () => {
                 htmlElement.classList.toggle('dark');
-                if (htmlElement.classList.contains('dark')) {
-                    localStorage.theme = 'dark';
-                } else {
-                    localStorage.theme = 'light';
-                }
+                localStorage.theme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
+                // Refresh meteor canvas color
+                if(window.refreshMeteors) window.refreshMeteors();
             });
         }
 
-        // Mobile Menu Toggle
+        // Mobile Menu
         const menuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
-
         if (menuBtn && mobileMenu) {
             menuBtn.addEventListener('click', () => {
                 mobileMenu.classList.toggle('hidden');
             });
         }
 
-        // Reveal Animations
-        const revealObserverOptions = {
-            threshold: 0.1,
-            rootMargin: "0px 0px -50px 0px"
-        };
-
+        // Reveal Animation
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -987,831 +769,352 @@
                     revealObserver.unobserve(entry.target);
                 }
             });
-        }, revealObserverOptions);
+        }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+        document.querySelectorAll('.reveal-element').forEach(el => revealObserver.observe(el));
 
-        document.querySelectorAll('.reveal-element').forEach(el => {
-            revealObserver.observe(el);
-        });
-
-        // Main Header Typewriter Animation
+        // Typewriter Animation
         (function() {
             const textElement = document.getElementById('typewriter-text');
             if (!textElement) return;
-
-            const phrases = [
-                "Smart Agents. Smart Actions.",
-                "Your Team, Supercharged by AI Agents",
-                "Dispatch Agents. Deploy Results.",
-                "AI Agents That Work While You Sleep",
-                "Execution-First AI Agents"
-            ];
-            
-            // Start with a random phrase
-            let phraseIndex = Math.floor(Math.random() * phrases.length);
-            let charIndex = 0;
-            let isDeleting = false;
-            let typeSpeed = 100;
-
+            const phrases = [ "Smart Agents. Smart Actions.", "Your Team, Supercharged by AI Agents", "Dispatch Agents. Deploy Results.", "AI Agents That Work While You Sleep", "Execution-First AI Agents" ];
+            let phraseIndex = 0, charIndex = 0, isDeleting = false;
             function type() {
                 const currentPhrase = phrases[phraseIndex];
-                
                 if (isDeleting) {
                     textElement.textContent = currentPhrase.substring(0, charIndex - 1);
                     charIndex--;
-                    typeSpeed = 50; // Deleting speed
                 } else {
                     textElement.textContent = currentPhrase.substring(0, charIndex + 1);
                     charIndex++;
-                    typeSpeed = 100; // Typing speed
                 }
-
+                let typeSpeed = isDeleting ? 50 : 100;
                 if (!isDeleting && charIndex === currentPhrase.length) {
                     isDeleting = true;
-                    typeSpeed = 2000; // Pause at end
+                    typeSpeed = 2000;
                 } else if (isDeleting && charIndex === 0) {
                     isDeleting = false;
-                    
-                    // Pick a random next phrase, avoiding the one just shown
-                    let nextIndex;
-                    do {
-                        nextIndex = Math.floor(Math.random() * phrases.length);
-                    } while (nextIndex === phraseIndex && phrases.length > 1);
-                    phraseIndex = nextIndex;
-
-                    typeSpeed = 500; // Pause before new word
+                    phraseIndex = (phraseIndex + 1) % phrases.length;
+                    typeSpeed = 500;
                 }
-
                 setTimeout(type, typeSpeed);
             }
-
-            // Start after initial slide-up animation (approx 1s delay)
             setTimeout(type, 1000);
         })();
 
-        // Terminal Animation Script
+        // Ultron Swarm Animation
+        (function() {
+            const canvas = document.getElementById('meteor-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [], mouse = { x: -1000, y: -1000 };
+            const PARTICLE_COUNT = 800, FORMATION_RADIUS = 250, MOUSE_REPULSION = 150, SPEED = 0.05;
+            
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; initParticles(); }
+            function initParticles() {
+                particles = [];
+                const count = width < 768 ? PARTICLE_COUNT / 2 : PARTICLE_COUNT;
+                for (let i = 0; i < count; i++) {
+                    particles.push({
+                        x: Math.random() * width, y: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2,
+                        targetX: 0, targetY: 0,
+                        size: Math.random() * 1.5 + 0.5,
+                        color: Math.random() > 0.9 ? '#6366f1' : '#ffffff',
+                        mode: 'wander', angle: Math.random() * Math.PI * 2, phi: Math.acos((Math.random() * 2) - 1)
+                    });
+                }
+            }
+
+            let time = 0;
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                time++;
+                particles.forEach(p => {
+                    const cycle = time % 1000;
+                    if (cycle < 600) p.mode = 'form'; else p.mode = 'wander';
+                    
+                    if (p.mode === 'form') {
+                        const radius = FORMATION_RADIUS;
+                        const rotateSpeed = time * 0.0005;
+                        let z3D = radius * Math.cos(p.phi);
+                        let x3D = radius * Math.sin(p.phi) * Math.cos(p.angle + rotateSpeed);
+                        let y3D = radius * Math.sin(p.phi) * Math.sin(p.angle + rotateSpeed);
+                        const scale = 400 / (400 - z3D);
+                        p.targetX = width / 2 + x3D;
+                        p.targetY = height / 2.5 + y3D;
+                        p.x += (p.targetX - p.x) * SPEED;
+                        p.y += (p.targetY - p.y) * SPEED;
+                    } else {
+                        p.x += p.vx; p.y += p.vy;
+                        if (p.x < 0 || p.x > width) p.vx *= -1;
+                        if (p.y < 0 || p.y > height) p.vy *= -1;
+                    }
+
+                    const dx = p.x - mouse.x, dy = p.y - mouse.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < MOUSE_REPULSION) {
+                        const force = (MOUSE_REPULSION - dist) / MOUSE_REPULSION;
+                        const angle = Math.atan2(dy, dx);
+                        p.x += Math.cos(angle) * force * 10;
+                        p.y += Math.sin(angle) * force * 10;
+                    }
+
+                    ctx.fillStyle = p.color;
+                    let alpha = Math.random() * 0.5 + 0.3;
+                    if (p.mode === 'form') {
+                        const distToCenter = Math.sqrt(Math.pow(p.x - width/2, 2) + Math.pow(p.y - height/2.5, 2));
+                        if(distToCenter < FORMATION_RADIUS) alpha = 0.8;
+                    }
+                    ctx.globalAlpha = alpha;
+                    ctx.fillRect(p.x, p.y, p.size, p.size);
+                    ctx.globalAlpha = 1.0;
+                });
+
+                if (time % 1000 < 600) {
+                     ctx.strokeStyle = 'rgba(99, 102, 241, 0.15)';
+                     ctx.lineWidth = 0.5;
+                     ctx.beginPath();
+                     for (let i = 0; i < particles.length; i+=4) {
+                        const p1 = particles[i];
+                        const distCenter = Math.sqrt(Math.pow(p1.x - width/2, 2) + Math.pow(p1.y - height/2.5, 2));
+                        if (distCenter > FORMATION_RADIUS + 50) continue;
+                        for (let j = i + 1; j < particles.length; j+=8) {
+                            const p2 = particles[j];
+                            const dx = p1.x - p2.x, dy = p1.y - p2.y;
+                            if (dx*dx + dy*dy < 2500) { ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); }
+                        }
+                     }
+                     ctx.stroke();
+                }
+                requestAnimationFrame(animate);
+            }
+            window.addEventListener('resize', resize);
+            window.addEventListener('mousemove', e => { const r = canvas.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; });
+            window.addEventListener('mouseleave', () => { mouse.x = -1000; mouse.y = -1000; });
+            resize(); animate();
+        })();
+
+        // Terminal Animation
         (function() {
             const container = document.getElementById('terminal-container');
-            if (!container) return; // Safety check
-
+            if (!container) return;
             const steps = [
                 { type: 'command', text: 'hyperion init new-project' },
                 { type: 'wait', delay: 400 },
                 { type: 'output', text: '➜ Analyzing requirements...', color: 'text-blue-400' },
                 { type: 'wait', delay: 300 },
-                { type: 'output', text: '➜ Detecting tech stack preference...', color: 'text-blue-400' },
-                { type: 'wait', delay: 300 },
                 { type: 'output', text: '✔ Stack selected: Next.js + Tailwind + PostgreSQL', color: 'text-green-400' },
                 { type: 'wait', delay: 600 },
                 { type: 'command', text: 'hyperion generate docs' },
                 { type: 'wait', delay: 400 },
-                { type: 'output', text: '➜ Scanning project structure...', color: 'text-purple-400' },
-                { type: 'wait', delay: 200 },
                 { type: 'output', text: '➜ 3 documents generated in /docs', color: 'text-white' },
-                { type: 'wait', delay: 2000 } // Pause before loop
+                { type: 'wait', delay: 2000 }
             ];
-
             async function typeLine(text, element) {
                 for (let i = 0; i < text.length; i++) {
                     element.textContent += text[i];
-                    // Random typing speed between 30ms and 70ms
-                    await new Promise(resolve => setTimeout(resolve, 30 + Math.random() * 40));
+                    await new Promise(r => setTimeout(r, 50));
                 }
             }
-
-            async function runTerminal() {
+            async function run() {
                 while(true) {
-                    container.innerHTML = ''; // Clear terminal
-                    
+                    container.innerHTML = '';
                     for (const step of steps) {
-                        if (step.type === 'wait') {
-                            await new Promise(resolve => setTimeout(resolve, step.delay));
-                            continue;
-                        }
-
+                        if (step.type === 'wait') { await new Promise(r => setTimeout(r, step.delay)); continue; }
                         const p = document.createElement('p');
-                        
                         if (step.type === 'command') {
                             p.className = 'text-zinc-400 flex items-center';
-                            const prompt = document.createElement('span');
-                            prompt.textContent = '$ ';
-                            prompt.className = 'mr-2';
-                            
-                            const cmdText = document.createElement('span');
-                            cmdText.className = 'text-white';
-                            
-                            const cursor = document.createElement('span');
-                            cursor.className = 'animate-pulse bg-zinc-500 w-2 h-4 inline-block ml-1';
-                            
-                            p.appendChild(prompt);
-                            p.appendChild(cmdText);
-                            p.appendChild(cursor);
+                            p.innerHTML = `<span class="mr-2">$</span><span class="text-white"></span><span class="animate-pulse bg-zinc-500 w-2 h-4 inline-block ml-1"></span>`;
                             container.appendChild(p);
-
-                            // Scroll to bottom
-                            container.scrollTop = container.scrollHeight;
-
-                            await typeLine(step.text, cmdText);
-                            cursor.remove(); // Remove cursor after typing
+                            await typeLine(step.text, p.querySelector('.text-white'));
+                            p.querySelector('.animate-pulse').remove();
                         } else {
-                            p.className = `${step.color || 'text-zinc-300'}`;
+                            p.className = step.color;
                             p.textContent = step.text;
                             container.appendChild(p);
-                            container.scrollTop = container.scrollHeight;
                         }
+                        container.scrollTop = container.scrollHeight;
                     }
-
-                    // Blinking cursor at the end before restart
-                    const endCursorLine = document.createElement('p');
-                    endCursorLine.className = 'text-zinc-400';
-                    endCursorLine.innerHTML = '$ <span class="animate-pulse bg-zinc-500 w-2 h-4 inline-block align-middle ml-1"></span>';
-                    container.appendChild(endCursorLine);
-                    container.scrollTop = container.scrollHeight;
-
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    await new Promise(r => setTimeout(r, 2000));
                 }
             }
-
-            // Start animation when section is visible
-            const terminalObserver = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting) {
-                    runTerminal();
-                    terminalObserver.disconnect(); // Run once
-                }
-            }, { threshold: 0.1 });
-            
-            terminalObserver.observe(container);
+            const obs = new IntersectionObserver((e) => { if(e[0].isIntersecting) { run(); obs.disconnect(); } });
+            obs.observe(container);
         })();
 
-        // PRD Typewriter Animation (Markdown Gen)
+        // PRD Animation
         (function() {
-            const prdContainer = document.getElementById('prd-content');
-            if (!prdContainer) return; // Safety check
-
-            // Markdown content to simulate
+            const container = document.getElementById('prd-content');
+            if (!container) return;
             const lines = [
-                { text: "# Product Requirements", class: "text-blue-300 font-bold" },
-                { text: "", class: "" }, // spacer
-                { text: "## 1. Core Features", class: "text-zinc-200 font-semibold" },
-                { text: "- User Authentication (Auth.js)", class: "text-zinc-400" },
-                { text: "- Real-time Dashboard", class: "text-zinc-400" },
-                { text: "- Stripe Integration", class: "text-zinc-400" },
-                { text: "- AI Chat Interface", class: "text-zinc-400" },
-                { text: "", class: "" },
-                { text: "## 2. Database Schema", class: "text-zinc-200 font-semibold" },
-                { text: "- Users: id, email, role", class: "text-zinc-400" },
-                { text: "- Projects: id, name, status", class: "text-zinc-400" },
-                { text: "- Documents: id, content, vector", class: "text-zinc-400" },
-                { text: "", class: "" },
-                { text: "## 3. API Endpoints", class: "text-zinc-200 font-semibold" },
-                { text: "- GET /api/v1/projects", class: "text-zinc-400" },
-                { text: "- POST /api/v1/generate", class: "text-zinc-400" }
+                { text: "# Requirements", class: "text-blue-300 font-bold" },
+                { text: "- Auth System", class: "text-zinc-400" },
+                { text: "- Dashboard UI", class: "text-zinc-400" }
             ];
-
-            async function typeText(element, text) {
-                for(let i=0; i<text.length; i++) {
-                    element.textContent += text[i];
-                    // Auto scroll on each character
-                    if(prdContainer) prdContainer.scrollTop = prdContainer.scrollHeight;
-                    await new Promise(r => setTimeout(r, 20 + Math.random() * 30)); // Fast typing
-                }
+            async function typeText(el, txt) {
+                for(let c of txt) { el.textContent += c; container.scrollTop = container.scrollHeight; await new Promise(r => setTimeout(r, 30)); }
             }
-
-            async function runPrdAnimation() {
+            async function run() {
                 while(true) {
-                    prdContainer.innerHTML = ''; // Reset
-                    
-                    for (const line of lines) {
+                    container.innerHTML = '';
+                    for(let line of lines) {
                         const div = document.createElement('div');
-                        div.className = line.class + " flex items-center shrink-0";
-                        
-                        // Blinking cursor
-                        const cursor = document.createElement('span');
-                        cursor.className = "w-1.5 h-3 bg-blue-400 inline-block ml-1 animate-pulse";
-                        
-                        div.appendChild(cursor);
-                        prdContainer.appendChild(div);
-                        
-                        // Auto scroll when new line starts
-                        prdContainer.scrollTop = prdContainer.scrollHeight;
-                        
-                        // Type content if exists
-                        if (line.text) {
-                            const textNode = document.createTextNode("");
-                            div.insertBefore(textNode, cursor);
-                            await typeText(textNode, line.text);
-                        }
-                        
-                        cursor.remove(); // Remove cursor from finished line
-                        await new Promise(r => setTimeout(r, 100)); // Slight pause between lines
+                        div.className = line.class + " flex";
+                        div.innerHTML = `<span></span><span class="w-1.5 h-3 bg-blue-400 animate-pulse ml-1"></span>`;
+                        container.appendChild(div);
+                        await typeText(div.firstElementChild, line.text);
+                        div.lastElementChild.remove();
+                        await new Promise(r => setTimeout(r, 100));
                     }
-
-                    // End wait
-                    const blinkingCursor = document.createElement('div');
-                    blinkingCursor.className = "w-1.5 h-3 bg-blue-400 inline-block animate-pulse";
-                    prdContainer.appendChild(blinkingCursor);
-                    prdContainer.scrollTop = prdContainer.scrollHeight;
-
-                    await new Promise(r => setTimeout(r, 3000)); // Show finished state
+                    await new Promise(r => setTimeout(r, 3000));
                 }
             }
-
-            // Start observer
-            const prdObserver = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting) {
-                    runPrdAnimation();
-                    prdObserver.disconnect();
-                }
-            }, { threshold: 0.1 });
-            
-            prdObserver.observe(prdContainer);
+            const obs = new IntersectionObserver((e) => { if(e[0].isIntersecting) { run(); obs.disconnect(); } });
+            obs.observe(container);
         })();
 
-        // Network Graph Animation (Nodes, Edges, Data Packets)
+        // Live Exchange
         (function() {
-            const canvas = document.getElementById('meteor-canvas'); // Reusing existing canvas element
-            if (!canvas) return;
-
-            const ctx = canvas.getContext('2d');
-            let width, height;
+            const t1 = document.getElementById('term-1-content'), t2 = document.getElementById('term-2-content');
+            const s1 = document.getElementById('term-1-status'), s2 = document.getElementById('term-2-status');
+            const dp = document.getElementById('data-packet'), dpm = document.getElementById('data-packet-mobile');
+            if(!t1 || !t2) return;
             
-            // Configuration
-            const config = {
-                nodeCount: 60,          // Jumlah node (responsive nanti)
-                connectionDist: 180,    // Jarak maksimal untuk membuat garis
-                packetSpeed: 0.015,     // Kecepatan paket data
-                packetSpawnRate: 0.02,  // Frekuensi munculnya paket
-                colors: {
-                    sync: '59, 130, 246',   // Blue (Code Sync)
-                    docs: '16, 185, 129',   // Green (Docs/PRD)
-                    ai: '168, 85, 247'      // Purple (AI Agent)
-                }
-            };
-
-            let nodes = [];
-            let packets = [];
-
-            // Node Class
-            class Node {
-                constructor() {
-                    this.x = Math.random() * width;
-                    this.y = Math.random() * height;
-                    this.vx = (Math.random() - 0.5) * 0.3; // Gerakan lambat & smooth
-                    this.vy = (Math.random() - 0.5) * 0.3;
-                    this.size = Math.random() * 1.5 + 1;
-                    this.isAI = Math.random() < 0.15; // 15% kemungkinan jadi AI Node
-                    this.pulse = Math.random() * Math.PI; // Random start phase for pulse
-                }
-
-                update() {
-                    this.x += this.vx;
-                    this.y += this.vy;
-
-                    // Bounce off edges smoothly
-                    if (this.x < 0 || this.x > width) this.vx *= -1;
-                    if (this.y < 0 || this.y > height) this.vy *= -1;
-                    
-                    // Pulse animation state
-                    if (this.isAI) {
-                        this.pulse += 0.05;
-                    }
-                }
-
-                draw() {
-                    // Draw Node Dot
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    // AI Nodes are purple, others are white/gray
-                    ctx.fillStyle = this.isAI ? `rgba(${config.colors.ai}, 0.9)` : 'rgba(255, 255, 255, 0.4)';
-                    ctx.fill();
-
-                    // Draw AI Glow Ring (Berdenyut)
-                    if (this.isAI) {
-                        const pulseSize = this.size + 4 + Math.sin(this.pulse) * 3;
-                        const pulseOpacity = 0.3 - Math.sin(this.pulse) * 0.1; // 0.2 to 0.4 opacity
-                        
-                        ctx.beginPath();
-                        ctx.arc(this.x, this.y, pulseSize, 0, Math.PI * 2);
-                        ctx.strokeStyle = `rgba(${config.colors.ai}, ${pulseOpacity})`;
-                        ctx.lineWidth = 1;
-                        ctx.stroke();
-                    }
-                }
+            const wait = ms => new Promise(r => setTimeout(r, ms));
+            async function log(el, txt, cls='text-zinc-300') {
+                const d = document.createElement('div'); d.className = cls + ' mb-1'; d.textContent = txt;
+                el.appendChild(d); el.scrollTop = el.scrollHeight;
             }
 
-            // Data Packet Class
-            class Packet {
-                constructor(startNode, endNode) {
-                    this.startNode = startNode;
-                    this.endNode = endNode;
-                    this.progress = 0;
-                    this.speed = config.packetSpeed * (Math.random() * 0.5 + 0.8); // Sedikit variasi kecepatan
-                    
-                    // Determine Type based on nodes
-                    // If moving to/from AI node -> Purple (AI Work)
-                    // Else random between Blue (Sync) and Green (Docs)
-                    if (startNode.isAI || endNode.isAI) {
-                        this.type = 'ai';
-                    } else {
-                        this.type = Math.random() > 0.5 ? 'sync' : 'docs';
-                    }
-                    this.color = config.colors[this.type];
-                }
-
-                update() {
-                    this.progress += this.speed;
-                }
-
-                draw() {
-                    const currentX = this.startNode.x + (this.endNode.x - this.startNode.x) * this.progress;
-                    const currentY = this.startNode.y + (this.endNode.y - this.startNode.y) * this.progress;
-                    
-                    // Draw Trail (Motion Blur)
-                    // Menghitung posisi "ekor" sedikit di belakang posisi sekarang
-                    const tailLength = 0.15; 
-                    const tailProgress = Math.max(0, this.progress - tailLength);
-                    const tailX = this.startNode.x + (this.endNode.x - this.startNode.x) * tailProgress;
-                    const tailY = this.startNode.y + (this.endNode.y - this.startNode.y) * tailProgress;
-
-                    // Gradient Trail
-                    const gradient = ctx.createLinearGradient(currentX, currentY, tailX, tailY);
-                    gradient.addColorStop(0, `rgba(${this.color}, 1)`); // Head
-                    gradient.addColorStop(1, `rgba(${this.color}, 0)`); // Tail fade
-
-                    ctx.beginPath();
-                    ctx.moveTo(currentX, currentY);
-                    ctx.lineTo(tailX, tailY);
-                    ctx.strokeStyle = gradient;
-                    ctx.lineWidth = 2;
-                    ctx.lineCap = 'round';
-                    ctx.stroke();
-
-                    // Glowing Head
-                    ctx.beginPath();
-                    ctx.arc(currentX, currentY, 1.5, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgb(${this.color})`;
-                    ctx.shadowColor = `rgb(${this.color})`;
-                    ctx.shadowBlur = 5;
-                    ctx.fill();
-                    ctx.shadowBlur = 0; // Reset
-                }
-            }
-
-            function resize() {
-                width = canvas.width = canvas.offsetWidth;
-                height = canvas.height = canvas.offsetHeight;
-                initNodes();
-            }
-
-            function initNodes() {
-                nodes = [];
-                // Adjust node count based on screen width
-                const density = width < 768 ? 30 : 70;
-                
-                for (let i = 0; i < density; i++) {
-                    nodes.push(new Node());
-                }
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, width, height);
-                
-                // Update & Draw Nodes
-                nodes.forEach(node => {
-                    node.update();
-                    node.draw();
-                });
-
-                // Connections & Packet Spawning
-                for (let i = 0; i < nodes.length; i++) {
-                    for (let j = i + 1; j < nodes.length; j++) {
-                        const nodeA = nodes[i];
-                        const nodeB = nodes[j];
-                        
-                        const dx = nodeA.x - nodeB.x;
-                        const dy = nodeA.y - nodeB.y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-
-                        if (dist < config.connectionDist) {
-                            // Draw Line (Edge)
-                            // Opacity based on distance (closer = clearer)
-                            const opacity = 1 - (dist / config.connectionDist);
-                            ctx.beginPath();
-                            ctx.moveTo(nodeA.x, nodeA.y);
-                            ctx.lineTo(nodeB.x, nodeB.y);
-                            ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.08})`; // Very subtle line
-                            ctx.lineWidth = 1;
-                            ctx.stroke();
-
-                            // Randomly spawn packet on this connection
-                            // Spawn chance increases slightly if connection is stronger (closer)
-                            if (Math.random() < config.packetSpawnRate * opacity) {
-                                packets.push(new Packet(nodeA, nodeB));
-                            }
-                        }
-                    }
-                }
-
-                // Update & Draw Packets
-                for (let i = packets.length - 1; i >= 0; i--) {
-                    const p = packets[i];
-                    p.update();
-                    p.draw();
-                    
-                    // Remove if reached destination
-                    if (p.progress >= 1) {
-                        packets.splice(i, 1);
-                    }
-                }
-
-                requestAnimationFrame(animate);
-            }
-
-            window.addEventListener('resize', resize);
-            resize(); // Init
-            animate(); // Start Loop
-        })();
-
-        // Live Exchange Visualization (Terminals)
-        (function() {
-            const term1Content = document.getElementById('term-1-content');
-            const term2Content = document.getElementById('term-2-content');
-            const term1Status = document.getElementById('term-1-status');
-            const term2Status = document.getElementById('term-2-status');
-            const term1Box = document.getElementById('term-1-box');
-            const term2Box = document.getElementById('term-2-box');
-            
-            const dataPacket = document.getElementById('data-packet');
-            const dataPacketMobile = document.getElementById('data-packet-mobile');
-            const hubIcon = document.getElementById('hub-icon');
-            const hubSvg = document.getElementById('hub-svg');
-
-            if (!term1Content || !term2Content) return;
-
-            const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-            async function typeLine(element, text, colorClass = 'text-zinc-300') {
-                const p = document.createElement('div');
-                p.className = `${colorClass} mb-1`;
-                element.appendChild(p);
-                
-                // If text starts with "$", type it. Else fade it in.
-                if (text.startsWith('$')) {
-                    const prompt = document.createElement('span');
-                    prompt.className = 'text-zinc-500 mr-2';
-                    prompt.textContent = text.substring(0, 2);
-                    p.appendChild(prompt);
-                    
-                    const cmd = document.createElement('span');
-                    p.appendChild(cmd);
-                    
-                    const chars = text.substring(2).split('');
-                    for (let char of chars) {
-                        cmd.textContent += char;
-                        await wait(30);
-                    }
-                } else {
-                    p.textContent = text;
-                    p.style.animation = "fadeInUp 0.3s ease-out forwards";
-                }
-                
-                // Auto scroll
-                element.scrollTop = element.scrollHeight;
-                await wait(200); 
-            }
-
-            async function runLiveExchange() {
+            async function run() {
                 while(true) {
-                    // Reset
-                    term1Content.innerHTML = '';
-                    term2Content.innerHTML = '';
-                    term1Status.textContent = 'IDLE';
-                    term1Status.className = 'text-primary/80';
-                    term2Status.textContent = 'WAITING';
-                    term2Status.className = 'text-emerald-500/80';
-                    term1Box.style.borderColor = 'rgba(255,255,255,0.1)';
-                    term2Box.style.borderColor = 'rgba(255,255,255,0.1)';
+                    t1.innerHTML = ''; t2.innerHTML = '';
+                    s1.textContent = 'IDLE'; s2.textContent = 'WAITING';
                     
-                    // --- PHASE 1: Terminal 1 Initiates ---
                     await wait(500);
-                    await typeLine(term1Content, '$ hyperion sync --global', 'text-white font-bold');
-                    term1Status.textContent = 'EXECUTING';
+                    await log(t1, '$ hyperion sync', 'text-white font-bold');
+                    s1.textContent = 'SENDING';
+                    await wait(500);
+                    await log(t1, '↳ Uploading...', 'text-blue-400');
                     
-                    await wait(300);
-                    await typeLine(term1Content, '↳ Syncing 4,291 nodes...', 'text-blue-400');
-                    await typeLine(term1Content, '↳ Package: ai-agent-v2.3', 'text-zinc-400');
-                    await typeLine(term1Content, '↳ Size: 12.4MB', 'text-zinc-400');
-                    await wait(300);
-                    await typeLine(term1Content, '↳ encrypting...', 'text-yellow-400');
-                    
-                    // --- PHASE 2: Data Transfer ---
-                    term1Status.textContent = 'SENDING';
-                    term1Box.style.borderColor = '#6366f1'; // Primary color
-                    
-                    await typeLine(term1Content, '↳ ✅ Broadcast ready', 'text-green-400');
-                    
-                    // Animate Hub & Line
-                    hubIcon.style.borderColor = '#6366f1';
-                    hubIcon.style.boxShadow = '0 0 20px #6366f1';
-                    hubSvg.style.color = '#fff';
-                    
-                    // Trigger packet animation (reset logic included)
-                    if (window.innerWidth >= 768) {
-                        // Desktop Animation (Left to Right)
-                        dataPacket.style.transition = 'none';
-                        dataPacket.style.left = '0';
-                        dataPacket.style.opacity = '1';
-                        // Force reflow
-                        void dataPacket.offsetWidth;
-                        dataPacket.style.transition = 'left 1.5s ease-in-out';
-                        dataPacket.style.left = '100%';
+                    // Animate packet
+                    if(window.innerWidth >= 768) {
+                        dp.style.transition = 'none'; dp.style.left = '0'; dp.style.opacity = '1';
+                        void dp.offsetWidth;
+                        dp.style.transition = 'left 1.5s ease'; dp.style.left = '100%';
                     } else {
-                        // Mobile Animation (Top to Bottom)
-                        dataPacketMobile.style.transition = 'none';
-                        dataPacketMobile.style.top = '0';
-                        dataPacketMobile.style.opacity = '1';
-                        void dataPacketMobile.offsetWidth;
-                        dataPacketMobile.style.transition = 'top 1.5s ease-in-out';
-                        dataPacketMobile.style.top = '100%';
+                        dpm.style.transition = 'none'; dpm.style.top = '0'; dpm.style.opacity = '1';
+                        void dpm.offsetWidth;
+                        dpm.style.transition = 'top 1.5s ease'; dpm.style.top = '100%';
                     }
+                    await wait(1500);
+                    dp.style.opacity = '0'; dpm.style.opacity = '0';
 
-                    await wait(1500); // Wait for packet travel time
-
-                    // Reset Hub
-                    hubIcon.style.borderColor = '#27272a';
-                    hubIcon.style.boxShadow = 'none';
-                    hubSvg.style.color = '#71717a';
-                    dataPacket.style.opacity = '0';
-                    dataPacketMobile.style.opacity = '0';
-
-                    // --- PHASE 3: Terminal 2 Receives ---
-                    term2Box.style.borderColor = '#10b981'; // Emerald color
-                    term2Status.textContent = 'RECEIVING';
-                    
-                    await typeLine(term2Content, '$ hyperion receive --node-01', 'text-white font-bold');
-                    await wait(200);
-                    await typeLine(term2Content, '↳ Receiving payload...', 'text-blue-400');
-                    
-                    // Simulating processing
-                    await wait(400);
-                    await typeLine(term2Content, '↳ validating packages...', 'text-yellow-400');
-                    await wait(300);
-                    await typeLine(term2Content, '↳ ✅ Deployed 1,247 files', 'text-green-400');
-                    await typeLine(term2Content, '↳ Latency: 89ms total', 'text-zinc-400');
-                    
-                    term2Status.textContent = 'READY';
-                    await typeLine(term2Content, '↳ ✅ Node ready', 'text-green-400 font-bold');
-
-                    await wait(3000); // Pause before restarting loop
+                    s2.textContent = 'RECEIVING';
+                    await log(t2, 'Data received', 'text-green-400');
+                    await wait(2000);
                 }
             }
-
-            // Start animation when visible
-            const observer = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting) {
-                    runLiveExchange();
-                    observer.disconnect();
-                }
-            }, { threshold: 0.1 });
-            
-            observer.observe(term1Box);
+            const obs = new IntersectionObserver((e) => { if(e[0].isIntersecting) { run(); obs.disconnect(); } });
+            obs.observe(document.getElementById('term-1-box'));
         })();
 
-        // CONSOLE MODAL LOGIC
-        (function() {
-            const openBtns = [document.getElementById('desktop-launch-btn'), document.getElementById('mobile-launch-btn')];
-            const modal = document.getElementById('console-modal');
-            const closeBtn = document.getElementById('close-console-btn');
-            const backdrop = document.getElementById('console-backdrop');
-            const hiddenInput = document.getElementById('hidden-input');
-            const typedTextSpan = document.getElementById('typed-text');
-            const terminalOutput = document.getElementById('terminal-output');
-            const loginTimeSpan = document.getElementById('login-time');
-
-            // Open Modal Function
-            function openModal() {
-                modal.classList.remove('hidden');
-                // Trigger reflow
-                void modal.offsetWidth;
-                modal.classList.remove('opacity-0');
-                
-                // Set login time
-                const now = new Date();
-                if(loginTimeSpan) loginTimeSpan.textContent = now.toLocaleString();
-                
-                // Focus input
-                if(hiddenInput) hiddenInput.focus();
-            }
-
-            // Close Modal Function
-            function closeModal() {
-                modal.classList.add('opacity-0');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                }, 300);
-            }
-
-            // Event Listeners
-            openBtns.forEach(btn => {
-                if(btn) btn.addEventListener('click', openModal);
-            });
-
-            if(closeBtn) closeBtn.addEventListener('click', closeModal);
-            if(backdrop) backdrop.addEventListener('click', closeModal);
-
-            // Terminal Typing Logic
-            if(hiddenInput && typedTextSpan) {
-                hiddenInput.addEventListener('input', (e) => {
-                    typedTextSpan.textContent = e.target.value;
-                });
-
-                hiddenInput.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        const command = hiddenInput.value.trim();
-                        
-                        // Add previous command to output
-                        const cmdLine = document.createElement('div');
-                        cmdLine.className = "mb-1";
-                        cmdLine.innerHTML = `<span class="text-emerald-500 mr-2">➜</span><span class="text-blue-400 mr-2">~</span><span class="text-white">${command}</span>`;
-                        terminalOutput.appendChild(cmdLine);
-
-                        // Process command (Simple Simulation)
-                        if (command) {
-                            const responseLine = document.createElement('div');
-                            responseLine.className = "mb-3 text-zinc-300";
-                            
-                            if (command === 'help') {
-                                responseLine.innerHTML = `Available commands:<br>  - help: Show this help<br>  - clear: Clear terminal<br>  - status: Check system status<br>  - version: Show version`;
-                            } else if (command === 'clear') {
-                                terminalOutput.innerHTML = '';
-                                responseLine.remove(); // Don't append empty line
-                            } else if (command === 'version') {
-                                responseLine.textContent = "Hyperion AI Console v2.0.4 (stable)";
-                            } else if (command === 'status') {
-                                responseLine.innerHTML = `<span class="text-green-400">● Systems Operational</span><br>Latency: 34ms<br>Uptime: 99.99%`;
-                            } else {
-                                responseLine.textContent = `zsh: command not found: ${command}`;
-                            }
-                            
-                            if(command !== 'clear') terminalOutput.appendChild(responseLine);
-                        }
-
-                        // Reset input
-                        hiddenInput.value = '';
-                        typedTextSpan.textContent = '';
-                        
-                        // Scroll to bottom
-                        const terminalWindow = document.getElementById('terminal-window');
-                        terminalWindow.scrollTop = terminalWindow.scrollHeight;
-                    }
-                });
-            }
-        })();
-
-        // --- AI PULSE FOOTER ANIMATION ---
+        // Footer Pulse
         (function() {
             const canvas = document.getElementById('footer-pulse');
             if (!canvas) return;
-            
             const ctx = canvas.getContext('2d');
             const hoverZone = document.getElementById('pulse-hover-zone');
             const tooltip = document.getElementById('pulse-tooltip');
             const statusText = document.getElementById('pulse-status-text');
-            const footerLinks = document.querySelectorAll('.footer-link');
-            const badgeContainer = document.getElementById('agent-badges-container');
+            const badges = document.getElementById('agent-badges-container');
+            let width, height, time = 0, pulseIntensity = 1, targetIntensity = 1;
 
-            let width, height;
-            let time = 0;
-            let pulseIntensity = 1; // Base intensity
-            let targetIntensity = 1;
-            
-            // Configuration
             const waves = [
-                { amplitude: 20, frequency: 0.02, speed: 0.05, color: 'rgba(99, 102, 241, 0.5)' }, // Indigo
-                { amplitude: 15, frequency: 0.01, speed: 0.03, color: 'rgba(168, 85, 247, 0.3)' }, // Purple
-                { amplitude: 10, frequency: 0.03, speed: 0.07, color: 'rgba(56, 189, 248, 0.3)' }  // Cyan
+                { amplitude: 20, frequency: 0.02, speed: 0.05, color: 'rgba(99, 102, 241, 0.5)' },
+                { amplitude: 15, frequency: 0.01, speed: 0.03, color: 'rgba(168, 85, 247, 0.3)' },
+                { amplitude: 10, frequency: 0.03, speed: 0.07, color: 'rgba(56, 189, 248, 0.3)' }
             ];
 
-            function resize() {
-                width = canvas.width = canvas.offsetWidth;
-                height = canvas.height = canvas.offsetHeight;
-            }
-
+            function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
             function animate() {
                 ctx.clearRect(0, 0, width, height);
-                time += 1;
-
-                // Smooth intensity transition
+                time++;
                 pulseIntensity += (targetIntensity - pulseIntensity) * 0.1;
-
-                waves.forEach((wave, i) => {
-                    ctx.beginPath();
-                    ctx.moveTo(0, height / 2);
-
-                    for (let x = 0; x < width; x++) {
-                        // Calculate Y with sine wave formula + some noise
-                        const y = height / 4 + // Raised slightly to top
-                                Math.sin(x * wave.frequency + time * wave.speed) * wave.amplitude * pulseIntensity +
-                                Math.sin(x * wave.frequency * 2 + time * wave.speed * 1.5) * (wave.amplitude / 2) * pulseIntensity;
-                        
+                waves.forEach(w => {
+                    ctx.beginPath(); ctx.moveTo(0, height/2);
+                    for(let x=0; x<width; x++) {
+                        const y = height/4 + Math.sin(x * w.frequency + time * w.speed) * w.amplitude * pulseIntensity;
                         ctx.lineTo(x, y);
                     }
-
-                    // Gradient fill for the wave
-                    const gradient = ctx.createLinearGradient(0, 0, width, 0);
-                    gradient.addColorStop(0, "transparent");
-                    gradient.addColorStop(0.5, wave.color);
-                    gradient.addColorStop(1, "transparent");
-
-                    ctx.strokeStyle = gradient;
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
+                    const g = ctx.createLinearGradient(0, 0, width, 0);
+                    g.addColorStop(0, "transparent"); g.addColorStop(0.5, w.color); g.addColorStop(1, "transparent");
+                    ctx.strokeStyle = g; ctx.lineWidth = 2; ctx.stroke();
                 });
-
                 requestAnimationFrame(animate);
             }
 
-            // --- Interactions ---
-
-            // 1. Tooltip Hover
-            hoverZone.addEventListener('mouseenter', () => {
-                tooltip.classList.remove('opacity-0');
-                targetIntensity = 0.5; // Calm down wave when inspecting
+            hoverZone.addEventListener('mouseenter', () => { tooltip.classList.remove('opacity-0'); targetIntensity = 0.5; });
+            hoverZone.addEventListener('mousemove', e => {
+                const r = hoverZone.getBoundingClientRect();
+                tooltip.style.left = `${e.clientX - r.left}px`;
             });
-            
-            hoverZone.addEventListener('mousemove', (e) => {
-                // Update tooltip position relative to mouse X
-                const rect = hoverZone.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                tooltip.style.left = `${x}px`;
-                
-                // Randomize status text occasionally
-                if (Math.random() < 0.05) {
-                    const statuses = [
-                        "Docs Engine Active", 
-                        "Context-Sync Running", 
-                        "Analyzing Codebase", 
-                        "Agent-03 Idle"
-                    ];
-                    statusText.textContent = statuses[Math.floor(Math.random() * statuses.length)];
-                }
-            });
+            hoverZone.addEventListener('mouseleave', () => { tooltip.classList.add('opacity-0'); targetIntensity = 1; });
 
-            hoverZone.addEventListener('mouseleave', () => {
-                tooltip.classList.add('opacity-0');
-                targetIntensity = 1; // Return to normal
-            });
-
-            // 2. Link Hover Effect (Excites the wave)
-            footerLinks.forEach(link => {
-                link.addEventListener('mouseenter', () => {
-                    targetIntensity = 2.5; // Spike the wave
-                });
-                link.addEventListener('mouseleave', () => {
-                    targetIntensity = 1;
-                });
-            });
-
-            // 3. Agent Activity Badges (Random Popups)
-            const agents = [
-                { name: "Doc Writer", color: "text-green-400", icon: "file-text" },
-                { name: "Code Reviewer", color: "text-purple-400", icon: "search" },
-                { name: "Security Bot", color: "text-red-400", icon: "shield" },
-                { name: "Deploy Agent", color: "text-blue-400", icon: "rocket" }
-            ];
-
+            const agents = [{name:"Doc Writer",c:"text-green-400",i:"file-text"},{name:"Code Reviewer",c:"text-purple-400",i:"search"}];
             function spawnBadge() {
-                const agent = agents[Math.floor(Math.random() * agents.length)];
-                const badge = document.createElement('div');
-                badge.className = "flex items-center gap-2 bg-zinc-900/80 border border-white/10 px-3 py-1.5 rounded-md text-[10px] backdrop-blur-md shadow-lg transform translate-x-4 opacity-0 transition-all duration-500";
-                badge.innerHTML = `
-                    <i data-lucide="${agent.icon}" class="w-3 h-3 ${agent.color}"></i>
-                    <span class="text-zinc-300">${agent.name} active</span>
-                `;
-                
-                badgeContainer.appendChild(badge);
-                lucide.createIcons(); // Refresh icons for new element
-
-                // Animate In
-                requestAnimationFrame(() => {
-                    badge.classList.remove('translate-x-4', 'opacity-0');
-                });
-
-                // Remove after few seconds
-                setTimeout(() => {
-                    badge.classList.add('translate-x-4', 'opacity-0');
-                    setTimeout(() => badge.remove(), 500);
-                }, 3000);
-
-                // Schedule next badge
+                const a = agents[Math.floor(Math.random() * agents.length)];
+                const b = document.createElement('div');
+                b.className = "flex items-center gap-2 bg-zinc-900/80 border border-white/10 px-3 py-1.5 rounded-md text-[10px] backdrop-blur-md shadow-lg transform translate-x-4 opacity-0 transition-all duration-500";
+                b.innerHTML = `<i data-lucide="${a.i}" class="w-3 h-3 ${a.c}"></i><span class="text-zinc-300">${a.name} active</span>`;
+                badges.appendChild(b); lucide.createIcons();
+                requestAnimationFrame(() => b.classList.remove('translate-x-4', 'opacity-0'));
+                setTimeout(() => { b.classList.add('translate-x-4', 'opacity-0'); setTimeout(() => b.remove(), 500); }, 3000);
                 setTimeout(spawnBadge, Math.random() * 5000 + 3000);
             }
-
-            // Init
             window.addEventListener('resize', resize);
-            resize();
-            animate();
-            setTimeout(spawnBadge, 2000); // Start badge loop
+            resize(); animate(); setTimeout(spawnBadge, 2000);
+        })();
 
+        // Console Modal
+        (function() {
+            const modal = document.getElementById('console-modal');
+            const btns = [document.getElementById('desktop-launch-btn'), document.getElementById('mobile-launch-btn')];
+            const close = document.getElementById('close-console-btn');
+            const back = document.getElementById('console-backdrop');
+            const input = document.getElementById('hidden-input');
+            const display = document.getElementById('typed-text');
+            const output = document.getElementById('terminal-output');
+
+            function open() { modal.classList.remove('hidden'); setTimeout(() => modal.classList.remove('opacity-0'), 10); if(input) input.focus(); }
+            function shut() { modal.classList.add('opacity-0'); setTimeout(() => modal.classList.add('hidden'), 300); }
+
+            btns.forEach(b => b && b.addEventListener('click', open));
+            if(close) close.addEventListener('click', shut);
+            if(back) back.addEventListener('click', shut);
+
+            if(input && display) {
+                input.addEventListener('input', e => display.textContent = e.target.value);
+                input.addEventListener('keydown', e => {
+                    if(e.key === 'Enter') {
+                        const val = input.value.trim();
+                        const line = document.createElement('div');
+                        line.innerHTML = `<span class="text-emerald-500 mr-2">➜</span><span class="text-white">${val}</span>`;
+                        output.appendChild(line);
+                        
+                        const res = document.createElement('div');
+                        res.className = "mb-2 text-zinc-300";
+                        if(val === 'help') res.innerHTML = "Commands: help, status, clear";
+                        else if(val === 'status') res.innerHTML = "System: <span class='text-green-400'>Online</span>";
+                        else if(val === 'clear') output.innerHTML = '';
+                        else res.textContent = `zsh: command not found: ${val}`;
+                        
+                        if(val !== 'clear') output.appendChild(res);
+                        input.value = ''; display.textContent = '';
+                        document.getElementById('terminal-window').scrollTop = 9999;
+                    }
+                });
+            }
         })();
     </script>
 </body>
