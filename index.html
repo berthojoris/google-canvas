@@ -223,7 +223,7 @@
                     <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
                 </button>
 
-                <!-- GitHub Star Button (Removed rounded-md) -->
+                <!-- GitHub Star Button (Hidden on small mobile) -->
                 <a href="#" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-surface border border-border hover:bg-surfaceHighlight transition-colors text-xs font-medium text-textMuted group">
                     <i data-lucide="github" class="w-3.5 h-3.5 text-textMuted group-hover:text-textMain transition-colors"></i>
                     <span>Star</span>
@@ -344,7 +344,7 @@
                         <div class="hidden md:block border-r border-white/5 bg-zinc-900/30 p-4 text-sm font-mono text-zinc-500">
                             <div class="mb-4 text-xs font-bold uppercase tracking-wider text-zinc-600">Project Files</div>
                             <ul class="space-y-2">
-                                <li class="flex items-center gap-2 text-primary bg-primary/10 p-1 rounded -mx-1"><i data-lucide="file-code" class="w-4 h-4"></i> generator.ts</li>
+                                <li class="flex items-center gap-2 text-primary bg-primary/10 p-1 -mx-1"><i data-lucide="file-code" class="w-4 h-4"></i> generator.ts</li>
                                 <li class="flex items-center gap-2 hover:text-zinc-300 cursor-pointer"><i data-lucide="database" class="w-4 h-4"></i> schema.prisma</li>
                                 <li class="flex items-center gap-2 hover:text-zinc-300 cursor-pointer"><i data-lucide="layout" class="w-4 h-4"></i> page.tsx</li>
                                 <li class="flex items-center gap-2 hover:text-zinc-300 cursor-pointer"><i data-lucide="settings" class="w-4 h-4"></i> config.json</li>
@@ -679,157 +679,135 @@
         </div>
     </section>
 
-    <!-- Pricing / Global Network Section -->
+    <!-- Global Network Section (Redesigned for Clarity and Impact) -->
     <section id="pricing" class="py-24 relative">
-        <!-- Global map section uses fixed dark theme for the map container itself as maps/space themes look best dark -->
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 blur-[100px] rounded-full pointer-events-none"></div>
         
         <div class="max-w-7xl mx-auto px-6 relative z-10">
             
-            <!-- NEW SECTION: Global Network -->
-            <div class="relative">
-                <div class="text-center mb-16 reveal-element">
-                    <h2 class="text-3xl md:text-5xl font-display font-bold mb-4 text-textMain">Connected to the World</h2>
-                    <p class="text-textMuted max-w-2xl mx-auto">Instant synchronization across edge nodes. Your code is deployed, replicated, and executed globally in milliseconds.</p>
+            <!-- Header focused on core benefit -->
+            <div class="text-center mb-16 reveal-element">
+                <h2 class="text-3xl md:text-5xl font-display font-bold mb-4 text-textMain">Global Deployment, Zero Latency</h2>
+                <p class="text-textMuted max-w-3xl mx-auto">Ship code in one region, run instantly everywhere. Hyperion ensures fast, reliable, and redundant execution across the planet.</p>
+            </div>
+
+            <!-- Global Map & Key Metrics Container -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                <!-- 1. Key Metrics Cards (Left/Right) -->
+                <div class="lg:col-span-1 space-y-8 flex flex-col justify-center">
+
+                    <!-- Card 1: Global Average Latency (Highlight) -->
+                    <div class="bg-surface border border-border p-6 reveal-element delay-100">
+                        <div class="text-xs text-textMuted uppercase font-bold tracking-widest mb-2 flex items-center gap-2">
+                            <i data-lucide="gauge" class="w-4 h-4 text-primary"></i>
+                            AVERAGE LATENCY
+                        </div>
+                        <div class="text-5xl font-display font-bold text-primary mb-3">18<span class="text-3xl text-textMuted font-sans ml-2">ms</span></div>
+                        <div class="h-2 bg-primary/20">
+                            <div class="h-full bg-primary" style="width: 85%;"></div>
+                        </div>
+                        <p class="text-xs text-textMuted mt-2">85% of traffic served under 25ms.</p>
+                    </div>
+
+                    <!-- Card 2: Uptime & Redundancy -->
+                    <div class="bg-surface border border-border p-6 reveal-element delay-200">
+                        <div class="text-xs text-textMuted uppercase font-bold tracking-widest mb-2 flex items-center gap-2">
+                             <i data-lucide="shield-check" class="w-4 h-4 text-brand"></i>
+                            UPTIME & REDUNDANCY
+                        </div>
+                        <div class="text-3xl font-display font-bold text-brand mb-1">99.999%</div>
+                        <p class="text-sm text-textMuted">Guaranteed uptime with multi-region failover across 6 continents.</p>
+                    </div>
                 </div>
 
-                <!-- Global Map Visual (Kept Dark for aesthetics) -->
-                <div class="w-full h-[600px] bg-[#0c0c0e] rounded-3xl border border-white/5 relative overflow-hidden group shadow-2xl reveal-element delay-200">
-                    
-                    <!-- Abstract Map Background (Dots) -->
-                    <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#3f3f46 1.5px, transparent 1.5px); background-size: 30px 30px;"></div>
-                    
-                    <!-- World Overlay Gradient -->
-                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0c0c0e] pointer-events-none"></div>
+                <!-- 2. Animated World Map (Center Focus) -->
+                <div class="lg:col-span-2 reveal-element delay-300">
+                    <div class="w-full h-[450px] bg-[#0c0c0e] rounded-3xl border border-white/5 relative overflow-hidden group shadow-2xl">
+                        
+                        <!-- Abstract Map Background (Dots) -->
+                        <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#3f3f46 1.5px, transparent 1.5px); background-size: 30px 30px;"></div>
+                        
+                        <!-- World Overlay Gradient -->
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0c0c0e] pointer-events-none"></div>
 
-                    <!-- Connection Lines (SVG) - Coords mapped to 1000x600 viewbox -->
-                    <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
-                        <defs>
-                            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0" />
-                                <stop offset="50%" style="stop-color:#6366f1;stop-opacity:0.6" />
-                                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0" />
-                            </linearGradient>
-                        </defs>
+                        <!-- Connection Lines (SVG) - Simplified Network Mesh -->
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 1000 450" preserveAspectRatio="xMidYMid slice">
+                            <defs>
+                                <linearGradient id="pingGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0" />
+                                    <stop offset="50%" style="stop-color:#6366f1;stop-opacity:0.8" />
+                                    <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0" />
+                                </linearGradient>
+                            </defs>
+                            
+                            <!-- US (200, 150) -> EU (500, 130) -->
+                            <path d="M 200 150 Q 350 50 500 130" stroke="url(#pingGradient)" stroke-width="2" fill="none" class="opacity-50" stroke-dasharray="8 8">
+                                <animate attributeName="stroke-dashoffset" from="100" to="0" dur="4s" repeatCount="indefinite" />
+                            </path>
+                            <!-- EU (500, 130) -> Asia (780, 200) -->
+                            <path d="M 500 130 Q 650 100 780 200" stroke="url(#pingGradient)" stroke-width="2" fill="none" class="opacity-50" stroke-dasharray="8 8">
+                                <animate attributeName="stroke-dashoffset" from="100" to="0" dur="4.5s" repeatCount="indefinite" />
+                            </path>
+                            <!-- Global Cross -->
+                            <path d="M 100 350 Q 500 400 900 350" stroke="#10b981" stroke-width="1.5" fill="none" class="opacity-20" stroke-dasharray="6 6">
+                                <animate attributeName="stroke-dashoffset" from="100" to="0" dur="6s" repeatCount="indefinite" />
+                            </path>
 
-                        <!-- US -> EU -->
-                        <path d="M 250 240 Q 375 150 520 210" stroke="url(#lineGradient)" stroke-width="1.5" fill="none" class="opacity-40" stroke-dasharray="4 4">
-                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="3s" repeatCount="indefinite" />
-                        </path>
-                        <!-- EU -> Asia -->
-                        <path d="M 520 210 Q 650 180 800 270" stroke="url(#lineGradient)" stroke-width="1.5" fill="none" class="opacity-40" stroke-dasharray="4 4">
-                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="4s" repeatCount="indefinite" />
-                        </path>
-                        <!-- US -> SA -->
-                        <path d="M 250 240 Q 220 350 320 450" stroke="url(#lineGradient)" stroke-width="1.5" fill="none" class="opacity-40" stroke-dasharray="4 4">
-                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="3.5s" repeatCount="indefinite" />
-                        </path>
-                        <!-- EU -> Africa -->
-                        <path d="M 520 210 Q 530 315 550 420" stroke="url(#lineGradient)" stroke-width="1.5" fill="none" class="opacity-40" stroke-dasharray="4 4">
-                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="3s" repeatCount="indefinite" />
-                        </path>
-                        <!-- Asia -> Oceania -->
-                        <path d="M 800 270 Q 850 380 900 480" stroke="url(#lineGradient)" stroke-width="1.5" fill="none" class="opacity-40" stroke-dasharray="4 4">
-                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="2.5s" repeatCount="indefinite" />
-                        </path>
-                        <!-- SA -> Africa (Trans-atlantic) -->
-                        <path d="M 320 450 Q 435 500 550 420" stroke="url(#lineGradient)" stroke-width="1.5" fill="none" class="opacity-30" stroke-dasharray="4 4">
-                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="5s" repeatCount="indefinite" />
-                        </path>
-                    </svg>
+                            <!-- Node Points (Simplified and centralized) -->
+                            <circle cx="200" cy="150" r="4" fill="#6366f1">
+                                <animate attributeName="r" values="4; 8; 4" dur="2s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="500" cy="130" r="4" fill="#a855f7">
+                                <animate attributeName="r" values="4; 8; 4" dur="2.5s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="780" cy="200" r="4" fill="#10b981">
+                                <animate attributeName="r" values="4; 8; 4" dur="3s" repeatCount="indefinite" />
+                            </circle>
+                             <circle cx="100" cy="350" r="4" fill="#10b981" />
+                             <circle cx="900" cy="350" r="4" fill="#10b981" />
+                        </svg>
 
-                    <!-- Node 1: North America (US-EAST) -->
-                    <div class="absolute top-[40%] left-[25%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 group/node cursor-pointer">
-                        <div class="relative w-20 h-20 flex items-center justify-center">
-                            <div class="absolute inset-0 bg-primary/20 rounded-full animate-ping"></div>
-                            <div class="w-14 h-14 bg-zinc-900 border border-primary/50 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_20px_rgba(99,102,241,0.6)] group-hover/node:scale-110 transition-transform duration-300">
-                                <i data-lucide="map-pin" class="w-8 h-8 text-primary fill-primary/20"></i>
+                        <!-- Centralized Stat Overlay -->
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                            <i data-lucide="earth" class="w-16 h-16 text-white/10 mx-auto mb-2"></i>
+                            <div class="text-xl font-display font-bold text-white tracking-wider">GLOBAL GRID ACTIVE</div>
+                            <div class="text-sm text-green-400 font-mono flex items-center justify-center gap-1">
+                                <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                                Live Data Streaming
                             </div>
                         </div>
-                        <div class="bg-zinc-900/90 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-300 backdrop-blur-md opacity-80 group-hover/node:opacity-100 transition-all translate-y-1 group-hover/node:translate-y-0 shadow-xl">
-                            <span class="text-primary font-bold">N. AMERICA</span> • <span class="text-green-400">12ms</span>
-                        </div>
-                    </div>
 
-                    <!-- Node 2: South America (SA-EAST) -->
-                    <div class="absolute top-[75%] left-[32%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 group/node cursor-pointer">
-                        <div class="relative w-20 h-20 flex items-center justify-center">
-                            <div class="absolute inset-0 bg-orange-500/20 rounded-full animate-ping" style="animation-delay: 0.5s"></div>
-                            <div class="w-14 h-14 bg-zinc-900 border border-orange-500/50 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_20px_rgba(249,115,22,0.6)] group-hover/node:scale-110 transition-transform duration-300">
-                                <i data-lucide="map-pin" class="w-8 h-8 text-orange-400 fill-orange-400/20"></i>
-                            </div>
-                        </div>
-                        <div class="bg-zinc-900/90 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-300 backdrop-blur-md opacity-80 group-hover/node:opacity-100 transition-all translate-y-1 group-hover/node:translate-y-0 shadow-xl">
-                            <span class="text-orange-400 font-bold">S. AMERICA</span> • <span class="text-green-400">65ms</span>
-                        </div>
                     </div>
-
-                    <!-- Node 3: Europe (EU-CENTRAL) -->
-                    <div class="absolute top-[35%] left-[52%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 group/node cursor-pointer">
-                        <div class="relative w-20 h-20 flex items-center justify-center">
-                            <div class="absolute inset-0 bg-purple-500/20 rounded-full animate-pulse"></div>
-                            <div class="w-14 h-14 bg-zinc-900 border border-purple-500/50 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_20px_rgba(168,85,247,0.6)] group-hover/node:scale-110 transition-transform duration-300">
-                                <i data-lucide="map-pin" class="w-8 h-8 text-purple-400 fill-purple-400/20"></i>
-                            </div>
-                        </div>
-                        <div class="bg-zinc-900/90 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-300 backdrop-blur-md opacity-80 group-hover/node:opacity-100 transition-all translate-y-1 group-hover/node:translate-y-0 shadow-xl">
-                            <span class="text-purple-400 font-bold">EUROPE</span> • <span class="text-green-400">24ms</span>
-                        </div>
-                    </div>
-
-                    <!-- Node 4: Africa (AF-SOUTH) -->
-                    <div class="absolute top-[70%] left-[55%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 group/node cursor-pointer">
-                        <div class="relative w-20 h-20 flex items-center justify-center">
-                            <div class="absolute inset-0 bg-yellow-500/20 rounded-full animate-ping" style="animation-delay: 1.2s"></div>
-                            <div class="w-14 h-14 bg-zinc-900 border border-yellow-500/50 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_20px_rgba(234,179,8,0.6)] group-hover/node:scale-110 transition-transform duration-300">
-                                <i data-lucide="map-pin" class="w-8 h-8 text-yellow-400 fill-yellow-400/20"></i>
-                            </div>
-                        </div>
-                        <div class="bg-zinc-900/90 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-300 backdrop-blur-md opacity-80 group-hover/node:opacity-100 transition-all translate-y-1 group-hover/node:translate-y-0 shadow-xl">
-                            <span class="text-yellow-400 font-bold">AFRICA</span> • <span class="text-green-400">92ms</span>
-                        </div>
-                    </div>
-
-                    <!-- Node 5: Asia (ASIA-PACIFIC) -->
-                    <div class="absolute top-[45%] left-[80%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 group/node cursor-pointer">
-                        <div class="relative w-20 h-20 flex items-center justify-center">
-                            <div class="absolute inset-0 bg-emerald-500/20 rounded-full animate-ping" style="animation-delay: 0.8s"></div>
-                            <div class="w-14 h-14 bg-zinc-900 border border-emerald-500/50 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_20px_rgba(16,185,129,0.6)] group-hover/node:scale-110 transition-transform duration-300">
-                                <i data-lucide="map-pin" class="w-8 h-8 text-emerald-400 fill-emerald-400/20"></i>
-                            </div>
-                        </div>
-                        <div class="bg-zinc-900/90 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-300 backdrop-blur-md opacity-80 group-hover/node:opacity-100 transition-all translate-y-1 group-hover/node:translate-y-0 shadow-xl">
-                            <span class="text-emerald-400 font-bold">ASIA</span> • <span class="text-green-400">89ms</span>
-                        </div>
-                    </div>
-
-                    <!-- Node 6: Oceania (OC-SYDNEY) -->
-                    <div class="absolute top-[80%] left-[90%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 group/node cursor-pointer">
-                        <div class="relative w-20 h-20 flex items-center justify-center">
-                            <div class="absolute inset-0 bg-blue-400/20 rounded-full animate-ping" style="animation-delay: 1.5s"></div>
-                            <div class="w-14 h-14 bg-zinc-900 border border-blue-400/50 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_20px_rgba(96,165,250,0.6)] group-hover/node:scale-110 transition-transform duration-300">
-                                <i data-lucide="map-pin" class="w-8 h-8 text-blue-400 fill-blue-400/20"></i>
-                            </div>
-                        </div>
-                        <div class="bg-zinc-900/90 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-300 backdrop-blur-md opacity-80 group-hover/node:opacity-100 transition-all translate-y-1 group-hover/node:translate-y-0 shadow-xl">
-                            <span class="text-blue-400 font-bold">OCEANIA</span> • <span class="text-green-400">104ms</span>
-                        </div>
-                    </div>
-
-                    <!-- Overlay Stats Card -->
-                    <div class="absolute bottom-8 left-8 bg-zinc-900/80 backdrop-blur-md border border-white/10 rounded-xl p-4 flex items-center gap-6 animate-fade-in-up" style="animation-delay: 0.5s">
-                        <div>
-                            <div class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-1">Active Nodes</div>
-                            <div class="text-2xl font-display font-bold text-white">4,291</div>
-                        </div>
-                        <div class="h-8 w-[1px] bg-white/10"></div>
-                        <div>
-                            <div class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-1">Global Latency</div>
-                            <div class="text-2xl font-display font-bold text-green-400">~38ms<span class="text-sm text-zinc-500 ml-1 font-normal">avg</span></div>
-                        </div>
-                    </div>
-
                 </div>
+
+                <!-- 3. Active Deployments Card (Right/Bottom) -->
+                <div class="lg:col-span-1 space-y-8 flex flex-col justify-center">
+
+                     <!-- Card 3: Active Deployments -->
+                    <div class="bg-surface border border-border p-6 reveal-element delay-100">
+                        <div class="text-xs text-textMuted uppercase font-bold tracking-widest mb-2 flex items-center gap-2">
+                            <i data-lucide="rocket" class="w-4 h-4 text-orange-500"></i>
+                            ACTIVE DEPLOYMENTS
+                        </div>
+                        <div class="text-5xl font-display font-bold text-textMain mb-1">98k<span class="text-3xl text-textMuted font-sans ml-2">+</span></div>
+                        <p class="text-sm text-textMuted">Code deployed, running, and synchronized across all edge locations.</p>
+                    </div>
+
+                    <!-- Card 4: Region Status -->
+                    <div class="bg-surface border border-border p-6 reveal-element delay-200">
+                        <div class="text-xs text-textMuted uppercase font-bold tracking-widest mb-2 flex items-center gap-2">
+                             <i data-lucide="map" class="w-4 h-4 text-blue-500"></i>
+                            REGIONAL STATUS
+                        </div>
+                        <ul class="space-y-1 font-mono text-xs">
+                            <li class="flex justify-between text-textMuted">N. America <span class="text-green-400">Online (12ms)</span></li>
+                            <li class="flex justify-between text-textMuted">Europe <span class="text-green-400">Online (24ms)</span></li>
+                            <li class="flex justify-between text-textMuted">Asia-Pac <span class="text-green-400">Online (89ms)</span></li>
+                        </ul>
+                    </div>
+                </div>
+
             </div>
 
         </div>
