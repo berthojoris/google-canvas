@@ -1203,100 +1203,209 @@
             prdObserver.observe(prdContainer);
         })();
 
-        // Meteor/Shooting Star Animation (Trae.ai Style)
+        // Network Graph Animation (Nodes, Edges, Data Packets)
         (function() {
-            // ... existing meteor code ...
-            const canvas = document.getElementById('meteor-canvas');
+            const canvas = document.getElementById('meteor-canvas'); // Reusing existing canvas element
             if (!canvas) return;
 
             const ctx = canvas.getContext('2d');
             let width, height;
-            let meteors = [];
+            
+            // Configuration
+            const config = {
+                nodeCount: 60,          // Jumlah node (responsive nanti)
+                connectionDist: 180,    // Jarak maksimal untuk membuat garis
+                packetSpeed: 0.015,     // Kecepatan paket data
+                packetSpawnRate: 0.02,  // Frekuensi munculnya paket
+                colors: {
+                    sync: '59, 130, 246',   // Blue (Code Sync)
+                    docs: '16, 185, 129',   // Green (Docs/PRD)
+                    ai: '168, 85, 247'      // Purple (AI Agent)
+                }
+            };
+
+            let nodes = [];
+            let packets = [];
+
+            // Node Class
+            class Node {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * 0.3; // Gerakan lambat & smooth
+                    this.vy = (Math.random() - 0.5) * 0.3;
+                    this.size = Math.random() * 1.5 + 1;
+                    this.isAI = Math.random() < 0.15; // 15% kemungkinan jadi AI Node
+                    this.pulse = Math.random() * Math.PI; // Random start phase for pulse
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    // Bounce off edges smoothly
+                    if (this.x < 0 || this.x > width) this.vx *= -1;
+                    if (this.y < 0 || this.y > height) this.vy *= -1;
+                    
+                    // Pulse animation state
+                    if (this.isAI) {
+                        this.pulse += 0.05;
+                    }
+                }
+
+                draw() {
+                    // Draw Node Dot
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    // AI Nodes are purple, others are white/gray
+                    ctx.fillStyle = this.isAI ? `rgba(${config.colors.ai}, 0.9)` : 'rgba(255, 255, 255, 0.4)';
+                    ctx.fill();
+
+                    // Draw AI Glow Ring (Berdenyut)
+                    if (this.isAI) {
+                        const pulseSize = this.size + 4 + Math.sin(this.pulse) * 3;
+                        const pulseOpacity = 0.3 - Math.sin(this.pulse) * 0.1; // 0.2 to 0.4 opacity
+                        
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, pulseSize, 0, Math.PI * 2);
+                        ctx.strokeStyle = `rgba(${config.colors.ai}, ${pulseOpacity})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Data Packet Class
+            class Packet {
+                constructor(startNode, endNode) {
+                    this.startNode = startNode;
+                    this.endNode = endNode;
+                    this.progress = 0;
+                    this.speed = config.packetSpeed * (Math.random() * 0.5 + 0.8); // Sedikit variasi kecepatan
+                    
+                    // Determine Type based on nodes
+                    // If moving to/from AI node -> Purple (AI Work)
+                    // Else random between Blue (Sync) and Green (Docs)
+                    if (startNode.isAI || endNode.isAI) {
+                        this.type = 'ai';
+                    } else {
+                        this.type = Math.random() > 0.5 ? 'sync' : 'docs';
+                    }
+                    this.color = config.colors[this.type];
+                }
+
+                update() {
+                    this.progress += this.speed;
+                }
+
+                draw() {
+                    const currentX = this.startNode.x + (this.endNode.x - this.startNode.x) * this.progress;
+                    const currentY = this.startNode.y + (this.endNode.y - this.startNode.y) * this.progress;
+                    
+                    // Draw Trail (Motion Blur)
+                    // Menghitung posisi "ekor" sedikit di belakang posisi sekarang
+                    const tailLength = 0.15; 
+                    const tailProgress = Math.max(0, this.progress - tailLength);
+                    const tailX = this.startNode.x + (this.endNode.x - this.startNode.x) * tailProgress;
+                    const tailY = this.startNode.y + (this.endNode.y - this.startNode.y) * tailProgress;
+
+                    // Gradient Trail
+                    const gradient = ctx.createLinearGradient(currentX, currentY, tailX, tailY);
+                    gradient.addColorStop(0, `rgba(${this.color}, 1)`); // Head
+                    gradient.addColorStop(1, `rgba(${this.color}, 0)`); // Tail fade
+
+                    ctx.beginPath();
+                    ctx.moveTo(currentX, currentY);
+                    ctx.lineTo(tailX, tailY);
+                    ctx.strokeStyle = gradient;
+                    ctx.lineWidth = 2;
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
+
+                    // Glowing Head
+                    ctx.beginPath();
+                    ctx.arc(currentX, currentY, 1.5, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgb(${this.color})`;
+                    ctx.shadowColor = `rgb(${this.color})`;
+                    ctx.shadowBlur = 5;
+                    ctx.fill();
+                    ctx.shadowBlur = 0; // Reset
+                }
+            }
 
             function resize() {
                 width = canvas.width = canvas.offsetWidth;
                 height = canvas.height = canvas.offsetHeight;
+                initNodes();
             }
 
-            function createMeteor() {
-                const x = Math.random() * width;
-                const y = Math.random() * height;
-                // Move diagonally downwards
-                const angle = Math.PI / 4; 
-                // Increased length for visibility
-                const length = Math.random() * 150 + 50; 
-                // Slightly faster speed
-                const speed = Math.random() * 4 + 2; 
+            function initNodes() {
+                nodes = [];
+                // Adjust node count based on screen width
+                const density = width < 768 ? 30 : 70;
                 
-                meteors.push({
-                    x: Math.random() * width, // Random start X
-                    y: Math.random() * -200,  // Start higher above screen
-                    length,
-                    speed,
-                    angle,
-                    opacity: 1
-                });
+                for (let i = 0; i < density; i++) {
+                    nodes.push(new Node());
+                }
             }
 
             function animate() {
                 ctx.clearRect(0, 0, width, height);
                 
-                // Increased spawn rate (0.05 -> 0.1) for more stars
-                if (Math.random() < 0.1) { 
-                    createMeteor();
+                // Update & Draw Nodes
+                nodes.forEach(node => {
+                    node.update();
+                    node.draw();
+                });
+
+                // Connections & Packet Spawning
+                for (let i = 0; i < nodes.length; i++) {
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        const nodeA = nodes[i];
+                        const nodeB = nodes[j];
+                        
+                        const dx = nodeA.x - nodeB.x;
+                        const dy = nodeA.y - nodeB.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < config.connectionDist) {
+                            // Draw Line (Edge)
+                            // Opacity based on distance (closer = clearer)
+                            const opacity = 1 - (dist / config.connectionDist);
+                            ctx.beginPath();
+                            ctx.moveTo(nodeA.x, nodeA.y);
+                            ctx.lineTo(nodeB.x, nodeB.y);
+                            ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.08})`; // Very subtle line
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+
+                            // Randomly spawn packet on this connection
+                            // Spawn chance increases slightly if connection is stronger (closer)
+                            if (Math.random() < config.packetSpawnRate * opacity) {
+                                packets.push(new Packet(nodeA, nodeB));
+                            }
+                        }
+                    }
                 }
 
-                // Get theme color
-                const isDark = document.documentElement.classList.contains('dark');
-                // Use brighter white/primary for better visibility
-                const meteorColor = isDark ? '255, 255, 255' : '99, 102, 241'; 
-
-                meteors.forEach((m, index) => {
-                    m.x += m.speed * Math.cos(m.angle);
-                    m.y += m.speed * Math.sin(m.angle);
-                    // Slower fade out for longer trails
-                    m.opacity -= 0.008; 
-
-                    if (m.opacity <= 0) {
-                        meteors.splice(index, 1);
-                    } else {
-                        // Draw Meteor Tail (Gradient Line)
-                        const gradient = ctx.createLinearGradient(
-                            m.x, m.y, 
-                            m.x - m.length * Math.cos(m.angle), 
-                            m.y - m.length * Math.sin(m.angle)
-                        );
-                        // More solid start of the tail
-                        gradient.addColorStop(0, `rgba(${meteorColor}, ${m.opacity})`);
-                        gradient.addColorStop(0.5, `rgba(${meteorColor}, ${m.opacity * 0.5})`);
-                        gradient.addColorStop(1, `rgba(${meteorColor}, 0)`);
-
-                        ctx.beginPath();
-                        ctx.moveTo(m.x, m.y);
-                        ctx.lineTo(m.x - m.length * Math.cos(m.angle), m.y - m.length * Math.sin(m.angle));
-                        ctx.strokeStyle = gradient;
-                        // Increased thickness
-                        ctx.lineWidth = 2.5; 
-                        ctx.lineCap = "round";
-                        ctx.stroke();
-                        
-                        // Glowing Head (Larger)
-                        ctx.beginPath();
-                        ctx.arc(m.x, m.y, 2, 0, Math.PI * 2);
-                        ctx.fillStyle = `rgba(${meteorColor}, ${m.opacity})`;
-                        ctx.shadowBlur = 10;
-                        ctx.shadowColor = `rgba(${meteorColor}, 1)`;
-                        ctx.fill();
-                        ctx.shadowBlur = 0; // Reset shadow for performance
+                // Update & Draw Packets
+                for (let i = packets.length - 1; i >= 0; i--) {
+                    const p = packets[i];
+                    p.update();
+                    p.draw();
+                    
+                    // Remove if reached destination
+                    if (p.progress >= 1) {
+                        packets.splice(i, 1);
                     }
-                });
+                }
 
                 requestAnimationFrame(animate);
             }
 
             window.addEventListener('resize', resize);
-            resize();
-            animate();
+            resize(); // Init
+            animate(); // Start Loop
         })();
 
         // Live Exchange Visualization (Terminals)
