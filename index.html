@@ -988,14 +988,31 @@
 
             async function run() {
                 while(true) {
+                    // RESET
                     t1.innerHTML = ''; t2.innerHTML = '';
                     s1.textContent = 'IDLE'; s2.textContent = 'WAITING';
+                    s1.className = 'text-primary/80'; s2.className = 'text-emerald-500/80';
                     
-                    await wait(500);
-                    await log(t1, '$ hyperion sync', 'text-white font-bold');
-                    s1.textContent = 'SENDING';
-                    await wait(500);
-                    await log(t1, '↳ Uploading...', 'text-blue-400');
+                    // --- PHASE 1: Terminal 1 Preparation ---
+                    await wait(800);
+                    await log(t1, '$ hyperion sync --global', 'text-white font-bold');
+                    s1.textContent = 'ANALYZING';
+                    
+                    await wait(400);
+                    await log(t1, '→ Resolving edge topology...', 'text-blue-400');
+                    await wait(200);
+                    await log(t1, '→ Diffing 1,240 files...', 'text-zinc-400');
+                    await wait(300);
+                    await log(t1, '→ Optimizing assets (45ms)', 'text-zinc-400');
+                    await wait(300);
+                    await log(t1, '→ Encrypting payload [AES-GCM]...', 'text-yellow-400');
+                    await wait(400);
+                    await log(t1, '→ Handshake established: NODE-02', 'text-green-400');
+                    
+                    // --- PHASE 2: Data Transfer ---
+                    s1.textContent = 'UPLOADING';
+                    s1.className = 'text-blue-400 animate-pulse';
+                    await log(t1, '→ ⬆️ Streaming 14.2MB data...', 'text-white');
                     
                     // Animate packet
                     if(window.innerWidth >= 768) {
@@ -1007,12 +1024,44 @@
                         void dpm.offsetWidth;
                         dpm.style.transition = 'top 1.5s ease'; dpm.style.top = '100%';
                     }
-                    await wait(1500);
+                    
+                    // While packet is moving...
+                    await wait(500);
+                    s2.textContent = 'INCOMING';
+                    s2.className = 'text-yellow-400 animate-pulse';
+                    
+                    await wait(1000); // Wait for packet arrival
                     dp.style.opacity = '0'; dpm.style.opacity = '0';
+                    s1.textContent = 'SENT';
+                    s1.className = 'text-zinc-500';
 
-                    s2.textContent = 'RECEIVING';
-                    await log(t2, 'Data received', 'text-green-400');
-                    await wait(2000);
+                    // --- PHASE 3: Terminal 2 Processing ---
+                    await log(t2, '$ hyperion listen --stream', 'text-white font-bold');
+                    await wait(300);
+                    await log(t2, '← Incoming stream detected', 'text-blue-400');
+                    s2.textContent = 'PROCESSING';
+                    
+                    await wait(300);
+                    await log(t2, '← Verifying checksums... OK', 'text-green-400');
+                    await wait(200);
+                    await log(t2, '← Decompressing (brotli)...', 'text-zinc-400');
+                    await wait(400);
+                    await log(t2, '← Hot-patching runtime env...', 'text-purple-400');
+                    await wait(300);
+                    await log(t2, '← ♻️ Restarting worker threads...', 'text-orange-400');
+                    await wait(500);
+                    
+                    // Final Success
+                    s2.textContent = 'ACTIVE';
+                    s2.className = 'text-green-400';
+                    await log(t2, '✅ Synchronization complete (89ms)', 'text-green-400 font-bold');
+                    
+                    // Sender confirmation
+                    await wait(200);
+                    await log(t1, '✅ ACK received. Sync finished.', 'text-green-400');
+                    s1.textContent = 'IDLE';
+
+                    await wait(4000); // Pause before restarting loop
                 }
             }
             const obs = new IntersectionObserver((e) => { if(e[0].isIntersecting) { run(); obs.disconnect(); } });
