@@ -86,7 +86,6 @@
                     <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Analytics</h3>
                 </div>
                 <div class="space-y-0.5">
-                    <!-- Updated Overview Link with ID and OnClick -->
                     <a href="#" id="btn-overview" onclick="switchPage('overview')" class="nav-item group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
                         <div class="flex items-center gap-3">
                             <i data-lucide="layout-dashboard" class="w-[18px] h-[18px] text-slate-400 group-hover:text-slate-600"></i>
@@ -110,7 +109,7 @@
                         <div class="w-1.5 h-1.5 rounded-full bg-orange-500 shadow-sm indicator"></div>
                     </a>
                     
-                    <a href="#" class="nav-item group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
+                    <a href="#" id="btn-ads" onclick="switchPage('ads')" class="nav-item group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
                         <div class="flex items-center gap-3">
                             <i data-lucide="pie-chart" class="w-[18px] h-[18px] text-slate-400 group-hover:text-slate-600"></i>
                             <span>Ads Report</span>
@@ -135,8 +134,10 @@
                     </a>
                     <!-- Submenu -->
                     <div class="pl-9 space-y-1 mt-1 mb-2 border-l border-slate-100 ml-3">
-                        <div class="text-[11px] text-slate-500 hover:text-orange-600 cursor-pointer py-1 pl-3 border-l-2 border-transparent hover:border-orange-200 transition-all">Funnel Cohort Analysis</div>
-                        <div class="text-[11px] text-slate-500 hover:text-orange-600 cursor-pointer py-1 pl-3 border-l-2 border-transparent hover:border-orange-200 transition-all">Paid User Lifecycle</div>
+                        <a href="#" id="btn-cohort" onclick="switchPage('cohort')" class="submenu-item block text-[11px] text-slate-500 hover:text-orange-600 cursor-pointer py-1 pl-3 border-l-2 border-transparent hover:border-orange-200 transition-all">Funnel Cohort Analysis</a>
+                        
+                        <!-- Updated Lifecycle Link -->
+                        <a href="#" id="btn-lifecycle" onclick="switchPage('lifecycle')" class="submenu-item block text-[11px] text-slate-500 hover:text-orange-600 cursor-pointer py-1 pl-3 border-l-2 border-transparent hover:border-orange-200 transition-all">Paid User Lifecycle</a>
                     </div>
                 </div>
             </div>
@@ -179,7 +180,7 @@
     <main class="pl-64 w-full min-h-screen">
         <div class="p-8 max-w-[1400px] mx-auto">
             
-            <!-- VIEW 0: OVERVIEW (NEW) -->
+            <!-- VIEW 0: OVERVIEW -->
             <div id="page-overview" class="fade-in hidden">
                 <!-- Header -->
                 <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
@@ -590,7 +591,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 2: MARKETING CHANNELS (NEW) -->
+            <!-- VIEW 2: MARKETING CHANNELS -->
             <div id="page-marketing" class="fade-in hidden">
                 <!-- Header -->
                 <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
@@ -774,6 +775,568 @@
                 </div>
             </div>
 
+            <!-- VIEW 3: ADS REPORT -->
+            <div id="page-ads" class="fade-in hidden">
+                <!-- Header -->
+                <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 tracking-tight">Ads Performance Report</h2>
+                        <p class="text-sm text-slate-500 mt-1">Campaign ROI analysis across all paid channels</p>
+                    </div>
+                    <div class="flex gap-2">
+                         <button class="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors shadow-sm">
+                            <i data-lucide="filter" class="w-4 h-4 text-slate-400"></i>
+                            <span>Filter</span>
+                        </button>
+                        <button class="flex items-center gap-2 px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm shadow-indigo-200">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Export CSV</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI Banner -->
+                <div class="bg-indigo-900 rounded-xl p-6 text-white shadow-lg mb-8 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-64 h-full bg-gradient-to-l from-indigo-800 to-transparent opacity-50"></div>
+                    <div class="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div>
+                            <div class="text-indigo-200 text-xs font-semibold uppercase tracking-wider mb-1">Total Ad Spend</div>
+                            <div class="text-2xl font-bold">$12,450</div>
+                            <div class="text-[11px] text-indigo-300 mt-1 flex items-center gap-1">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i> +14% vs last mo
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-indigo-200 text-xs font-semibold uppercase tracking-wider mb-1">Impressions</div>
+                            <div class="text-2xl font-bold">850.2K</div>
+                            <div class="text-[11px] text-indigo-300 mt-1 flex items-center gap-1">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i> +8.2% vs last mo
+                            </div>
+                        </div>
+                         <div>
+                            <div class="text-indigo-200 text-xs font-semibold uppercase tracking-wider mb-1">Avg. CPC</div>
+                            <div class="text-2xl font-bold">$1.42</div>
+                            <div class="text-[11px] text-indigo-300 mt-1 flex items-center gap-1">
+                                <i data-lucide="trending-down" class="w-3 h-3"></i> -2% (Better)
+                            </div>
+                        </div>
+                         <div>
+                            <div class="text-indigo-200 text-xs font-semibold uppercase tracking-wider mb-1">ROAS</div>
+                            <div class="text-2xl font-bold text-emerald-400">4.2x</div>
+                            <div class="text-[11px] text-indigo-300 mt-1 flex items-center gap-1">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i> +0.4x vs last mo
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Left: Campaign Table (2/3) -->
+                    <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col">
+                        <div class="p-5 border-b border-slate-100 flex justify-between items-center">
+                            <h3 class="font-bold text-slate-800 text-sm">Active Campaigns</h3>
+                            <div class="flex gap-2">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                <span class="text-xs text-slate-500">Live</span>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-600">
+                                <thead class="bg-slate-50 text-xs uppercase text-slate-500 font-semibold">
+                                    <tr>
+                                        <th class="px-5 py-3 tracking-wide">Campaign</th>
+                                        <th class="px-5 py-3 tracking-wide">Status</th>
+                                        <th class="px-5 py-3 tracking-wide text-right">Spend</th>
+                                        <th class="px-5 py-3 tracking-wide text-right">Conv.</th>
+                                        <th class="px-5 py-3 tracking-wide text-right">CPA</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <!-- Row 1 -->
+                                    <tr class="table-row-hover transition-colors">
+                                        <td class="px-5 py-4 font-medium text-slate-900">
+                                            <div>Summer Sale - Search</div>
+                                            <div class="text-[10px] text-slate-400 font-normal">Google Ads</div>
+                                        </td>
+                                        <td class="px-5 py-4">
+                                            <span class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold">ACTIVE</span>
+                                        </td>
+                                        <td class="px-5 py-4 text-right font-medium">$4,200</td>
+                                        <td class="px-5 py-4 text-right">320</td>
+                                        <td class="px-5 py-4 text-right text-slate-500">$13.12</td>
+                                    </tr>
+                                     <!-- Row 2 -->
+                                    <tr class="table-row-hover transition-colors">
+                                        <td class="px-5 py-4 font-medium text-slate-900">
+                                            <div>Retargeting - Q1</div>
+                                            <div class="text-[10px] text-slate-400 font-normal">Facebook Ads</div>
+                                        </td>
+                                        <td class="px-5 py-4">
+                                            <span class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold">ACTIVE</span>
+                                        </td>
+                                        <td class="px-5 py-4 text-right font-medium">$2,150</td>
+                                        <td class="px-5 py-4 text-right">145</td>
+                                        <td class="px-5 py-4 text-right text-slate-500">$14.80</td>
+                                    </tr>
+                                     <!-- Row 3 -->
+                                    <tr class="table-row-hover transition-colors">
+                                        <td class="px-5 py-4 font-medium text-slate-900">
+                                            <div>Brand Awareness</div>
+                                            <div class="text-[10px] text-slate-400 font-normal">YouTube</div>
+                                        </td>
+                                        <td class="px-5 py-4">
+                                            <span class="px-2 py-1 rounded-full bg-slate-100 text-slate-500 text-[10px] font-bold">PAUSED</span>
+                                        </td>
+                                        <td class="px-5 py-4 text-right font-medium">$850</td>
+                                        <td class="px-5 py-4 text-right">12</td>
+                                        <td class="px-5 py-4 text-right text-slate-500">$70.83</td>
+                                    </tr>
+                                     <!-- Row 4 -->
+                                    <tr class="table-row-hover transition-colors">
+                                        <td class="px-5 py-4 font-medium text-slate-900">
+                                            <div>Competitor Conquesting</div>
+                                            <div class="text-[10px] text-slate-400 font-normal">Google Ads</div>
+                                        </td>
+                                        <td class="px-5 py-4">
+                                            <span class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold">ACTIVE</span>
+                                        </td>
+                                        <td class="px-5 py-4 text-right font-medium">$3,100</td>
+                                        <td class="px-5 py-4 text-right">85</td>
+                                        <td class="px-5 py-4 text-right text-slate-500">$36.47</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="p-4 border-t border-slate-50 text-center">
+                             <button class="text-xs text-indigo-600 font-medium hover:text-indigo-700">View All Campaigns</button>
+                        </div>
+                    </div>
+
+                    <!-- Right: Platform Breakdown (1/3) -->
+                    <div class="space-y-6">
+                        <!-- Platform Card 1 -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-[10px]">G</div>
+                                    <span class="font-bold text-sm text-slate-700">Google Ads</span>
+                                </div>
+                                <span class="text-xs font-bold text-slate-900">$7,300</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-1.5 mb-2">
+                                <div class="bg-blue-500 h-1.5 rounded-full" style="width: 65%"></div>
+                            </div>
+                            <div class="flex justify-between text-[10px] text-slate-500">
+                                <span>65% of Spend</span>
+                                <span class="text-emerald-600">ROAS 4.8x</span>
+                            </div>
+                        </div>
+
+                        <!-- Platform Card 2 -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-[10px]">fb</div>
+                                    <span class="font-bold text-sm text-slate-700">Facebook / IG</span>
+                                </div>
+                                <span class="text-xs font-bold text-slate-900">$3,200</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-1.5 mb-2">
+                                <div class="bg-indigo-500 h-1.5 rounded-full" style="width: 25%"></div>
+                            </div>
+                            <div class="flex justify-between text-[10px] text-slate-500">
+                                <span>25% of Spend</span>
+                                <span class="text-emerald-600">ROAS 3.1x</span>
+                            </div>
+                        </div>
+
+                        <!-- Platform Card 3 -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded bg-sky-100 flex items-center justify-center text-sky-600 font-bold text-[10px]">in</div>
+                                    <span class="font-bold text-sm text-slate-700">LinkedIn</span>
+                                </div>
+                                <span class="text-xs font-bold text-slate-900">$1,950</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-1.5 mb-2">
+                                <div class="bg-sky-500 h-1.5 rounded-full" style="width: 10%"></div>
+                            </div>
+                            <div class="flex justify-between text-[10px] text-slate-500">
+                                <span>10% of Spend</span>
+                                <span class="text-slate-400">ROAS 2.2x</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Mini Chart: ROI Trend -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="text-[11px] font-bold text-slate-400 uppercase mb-4">ROAS Trend (30 Days)</div>
+                             <div class="h-24 w-full flex items-end justify-between gap-1">
+                                <!-- Fake bars -->
+                                <div class="w-full bg-slate-100 hover:bg-emerald-400 h-[40%] rounded-sm transition-colors"></div>
+                                <div class="w-full bg-slate-100 hover:bg-emerald-400 h-[55%] rounded-sm transition-colors"></div>
+                                <div class="w-full bg-slate-100 hover:bg-emerald-400 h-[45%] rounded-sm transition-colors"></div>
+                                <div class="w-full bg-slate-100 hover:bg-emerald-400 h-[60%] rounded-sm transition-colors"></div>
+                                <div class="w-full bg-slate-100 hover:bg-emerald-400 h-[75%] rounded-sm transition-colors"></div>
+                                <div class="w-full bg-slate-100 hover:bg-emerald-400 h-[65%] rounded-sm transition-colors"></div>
+                                <div class="w-full bg-slate-100 hover:bg-emerald-400 h-[85%] rounded-sm transition-colors"></div>
+                                <div class="w-full bg-slate-100 hover:bg-emerald-400 h-[80%] rounded-sm transition-colors"></div>
+                             </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- VIEW 4: COHORT ANALYSIS -->
+            <div id="page-cohort" class="fade-in hidden">
+                <!-- Header -->
+                <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 tracking-tight">Retention Cohorts</h2>
+                        <p class="text-sm text-slate-500 mt-1">Analyze user retention over time based on acquisition date</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors shadow-sm">
+                            <i data-lucide="filter" class="w-4 h-4 text-slate-400"></i>
+                            <span>Weekly</span>
+                        </button>
+                        <button class="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors shadow-sm">
+                            <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                            <span>Last 8 Weeks</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    
+                    <!-- Main Cohort Table (3/4) -->
+                    <div class="lg:col-span-3 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="p-5 border-b border-slate-100">
+                             <h3 class="font-bold text-slate-800 text-sm">Weekly Retention Heatmap</h3>
+                        </div>
+                        <div class="overflow-x-auto p-6">
+                            <table class="w-full text-center text-xs">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left pb-4 font-semibold text-slate-500 min-w-[120px]">Cohort</th>
+                                        <th class="pb-4 font-semibold text-slate-500 min-w-[80px]">Users</th>
+                                        <th class="pb-4 font-semibold text-slate-500">Week 0</th>
+                                        <th class="pb-4 font-semibold text-slate-500">Week 1</th>
+                                        <th class="pb-4 font-semibold text-slate-500">Week 2</th>
+                                        <th class="pb-4 font-semibold text-slate-500">Week 3</th>
+                                        <th class="pb-4 font-semibold text-slate-500">Week 4</th>
+                                        <th class="pb-4 font-semibold text-slate-500">Week 5</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="space-y-2">
+                                    <!-- Row 1 -->
+                                    <tr class="h-10">
+                                        <td class="text-left font-medium text-slate-700">Dec 01 - Dec 07</td>
+                                        <td class="text-slate-500">2,450</td>
+                                        <td class="px-1"><div class="bg-indigo-600 text-white rounded py-2">100%</div></td>
+                                        <td class="px-1"><div class="bg-indigo-400 text-white rounded py-2">45%</div></td>
+                                        <td class="px-1"><div class="bg-indigo-300 text-white rounded py-2">32%</div></td>
+                                        <td class="px-1"><div class="bg-indigo-200 text-indigo-900 rounded py-2">28%</div></td>
+                                        <td class="px-1"><div class="bg-indigo-100 text-indigo-900 rounded py-2">25%</div></td>
+                                        <td class="px-1"><div class="bg-indigo-50 text-indigo-900 rounded py-2">20%</div></td>
+                                    </tr>
+                                    <!-- Row 2 -->
+                                    <tr class="h-10">
+                                        <td class="text-left font-medium text-slate-700">Dec 08 - Dec 14</td>
+                                        <td class="text-slate-500">2,680</td>
+                                        <td class="px-1"><div class="bg-indigo-600 text-white rounded py-2">100%</div></td>
+                                        <td class="px-1"><div class="bg-indigo-400 text-white rounded py-2">48%</div></td>
+                                        <td class="px-1"><div class="bg-indigo-300 text-white rounded py-2">35%</div></td>
+                                        <td class="px-1"><div class="bg-indigo-200 text-indigo-900 rounded py-2">30%</div></td>
+                                        <td class="px-1"><div class="bg-indigo-100 text-indigo-900 rounded py-2">28%</div></td>
+                                        <td class="px-1"></td>
+                                    </tr>
+                                    <!-- Row 3 -->
+                                    <tr class="h-10">
+                                        <td class="text-left font-medium text-slate-700">Dec 15 - Dec 21</td>
+                                        <td class="text-slate-500">3,100</td>
+                                        <td class="px-1"><div class="bg-indigo-600 text-white rounded py-2">100%</div></td>
+                                        <td class="px-1"><div class="bg-indigo-400 text-white rounded py-2">42%</div></td>
+                                        <td class="px-1"><div class="bg-indigo-300 text-white rounded py-2">30%</div></td>
+                                        <td class="px-1"><div class="bg-indigo-200 text-indigo-900 rounded py-2">25%</div></td>
+                                        <td class="px-1"></td>
+                                        <td class="px-1"></td>
+                                    </tr>
+                                    <!-- Row 4 -->
+                                    <tr class="h-10">
+                                        <td class="text-left font-medium text-slate-700">Dec 22 - Dec 28</td>
+                                        <td class="text-slate-500">2,900</td>
+                                        <td class="px-1"><div class="bg-indigo-600 text-white rounded py-2">100%</div></td>
+                                        <td class="px-1"><div class="bg-indigo-500 text-white rounded py-2">52%</div></td>
+                                        <td class="px-1"><div class="bg-indigo-300 text-white rounded py-2">38%</div></td>
+                                        <td class="px-1"></td>
+                                        <td class="px-1"></td>
+                                        <td class="px-1"></td>
+                                    </tr>
+                                    <!-- Row 5 -->
+                                    <tr class="h-10">
+                                        <td class="text-left font-medium text-slate-700">Dec 29 - Jan 04</td>
+                                        <td class="text-slate-500">2,200</td>
+                                        <td class="px-1"><div class="bg-indigo-600 text-white rounded py-2">100%</div></td>
+                                        <td class="px-1"><div class="bg-indigo-400 text-white rounded py-2">49%</div></td>
+                                        <td class="px-1"></td>
+                                        <td class="px-1"></td>
+                                        <td class="px-1"></td>
+                                        <td class="px-1"></td>
+                                    </tr>
+                                    <!-- Row 6 -->
+                                    <tr class="h-10">
+                                        <td class="text-left font-medium text-slate-700">Jan 05 - Jan 11</td>
+                                        <td class="text-slate-500">3,400</td>
+                                        <td class="px-1"><div class="bg-indigo-600 text-white rounded py-2">100%</div></td>
+                                        <td class="px-1"></td>
+                                        <td class="px-1"></td>
+                                        <td class="px-1"></td>
+                                        <td class="px-1"></td>
+                                        <td class="px-1"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Right: Summary & Legend (1/4) -->
+                    <div class="space-y-6">
+                        
+                        <!-- Insight Card -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-slate-800 text-sm mb-4">Cohort Insights</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="text-[10px] text-slate-400 uppercase font-semibold">Avg. Week 1 Retention</div>
+                                    <div class="text-2xl font-bold text-slate-900 mt-1">47.2%</div>
+                                    <div class="text-[10px] text-emerald-600 flex items-center gap-1 mt-1">
+                                        <i data-lucide="arrow-up" class="w-3 h-3"></i> +2.4% vs prev period
+                                    </div>
+                                </div>
+                                <div class="w-full h-px bg-slate-100"></div>
+                                <div>
+                                    <div class="text-[10px] text-slate-400 uppercase font-semibold">Best Performing Cohort</div>
+                                    <div class="text-sm font-bold text-slate-900 mt-1">Dec 22 - Dec 28</div>
+                                    <p class="text-[10px] text-slate-500 mt-1">Driven by Holiday Special campaign.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Info Card -->
+                        <div class="bg-indigo-50 p-5 rounded-xl border border-indigo-100">
+                             <div class="flex items-start gap-3">
+                                 <i data-lucide="info" class="w-4 h-4 text-indigo-500 mt-0.5"></i>
+                                 <div>
+                                     <h4 class="text-xs font-bold text-indigo-900">Interpretation Tip</h4>
+                                     <p class="text-[10px] text-indigo-700 mt-1 leading-relaxed">
+                                         A drop in Week 1 retention usually indicates an activation problem (onboarding), while a drop in later weeks suggests a product value problem.
+                                     </p>
+                                 </div>
+                             </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- VIEW 5: PAID USER LIFECYCLE (NEW) -->
+            <div id="page-lifecycle" class="fade-in hidden">
+                <!-- Header -->
+                <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 tracking-tight">Paid User Lifecycle</h2>
+                        <p class="text-sm text-slate-500 mt-1">Track financial journey from trial to loyal customer</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors shadow-sm">
+                            <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                            <span>This Year</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Financial KPIs -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <!-- KPI 1 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="dollar-sign" class="w-4 h-4 text-slate-400"></i>
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Avg. LTV</span>
+                        </div>
+                        <div class="text-2xl font-bold text-slate-900">$1,240</div>
+                        <div class="text-[10px] text-emerald-600 mt-1">+12% vs avg.</div>
+                    </div>
+                    <!-- KPI 2 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="target" class="w-4 h-4 text-slate-400"></i>
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">CAC</span>
+                        </div>
+                        <div class="text-2xl font-bold text-slate-900">$340</div>
+                        <div class="text-[10px] text-slate-400 mt-1">Stable</div>
+                    </div>
+                    <!-- KPI 3 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="repeat" class="w-4 h-4 text-slate-400"></i>
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">LTV:CAC Ratio</span>
+                        </div>
+                        <div class="text-2xl font-bold text-emerald-600">3.6x</div>
+                        <div class="text-[10px] text-slate-400 mt-1">Healthy (>3x)</div>
+                    </div>
+                     <!-- KPI 4 -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="clock" class="w-4 h-4 text-slate-400"></i>
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Payback Period</span>
+                        </div>
+                        <div class="text-2xl font-bold text-slate-900">4.2 Mo</div>
+                        <div class="text-[10px] text-emerald-600 mt-1">-0.5 Mo (Faster)</div>
+                    </div>
+                </div>
+
+                <!-- Main Flow Visualization -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-8 overflow-hidden">
+                    <h3 class="font-bold text-slate-800 text-sm mb-6">User Conversion Flow</h3>
+                    
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-4 relative">
+                        <!-- Connecting Line (Desktop) -->
+                        <div class="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-10 -translate-y-1/2"></div>
+
+                        <!-- Step 1 -->
+                        <div class="bg-white border border-slate-200 p-4 rounded-lg w-full md:w-1/4 relative shadow-sm hover:border-orange-200 transition-colors">
+                            <div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Step 1</div>
+                            <div class="font-bold text-slate-800 text-lg">Sign Up</div>
+                            <div class="text-2xl font-bold text-slate-900 mt-2">15,200</div>
+                            <div class="w-full bg-slate-100 h-1.5 rounded-full mt-3 overflow-hidden">
+                                <div class="bg-slate-400 h-full w-full"></div>
+                            </div>
+                        </div>
+
+                        <!-- Arrow -->
+                        <i data-lucide="arrow-right" class="w-6 h-6 text-slate-300 hidden md:block"></i>
+
+                        <!-- Step 2 -->
+                        <div class="bg-white border border-slate-200 p-4 rounded-lg w-full md:w-1/4 relative shadow-sm hover:border-orange-200 transition-colors">
+                            <div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Step 2</div>
+                            <div class="font-bold text-slate-800 text-lg">Trial Active</div>
+                            <div class="text-2xl font-bold text-slate-900 mt-2">8,450</div>
+                            <div class="text-[10px] text-slate-500 mt-1">55% Conversion</div>
+                            <div class="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden">
+                                <div class="bg-orange-300 h-full w-[55%]"></div>
+                            </div>
+                        </div>
+
+                         <!-- Arrow -->
+                        <i data-lucide="arrow-right" class="w-6 h-6 text-slate-300 hidden md:block"></i>
+
+                        <!-- Step 3 -->
+                        <div class="bg-white border-2 border-orange-100 p-4 rounded-lg w-full md:w-1/4 relative shadow-sm bg-orange-50/50">
+                            <div class="text-[10px] text-orange-600 uppercase font-bold mb-1">Step 3</div>
+                            <div class="font-bold text-slate-800 text-lg">Paid Customer</div>
+                            <div class="text-2xl font-bold text-orange-600 mt-2">1,240</div>
+                            <div class="text-[10px] text-slate-500 mt-1">14.6% Conversion</div>
+                            <div class="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden">
+                                <div class="bg-orange-500 h-full w-[14%]"></div>
+                            </div>
+                        </div>
+
+                         <!-- Arrow -->
+                        <i data-lucide="arrow-right" class="w-6 h-6 text-slate-300 hidden md:block"></i>
+
+                        <!-- Step 4 -->
+                        <div class="bg-white border border-slate-200 p-4 rounded-lg w-full md:w-1/4 relative shadow-sm hover:border-orange-200 transition-colors">
+                            <div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Step 4</div>
+                            <div class="font-bold text-slate-800 text-lg">Renewal</div>
+                            <div class="text-2xl font-bold text-slate-900 mt-2">980</div>
+                            <div class="text-[10px] text-slate-500 mt-1">79% Retention</div>
+                            <div class="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden">
+                                <div class="bg-emerald-500 h-full w-[79%]"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Split -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Recent Conversions Table -->
+                    <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                         <div class="p-5 border-b border-slate-100">
+                             <h3 class="font-bold text-slate-800 text-sm">Recent Paid Conversions</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-600">
+                                <thead class="bg-slate-50 text-xs uppercase text-slate-500 font-semibold">
+                                    <tr>
+                                        <th class="px-5 py-3">User</th>
+                                        <th class="px-5 py-3">Plan</th>
+                                        <th class="px-5 py-3">Date</th>
+                                        <th class="px-5 py-3 text-right">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr class="table-row-hover">
+                                        <td class="px-5 py-3 font-medium text-slate-900">acme_inc@company.com</td>
+                                        <td class="px-5 py-3"><span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-[10px] font-bold">PRO</span></td>
+                                        <td class="px-5 py-3 text-slate-500 text-xs">Today, 10:23 AM</td>
+                                        <td class="px-5 py-3 text-right font-medium">$499.00</td>
+                                    </tr>
+                                    <tr class="table-row-hover">
+                                        <td class="px-5 py-3 font-medium text-slate-900">sarah.j@startup.io</td>
+                                        <td class="px-5 py-3"><span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] font-bold">STARTER</span></td>
+                                        <td class="px-5 py-3 text-slate-500 text-xs">Yesterday</td>
+                                        <td class="px-5 py-3 text-right font-medium">$99.00</td>
+                                    </tr>
+                                     <tr class="table-row-hover">
+                                        <td class="px-5 py-3 font-medium text-slate-900">dev_team@bigcorp.net</td>
+                                        <td class="px-5 py-3"><span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[10px] font-bold">ENTERPRISE</span></td>
+                                        <td class="px-5 py-3 text-slate-500 text-xs">Yesterday</td>
+                                        <td class="px-5 py-3 text-right font-medium">$2,400.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Churn Analysis -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                        <h3 class="font-bold text-slate-800 text-sm mb-4">Churn Reasons</h3>
+                        <div class="flex items-center gap-4">
+                            <!-- Simple CSS Donut Chart -->
+                            <div class="w-24 h-24 rounded-full border-[12px] border-slate-100 relative shrink-0" 
+                                 style="background: conic-gradient(#f43f5e 0% 35%, #fb923c 35% 60%, #cbd5e1 60% 100%); border-width: 0;">
+                                 <div class="absolute inset-4 bg-white rounded-full flex items-center justify-center">
+                                     <span class="text-xs font-bold text-slate-600">Total</span>
+                                 </div>
+                            </div>
+                            <div class="space-y-2 w-full">
+                                <div class="flex justify-between text-xs">
+                                    <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-rose-500"></div> Price too high</div>
+                                    <span class="font-bold">35%</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-orange-400"></div> Missing features</div>
+                                    <span class="font-bold">25%</span>
+                                </div>
+                                 <div class="flex justify-between text-xs">
+                                    <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-slate-300"></div> Other</div>
+                                    <span class="font-bold">40%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -786,51 +1349,65 @@
         function switchPage(pageName) {
             // -- A. Handle Sidebar Active States --
             
-            // Define navigation items
-            const navItems = {
+            // Define navigation items (Main Items)
+            const mainNavItems = {
                 'overview': document.getElementById('btn-overview'),
                 'conversion': document.getElementById('btn-conversion'),
-                'marketing': document.getElementById('btn-marketing')
+                'marketing': document.getElementById('btn-marketing'),
+                'ads': document.getElementById('btn-ads')
             };
 
-            // Reset all nav items to default style
-            Object.values(navItems).forEach(item => {
+            // Define Submenu Items (Styled differently)
+            const submenuItems = {
+                'cohort': document.getElementById('btn-cohort'),
+                'lifecycle': document.getElementById('btn-lifecycle')
+            };
+
+            // Reset Main Nav Items
+            Object.values(mainNavItems).forEach(item => {
                 if(!item) return;
-                // Remove active classes
                 item.classList.remove('bg-orange-50', 'text-orange-600', 'cursor-default', 'active');
-                // Add inactive classes
                 item.classList.add('text-slate-500', 'hover:bg-slate-50', 'hover:text-slate-900');
                 
-                // Reset Icon color
                 const icon = item.querySelector('svg');
                 if(icon) {
                     icon.classList.remove('text-orange-500');
                     icon.classList.add('text-slate-400');
                 }
 
-                // Remove dot indicator
                 const dot = item.querySelector('.indicator');
                 if(dot) dot.remove();
             });
 
-            // Set active item
-            const activeItem = navItems[pageName];
-            if (activeItem) {
-                // Add active classes
+            // Reset Submenu Items
+            Object.values(submenuItems).forEach(item => {
+                if(!item) return;
+                // Submenu active style is text color + bold, no bg
+                item.classList.remove('text-orange-600', 'font-semibold', 'border-orange-500');
+                item.classList.add('text-slate-500', 'hover:text-orange-600', 'border-transparent');
+            });
+
+            // Set Active Item
+            if (mainNavItems[pageName]) {
+                const activeItem = mainNavItems[pageName];
                 activeItem.classList.remove('text-slate-500', 'hover:bg-slate-50', 'hover:text-slate-900');
                 activeItem.classList.add('bg-orange-50', 'text-orange-600', 'cursor-default', 'active');
                 
-                // Set Icon color
                 const icon = activeItem.querySelector('svg');
                 if(icon) {
                     icon.classList.remove('text-slate-400');
                     icon.classList.add('text-orange-500');
                 }
 
-                // Add dot indicator
                 const dot = document.createElement('div');
                 dot.className = 'w-1.5 h-1.5 rounded-full bg-orange-500 shadow-sm indicator ml-auto';
                 activeItem.appendChild(dot);
+            } 
+            else if (submenuItems[pageName]) {
+                const activeItem = submenuItems[pageName];
+                // Submenu specific active style
+                activeItem.classList.remove('text-slate-500', 'hover:text-orange-600', 'border-transparent');
+                activeItem.classList.add('text-orange-600', 'font-semibold', 'border-orange-500');
             }
 
             // -- B. Handle Page Content Visibility --
@@ -839,6 +1416,11 @@
             document.getElementById('page-overview').classList.add('hidden');
             document.getElementById('page-conversion').classList.add('hidden');
             document.getElementById('page-marketing').classList.add('hidden');
+            document.getElementById('page-ads').classList.add('hidden');
+            const pageCohort = document.getElementById('page-cohort');
+            if(pageCohort) pageCohort.classList.add('hidden');
+            const pageLifecycle = document.getElementById('page-lifecycle');
+            if(pageLifecycle) pageLifecycle.classList.add('hidden');
 
             // Show target page with fade animation
             const targetPage = document.getElementById('page-' + pageName);
