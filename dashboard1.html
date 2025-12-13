@@ -82,7 +82,6 @@
 <body class="bg-slate-50 text-slate-900 antialiased selection:bg-orange-100 selection:text-orange-900 tracking-tight">
 
     <!-- Mobile Header (Visible only on Mobile) -->
-    <!-- UPDATED: Added bg-white/90 and backdrop-blur-md for transparent glass effect -->
     <div class="lg:hidden fixed top-0 left-0 w-full bg-white/90 backdrop-blur-md border-b border-slate-200 z-40 px-4 py-3 flex items-center justify-between shadow-sm">
         <div class="flex items-center gap-3">
             <button onclick="toggleSidebar()" class="p-1 text-slate-500 hover:bg-slate-50">
@@ -324,32 +323,245 @@
                     </div>
                 </div>
 
-                <!-- Row 2: Main Content Split (FLAT) -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Left: Main Chart (2/3) -->
-                    <div class="lg:col-span-2 bg-white border border-slate-200 shadow-sm p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <div><h3 class="font-bold text-slate-800 text-sm">Revenue Growth</h3><p class="text-xs text-slate-500">Year to date performance</p></div>
-                            <button class="p-2 hover:bg-slate-50 text-slate-400 hover:text-slate-600"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
+                <!-- Row 2: Advanced Charts (Line & Pie) - NEW UPDATE -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    
+                    <!-- Advanced Line Chart (Revenue Analysis) -->
+                    <div class="lg:col-span-2 bg-white border border-slate-200 shadow-sm p-6 flex flex-col">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-sm">Revenue Analytics</h3>
+                                <div class="flex items-center gap-4 mt-2">
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="w-2 h-2 bg-blue-500"></div>
+                                        <span class="text-xs text-slate-500">Income</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="w-2 h-2 bg-rose-400 border border-white shadow-sm"></div>
+                                        <span class="text-xs text-slate-500">Expenses</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Flat Filters -->
+                            <div class="flex border border-slate-200 bg-slate-50 p-0.5">
+                                <button class="px-3 py-1 text-[10px] font-medium text-slate-500 hover:text-slate-900 hover:bg-white transition-all">7D</button>
+                                <button class="px-3 py-1 text-[10px] font-medium text-white bg-slate-900 shadow-sm">30D</button>
+                                <button class="px-3 py-1 text-[10px] font-medium text-slate-500 hover:text-slate-900 hover:bg-white transition-all">3M</button>
+                                <button class="px-3 py-1 text-[10px] font-medium text-slate-500 hover:text-slate-900 hover:bg-white transition-all">1Y</button>
+                            </div>
                         </div>
-                        <div class="h-64 w-full relative">
-                             <svg viewBox="0 0 600 200" class="w-full h-full overflow-visible" preserveAspectRatio="none">
-                                <defs><linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f6" stop-opacity="0.1"/><stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/></linearGradient></defs>
-                                <path d="M0,150 C50,140 100,100 150,110 C200,120 250,80 300,70 C350,60 400,90 450,50 C500,10 550,40 600,20 V200 H0 Z" fill="url(#blueGradient)" />
-                                <path d="M0,150 C50,140 100,100 150,110 C200,120 250,80 300,70 C350,60 400,90 450,50 C500,10 550,40 600,20" fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" />
-                                <circle cx="300" cy="70" r="4" fill="white" stroke="#3b82f6" stroke-width="2" /><circle cx="450" cy="50" r="4" fill="white" stroke="#3b82f6" stroke-width="2" />
+                        
+                        <!-- SVG Chart Container -->
+                        <div class="h-64 w-full relative group">
+                             <!-- Grid Lines -->
+                             <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
+                                <div class="w-full h-px bg-slate-100"></div>
+                                <div class="w-full h-px bg-slate-100"></div>
+                                <div class="w-full h-px bg-slate-100"></div>
+                                <div class="w-full h-px bg-slate-100"></div>
+                                <div class="w-full h-px bg-slate-100"></div>
+                             </div>
+                             
+                             <!-- SVG Chart -->
+                             <svg viewBox="0 0 800 300" class="w-full h-full overflow-visible" preserveAspectRatio="none">
+                                <defs>
+                                    <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.15"/>
+                                        <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+                                    </linearGradient>
+                                </defs>
+                                
+                                <!-- Revenue Area -->
+                                <path d="M0,220 C100,180 200,240 300,120 400,150 500,60 600,80 700,30 800,50 V300 H0 Z" fill="url(#revenueGradient)" />
+                                <!-- Revenue Line -->
+                                <path d="M0,220 C100,180 200,240 300,120 400,150 500,60 600,80 700,30 800,50" fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                                
+                                <!-- Expenses Line (Dashed) -->
+                                <path d="M0,260 C120,250 220,270 320,200 420,210 520,180 620,190 720,160 800,170" fill="none" stroke="#fb7185" stroke-width="2" stroke-dasharray="6 4" stroke-linecap="round" />
+                                
+                                <!-- Hover Interaction Point (Simulated) -->
+                                <g class="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    <line x1="500" y1="0" x2="500" y2="300" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4 2" />
+                                    <circle cx="500" cy="60" r="5" fill="white" stroke="#3b82f6" stroke-width="2" />
+                                    <circle cx="500" cy="186" r="4" fill="white" stroke="#fb7185" stroke-width="2" />
+                                </g>
                              </svg>
-                             <div class="flex justify-between text-[10px] text-slate-400 mt-2 px-2"><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span></div>
+                             
+                             <!-- Tooltip Overlay -->
+                             <div class="absolute top-10 left-[62%] bg-slate-900 text-white p-3 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 w-40">
+                                <div class="text-[10px] text-slate-400 mb-1">Oct 24, 2024</div>
+                                <div class="flex justify-between items-center text-xs mb-1">
+                                    <span>Income</span>
+                                    <span class="font-bold text-blue-300">$8,450</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <span>Exp.</span>
+                                    <span class="font-bold text-rose-300">$3,200</span>
+                                </div>
+                             </div>
+
+                             <!-- X-Axis Labels -->
+                             <div class="flex justify-between text-[10px] text-slate-400 mt-2 px-2">
+                                 <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                             </div>
                         </div>
                     </div>
-                    <!-- Right: Recent Activity (1/3) -->
+
+                    <!-- Advanced Donut Chart (Demographics) -->
+                    <div class="bg-white border border-slate-200 shadow-sm p-6 flex flex-col">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-sm">Device Usage</h3>
+                                <p class="text-[10px] text-slate-500">By active sessions</p>
+                            </div>
+                            <button class="text-slate-400 hover:text-slate-600"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
+                        </div>
+                        
+                        <div class="flex-1 flex flex-col items-center justify-center relative">
+                            <!-- Donut SVG -->
+                            <div class="w-48 h-48 relative">
+                                <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                                    <!-- Background Circle -->
+                                    <circle cx="50" cy="50" r="40" fill="none" stroke="#f1f5f9" stroke-width="12" />
+                                    <!-- Mobile Segment (Blue) 55% -->
+                                    <circle cx="50" cy="50" r="40" fill="none" stroke="#3b82f6" stroke-width="12" stroke-dasharray="138 251" stroke-linecap="round" />
+                                    <!-- Desktop Segment (Cyan) 30% -->
+                                    <circle cx="50" cy="50" r="40" fill="none" stroke="#06b6d4" stroke-width="12" stroke-dasharray="75 251" stroke-dashoffset="-145" stroke-linecap="round" />
+                                    <!-- Tablet Segment (Orange) 15% -->
+                                    <circle cx="50" cy="50" r="40" fill="none" stroke="#f97316" stroke-width="12" stroke-dasharray="30 251" stroke-dashoffset="-225" stroke-linecap="round" />
+                                </svg>
+                                <!-- Center Text -->
+                                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span class="text-2xl font-bold text-slate-800">24k</span>
+                                    <span class="text-[10px] text-slate-400 uppercase tracking-wide">Sessions</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Legend -->
+                        <div class="mt-6 space-y-3">
+                            <div class="flex items-center justify-between text-xs">
+                                <div class="flex items-center gap-2"><div class="w-2 h-2 bg-blue-500"></div> <span class="text-slate-600">Mobile</span></div>
+                                <span class="font-bold text-slate-900">55%</span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <div class="flex items-center gap-2"><div class="w-2 h-2 bg-cyan-500"></div> <span class="text-slate-600">Desktop</span></div>
+                                <span class="font-bold text-slate-900">30%</span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <div class="flex items-center gap-2"><div class="w-2 h-2 bg-orange-500"></div> <span class="text-slate-600">Tablet</span></div>
+                                <span class="font-bold text-slate-900">15%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Advanced Bar Chart & Activity - NEW UPDATE -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Advanced Stacked Bar Chart -->
+                    <div class="lg:col-span-2 bg-white border border-slate-200 shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-sm">Traffic Source Trends</h3>
+                                <p class="text-[10px] text-slate-500">Direct vs Organic over last 7 days</p>
+                            </div>
+                            <!-- Simple Dropdown Trigger -->
+                            <button class="flex items-center gap-2 text-xs border border-slate-200 px-3 py-1.5 hover:bg-slate-50">
+                                <span>All Channels</span>
+                                <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+                            </button>
+                        </div>
+
+                        <div class="h-60 w-full flex items-end justify-between gap-4 sm:gap-8 px-2">
+                            <!-- Bar Item -->
+                            <div class="flex flex-col items-center gap-2 w-full group relative cursor-pointer">
+                                <div class="w-full max-w-[24px] bg-slate-100 h-48 relative flex flex-col justify-end overflow-hidden">
+                                    <!-- Organic -->
+                                    <div class="w-full bg-emerald-400 h-[40%] group-hover:bg-emerald-500 transition-colors"></div>
+                                    <!-- Direct -->
+                                    <div class="w-full bg-indigo-500 h-[30%] group-hover:bg-indigo-600 transition-colors border-t border-white/20"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-400">Mon</span>
+                                <!-- Tooltip -->
+                                <div class="absolute bottom-full mb-2 bg-slate-800 text-white text-[10px] p-2 w-24 text-center opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
+                                    Direct: 300<br>Organic: 400
+                                </div>
+                            </div>
+
+                            <!-- Bar Item -->
+                            <div class="flex flex-col items-center gap-2 w-full group relative cursor-pointer">
+                                <div class="w-full max-w-[24px] bg-slate-100 h-48 relative flex flex-col justify-end overflow-hidden">
+                                    <div class="w-full bg-emerald-400 h-[50%] group-hover:bg-emerald-500 transition-colors"></div>
+                                    <div class="w-full bg-indigo-500 h-[25%] group-hover:bg-indigo-600 transition-colors border-t border-white/20"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-400">Tue</span>
+                            </div>
+
+                            <!-- Bar Item (High) -->
+                            <div class="flex flex-col items-center gap-2 w-full group relative cursor-pointer">
+                                <div class="w-full max-w-[24px] bg-slate-100 h-48 relative flex flex-col justify-end overflow-hidden">
+                                    <div class="w-full bg-emerald-400 h-[60%] group-hover:bg-emerald-500 transition-colors"></div>
+                                    <div class="w-full bg-indigo-500 h-[35%] group-hover:bg-indigo-600 transition-colors border-t border-white/20"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-400 font-bold text-slate-600">Wed</span>
+                            </div>
+
+                            <!-- Bar Item -->
+                            <div class="flex flex-col items-center gap-2 w-full group relative cursor-pointer">
+                                <div class="w-full max-w-[24px] bg-slate-100 h-48 relative flex flex-col justify-end overflow-hidden">
+                                    <div class="w-full bg-emerald-400 h-[45%] group-hover:bg-emerald-500 transition-colors"></div>
+                                    <div class="w-full bg-indigo-500 h-[20%] group-hover:bg-indigo-600 transition-colors border-t border-white/20"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-400">Thu</span>
+                            </div>
+
+                            <!-- Bar Item -->
+                            <div class="flex flex-col items-center gap-2 w-full group relative cursor-pointer">
+                                <div class="w-full max-w-[24px] bg-slate-100 h-48 relative flex flex-col justify-end overflow-hidden">
+                                    <div class="w-full bg-emerald-400 h-[55%] group-hover:bg-emerald-500 transition-colors"></div>
+                                    <div class="w-full bg-indigo-500 h-[40%] group-hover:bg-indigo-600 transition-colors border-t border-white/20"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-400">Fri</span>
+                            </div>
+
+                            <!-- Bar Item -->
+                            <div class="flex flex-col items-center gap-2 w-full group relative cursor-pointer">
+                                <div class="w-full max-w-[24px] bg-slate-100 h-48 relative flex flex-col justify-end overflow-hidden">
+                                    <div class="w-full bg-emerald-400 h-[30%] group-hover:bg-emerald-500 transition-colors"></div>
+                                    <div class="w-full bg-indigo-500 h-[15%] group-hover:bg-indigo-600 transition-colors border-t border-white/20"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-400">Sat</span>
+                            </div>
+
+                            <!-- Bar Item -->
+                            <div class="flex flex-col items-center gap-2 w-full group relative cursor-pointer">
+                                <div class="w-full max-w-[24px] bg-slate-100 h-48 relative flex flex-col justify-end overflow-hidden">
+                                    <div class="w-full bg-emerald-400 h-[35%] group-hover:bg-emerald-500 transition-colors"></div>
+                                    <div class="w-full bg-indigo-500 h-[10%] group-hover:bg-indigo-600 transition-colors border-t border-white/20"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-400">Sun</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity (Preserved) -->
                     <div class="bg-white border border-slate-200 shadow-sm p-6">
                         <h3 class="font-bold text-slate-800 text-sm mb-4">Recent Activity</h3>
                         <div class="space-y-6 relative">
                             <div class="absolute left-2.5 top-2 bottom-2 w-px bg-slate-100"></div>
-                            <div class="flex gap-4 relative"><div class="w-5 h-5 bg-blue-100 border-2 border-white flex items-center justify-center z-10"><div class="w-2 h-2 bg-blue-500"></div></div><div><p class="text-xs text-slate-800 font-medium">New enterprise plan purchased</p><p class="text-[10px] text-slate-400 mt-0.5">Acme Corp upgraded to Pro</p><p class="text-[10px] text-slate-300 mt-1">2 mins ago</p></div></div>
-                            <div class="flex gap-4 relative"><div class="w-5 h-5 bg-orange-100 border-2 border-white flex items-center justify-center z-10"><div class="w-2 h-2 bg-orange-500"></div></div><div><p class="text-xs text-slate-800 font-medium">Server load warning</p><p class="text-[10px] text-slate-400 mt-0.5">CPU usage > 80% on us-east-1</p><p class="text-[10px] text-slate-300 mt-1">1 hour ago</p></div></div>
-                            <div class="flex gap-4 relative"><div class="w-5 h-5 bg-emerald-100 border-2 border-white flex items-center justify-center z-10"><div class="w-2 h-2 bg-emerald-500"></div></div><div><p class="text-xs text-slate-800 font-medium">New feature deployed</p><p class="text-[10px] text-slate-400 mt-0.5">v2.4.0 is live</p><p class="text-[10px] text-slate-300 mt-1">3 hours ago</p></div></div>
+                            <div class="flex gap-4 relative">
+                                <div class="w-5 h-5 bg-blue-100 border-2 border-white flex items-center justify-center z-10"><div class="w-2 h-2 bg-blue-500"></div></div>
+                                <div><p class="text-xs text-slate-800 font-medium">New enterprise plan</p><p class="text-[10px] text-slate-400 mt-0.5">Acme Corp upgraded</p><p class="text-[10px] text-slate-300 mt-1">2 mins ago</p></div>
+                            </div>
+                            <div class="flex gap-4 relative">
+                                <div class="w-5 h-5 bg-orange-100 border-2 border-white flex items-center justify-center z-10"><div class="w-2 h-2 bg-orange-500"></div></div>
+                                <div><p class="text-xs text-slate-800 font-medium">Server load warning</p><p class="text-[10px] text-slate-400 mt-0.5">CPU > 80% us-east</p><p class="text-[10px] text-slate-300 mt-1">1 hour ago</p></div>
+                            </div>
+                            <div class="flex gap-4 relative">
+                                <div class="w-5 h-5 bg-emerald-100 border-2 border-white flex items-center justify-center z-10"><div class="w-2 h-2 bg-emerald-500"></div></div>
+                                <div><p class="text-xs text-slate-800 font-medium">Feature deployed</p><p class="text-[10px] text-slate-400 mt-0.5">v2.4.0 live</p><p class="text-[10px] text-slate-300 mt-1">3 hours ago</p></div>
+                            </div>
                         </div>
                         <button class="w-full mt-6 py-2 border border-slate-100 text-xs text-slate-500 hover:bg-slate-50 transition-colors">View All Activity</button>
                     </div>
@@ -888,6 +1100,217 @@
                 </div>
             </div>
 
+            <!-- VIEW 8: FORM ELEMENTS (NEW) -->
+            <div id="page-form" class="fade-in hidden">
+                <!-- Header -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-bold text-slate-900 tracking-tight">Form Components</h2>
+                    <p class="text-sm text-slate-500 mt-1">Comprehensive collection of flat-style input controls and UI elements.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    
+                    <!-- LEFT COLUMN: INPUTS & TEXT AREAS -->
+                    <div class="space-y-8">
+                        
+                        <!-- Text Inputs -->
+                        <div class="bg-white border border-slate-200 shadow-sm p-6">
+                            <h3 class="font-bold text-slate-800 text-sm mb-6 pb-2 border-b border-slate-100">Input Fields</h3>
+                            <div class="space-y-5">
+                                <!-- Basic -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Basic Input</label>
+                                    <input type="text" placeholder="Type something..." class="w-full px-3 py-2 border border-slate-200 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors placeholder-slate-400">
+                                </div>
+                                <!-- With Icon -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">With Icon</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
+                                        </div>
+                                        <input type="text" placeholder="Search..." class="w-full pl-10 px-3 py-2 border border-slate-200 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors placeholder-slate-400">
+                                    </div>
+                                </div>
+                                <!-- With Helper -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">With Helper Text</label>
+                                    <input type="email" placeholder="name@example.com" class="w-full px-3 py-2 border border-slate-200 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors placeholder-slate-400">
+                                    <p class="text-[10px] text-slate-400 mt-1">We'll never share your email with anyone else.</p>
+                                </div>
+                                <!-- Error State -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-rose-500 mb-1.5">Error State</label>
+                                    <input type="text" value="Invalid Value" class="w-full px-3 py-2 border border-rose-300 text-rose-600 text-sm focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-colors">
+                                    <p class="text-[10px] text-rose-500 mt-1">This field is required.</p>
+                                </div>
+                                <!-- Disabled -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">Disabled Input</label>
+                                    <input type="text" value="Disabled content" disabled class="w-full px-3 py-2 border border-slate-100 bg-slate-50 text-slate-400 text-sm cursor-not-allowed">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Text Area -->
+                        <div class="bg-white border border-slate-200 shadow-sm p-6">
+                            <h3 class="font-bold text-slate-800 text-sm mb-6 pb-2 border-b border-slate-100">Text Area</h3>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1.5">Description</label>
+                                <textarea rows="4" placeholder="Enter detailed description..." class="w-full px-3 py-2 border border-slate-200 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors placeholder-slate-400 resize-none"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Input Groups -->
+                        <div class="bg-white border border-slate-200 shadow-sm p-6">
+                            <h3 class="font-bold text-slate-800 text-sm mb-6 pb-2 border-b border-slate-100">Input Groups</h3>
+                            <div class="space-y-4">
+                                <!-- Prepend -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Website URL</label>
+                                    <div class="flex">
+                                        <span class="inline-flex items-center px-3 border border-r-0 border-slate-200 bg-slate-50 text-slate-500 text-sm">https://</span>
+                                        <input type="text" placeholder="www.example.com" class="flex-1 min-w-0 block w-full px-3 py-2 border border-slate-200 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                                    </div>
+                                </div>
+                                <!-- Append -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Price</label>
+                                    <div class="flex">
+                                        <input type="text" placeholder="0.00" class="flex-1 min-w-0 block w-full px-3 py-2 border border-slate-200 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                                        <span class="inline-flex items-center px-3 border border-l-0 border-slate-200 bg-slate-50 text-slate-500 text-sm">USD</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- RIGHT COLUMN: SELECTION & BUTTONS -->
+                    <div class="space-y-8">
+                        
+                        <!-- Select & Dropdowns -->
+                        <div class="bg-white border border-slate-200 shadow-sm p-6">
+                            <h3 class="font-bold text-slate-800 text-sm mb-6 pb-2 border-b border-slate-100">Selection Controls</h3>
+                            <div class="space-y-5">
+                                <!-- Native Select -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Native Select</label>
+                                    <select class="w-full px-3 py-2 border border-slate-200 text-sm bg-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 cursor-pointer">
+                                        <option>Choose an option...</option>
+                                        <option>Option 1</option>
+                                        <option>Option 2</option>
+                                        <option>Option 3</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Checkboxes -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-2">Checkboxes</label>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" class="custom-checkbox">
+                                            <span class="text-sm text-slate-600">Remember me</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" checked class="custom-checkbox">
+                                            <span class="text-sm text-slate-600">Subscribe to newsletter</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 cursor-not-allowed opacity-60">
+                                            <input type="checkbox" disabled class="custom-checkbox">
+                                            <span class="text-sm text-slate-600">Disabled option</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Radio Buttons -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-2">Radio Buttons</label>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center gap-2 cursor-pointer group">
+                                            <div class="relative flex items-center">
+                                                <input type="radio" name="radio-group" class="peer h-4 w-4 appearance-none border border-slate-300 rounded-full checked:border-orange-500 checked:bg-white focus:ring-1 focus:ring-orange-500">
+                                                <div class="absolute w-2 h-2 rounded-full bg-orange-500 top-1 left-1 opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                            </div>
+                                            <span class="text-sm text-slate-600">Email Only</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 cursor-pointer group">
+                                            <div class="relative flex items-center">
+                                                <input type="radio" name="radio-group" checked class="peer h-4 w-4 appearance-none border border-slate-300 rounded-full checked:border-orange-500 checked:bg-white focus:ring-1 focus:ring-orange-500">
+                                                <div class="absolute w-2 h-2 rounded-full bg-orange-500 top-1 left-1 opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                            </div>
+                                            <span class="text-sm text-slate-600">Email & SMS</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Toggles -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-2">Toggles</label>
+                                    <div class="flex items-center gap-4">
+                                        <div class="relative inline-block w-10 align-middle select-none">
+                                            <input type="checkbox" name="toggle" id="toggle-1" class="toggle-checkbox absolute block w-5 h-5 bg-white border-4 appearance-none cursor-pointer border-slate-300"/>
+                                            <label for="toggle-1" class="toggle-label block overflow-hidden h-5 bg-slate-300 cursor-pointer"></label>
+                                        </div>
+                                        <div class="relative inline-block w-10 align-middle select-none">
+                                            <input type="checkbox" checked name="toggle" id="toggle-2" class="toggle-checkbox absolute block w-5 h-5 bg-white border-4 appearance-none cursor-pointer border-slate-300"/>
+                                            <label for="toggle-2" class="toggle-label block overflow-hidden h-5 bg-slate-300 cursor-pointer"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Special Inputs -->
+                        <div class="bg-white border border-slate-200 shadow-sm p-6">
+                            <h3 class="font-bold text-slate-800 text-sm mb-6 pb-2 border-b border-slate-100">Special Inputs</h3>
+                            <div class="space-y-5">
+                                <!-- File Upload -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">File Upload</label>
+                                    <input type="file" class="block w-full text-sm text-slate-500
+                                      file:mr-4 file:py-2 file:px-4
+                                      file:border-0 file:text-sm file:font-semibold
+                                      file:bg-slate-100 file:text-slate-700
+                                      hover:file:bg-slate-200 cursor-pointer
+                                    "/>
+                                </div>
+                                <!-- Date Picker -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Date Picker</label>
+                                    <input type="date" class="w-full px-3 py-2 border border-slate-200 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 text-slate-600">
+                                </div>
+                                <!-- Range Slider -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Range Slider</label>
+                                    <input type="range" class="w-full h-2 bg-slate-200 appearance-none cursor-pointer accent-orange-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="bg-white border border-slate-200 shadow-sm p-6">
+                            <h3 class="font-bold text-slate-800 text-sm mb-6 pb-2 border-b border-slate-100">Buttons</h3>
+                            <div class="flex flex-wrap gap-3 mb-4">
+                                <button class="px-4 py-2 bg-orange-500 text-white text-sm font-medium hover:bg-orange-600 transition-colors shadow-sm shadow-orange-200">Primary</button>
+                                <button class="px-4 py-2 bg-slate-800 text-white text-sm font-medium hover:bg-slate-900 transition-colors shadow-sm">Secondary</button>
+                                <button class="px-4 py-2 bg-white border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors">Outline</button>
+                                <button class="px-4 py-2 text-slate-600 text-sm font-medium hover:bg-slate-100 transition-colors">Ghost</button>
+                            </div>
+                            <div class="flex flex-wrap gap-3 items-center">
+                                <button class="px-2 py-1 bg-orange-500 text-white text-xs font-medium hover:bg-orange-600 transition-colors">Small</button>
+                                <button class="px-4 py-2 bg-orange-500 text-white text-sm font-medium hover:bg-orange-600 transition-colors">Default</button>
+                                <button class="px-6 py-3 bg-orange-500 text-white text-base font-medium hover:bg-orange-600 transition-colors">Large</button>
+                                <button class="px-4 py-2 bg-rose-500 text-white text-sm font-medium hover:bg-rose-600 transition-colors flex items-center gap-2">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i> With Icon
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -913,15 +1336,13 @@
             }
         }
 
-        // 3. Submenu Toggle Logic (Fixed)
+        // 3. Submenu Toggle Logic
         function toggleSubmenu(elementId, trigger) {
             const submenu = document.getElementById(elementId);
             submenu.classList.toggle('hidden');
             
-            // Find the SVG icon generated by Lucide
             const icon = trigger.querySelector('svg:last-child');
             if (icon) {
-                // Toggle rotation
                 icon.classList.toggle('rotate-180');
             }
         }
@@ -936,17 +1357,16 @@
 
             // -- A. Handle Sidebar Active States --
             
-            // Define navigation items (Main Items)
             const mainNavItems = {
                 'overview': document.getElementById('btn-overview'),
                 'conversion': document.getElementById('btn-conversion'),
                 'marketing': document.getElementById('btn-marketing'),
                 'ads': document.getElementById('btn-ads'),
+                'form': document.getElementById('btn-form'), // New
                 'appearance': document.getElementById('btn-appearance'),
                 'account': document.getElementById('btn-account')
             };
 
-            // Define Submenu Items (Styled differently)
             const submenuItems = {
                 'cohort': document.getElementById('btn-cohort'),
                 'lifecycle': document.getElementById('btn-lifecycle')
@@ -999,28 +1419,27 @@
 
             // -- B. Handle Page Content Visibility --
             
-            // List of all page IDs to hide
             const allPages = [
                 'page-overview', 'page-conversion', 'page-marketing', 
                 'page-ads', 'page-cohort', 'page-lifecycle', 
-                'page-appearance', 'page-account'
+                'page-appearance', 'page-account', 'page-form' // Added new page
             ];
 
-            // Hide all pages
             allPages.forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.classList.add('hidden');
             });
 
-            // Show target page with fade animation
             const targetPage = document.getElementById('page-' + pageName);
             if(targetPage) {
                 targetPage.classList.remove('hidden');
-                // Re-trigger fade animation
                 targetPage.classList.remove('fade-in');
-                void targetPage.offsetWidth; // trigger reflow
+                void targetPage.offsetWidth; 
                 targetPage.classList.add('fade-in');
             }
+            
+            // Re-init lucide icons for new content if needed
+            lucide.createIcons();
         }
     </script>
 </body>
