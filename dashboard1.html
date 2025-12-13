@@ -124,11 +124,13 @@
                     <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Analytics</h3>
                 </div>
                 <div class="space-y-0.5">
-                    <a href="#" id="btn-overview" onclick="switchPage('overview')" class="nav-item group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
+                    <!-- Default Active: Overview -->
+                    <a href="#" id="btn-overview" onclick="switchPage('overview')" class="nav-item active group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium bg-orange-50 text-orange-600 cursor-default">
                         <div class="flex items-center gap-3">
-                            <i data-lucide="layout-dashboard" class="w-[18px] h-[18px] text-slate-400 group-hover:text-slate-600"></i>
+                            <i data-lucide="layout-dashboard" class="w-[18px] h-[18px] text-orange-500"></i>
                             <span>Overview</span>
                         </div>
+                        <div class="w-1.5 h-1.5 rounded-full bg-orange-500 shadow-sm indicator ml-auto"></div>
                     </a>
                     
                     <a href="#" id="btn-marketing" onclick="switchPage('marketing')" class="nav-item group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
@@ -138,13 +140,12 @@
                         </div>
                     </a>
                     
-                    <!-- Active Item by default -->
-                    <a href="#" id="btn-conversion" onclick="switchPage('conversion')" class="nav-item active group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium bg-orange-50 text-orange-600 cursor-default">
+                    <!-- Inactive by default -->
+                    <a href="#" id="btn-conversion" onclick="switchPage('conversion')" class="nav-item group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
                         <div class="flex items-center gap-3">
-                            <i data-lucide="zap" class="w-[18px] h-[18px] text-orange-500"></i>
+                            <i data-lucide="zap" class="w-[18px] h-[18px] text-slate-400 group-hover:text-slate-600"></i>
                             <span>Conversion Funnel</span>
                         </div>
-                        <div class="w-1.5 h-1.5 rounded-full bg-orange-500 shadow-sm indicator"></div>
                     </a>
                     
                     <a href="#" id="btn-ads" onclick="switchPage('ads')" class="nav-item group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
@@ -217,8 +218,8 @@
     <main class="lg:pl-64 w-full min-h-screen pt-16 lg:pt-0 transition-all duration-300">
         <div class="p-4 md:p-8 max-w-[1400px] mx-auto">
             
-            <!-- VIEW 0: OVERVIEW -->
-            <div id="page-overview" class="fade-in hidden">
+            <!-- VIEW 0: OVERVIEW (DEFAULT) -->
+            <div id="page-overview" class="fade-in">
                 <!-- Header -->
                 <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                     <div>
@@ -344,8 +345,8 @@
                 </div>
             </div>
 
-            <!-- VIEW 1: CONVERSION FUNNEL (DEFAULT) -->
-            <div id="page-conversion" class="fade-in">
+            <!-- VIEW 1: CONVERSION FUNNEL -->
+            <div id="page-conversion" class="fade-in hidden">
                 <!-- Page Header -->
                 <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                     <div>
@@ -419,6 +420,53 @@
                 </div>
 
                 <!-- Section 2 Header -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                     <div class="bg-white p-4 border border-slate-200 shadow-sm"><div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Total Sessions</div><div class="flex items-end gap-2 mt-1"><div class="text-xl font-bold text-slate-900">142.3K</div><div class="text-[10px] text-emerald-600 font-medium mb-1">+12%</div></div></div>
+                     <div class="bg-white p-4 border border-slate-200 shadow-sm"><div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Avg. Duration</div><div class="flex items-end gap-2 mt-1"><div class="text-xl font-bold text-slate-900">4m 32s</div><div class="text-[10px] text-emerald-600 font-medium mb-1">+3%</div></div></div>
+                     <div class="bg-white p-4 border border-slate-200 shadow-sm"><div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Bounce Rate</div><div class="flex items-end gap-2 mt-1"><div class="text-xl font-bold text-slate-900">42.8%</div><div class="text-[10px] text-rose-500 font-medium mb-1">+2%</div></div></div>
+                     <div class="bg-white p-4 border border-slate-200 shadow-sm"><div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Goal Completions</div><div class="flex items-end gap-2 mt-1"><div class="text-xl font-bold text-slate-900">8,921</div><div class="text-[10px] text-emerald-600 font-medium mb-1">+8.5%</div></div></div>
+                </div>
+
+                <!-- Main Content Split (FLAT) -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left: Channel Table (2/3) -->
+                    <div class="lg:col-span-2 bg-white border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="p-5 border-b border-slate-100 flex justify-between items-center"><h3 class="font-bold text-slate-800 text-sm">Acquisition by Channel</h3><button class="text-xs text-orange-600 font-medium hover:text-orange-700">View Full Report</button></div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-600">
+                                <thead class="bg-slate-50 text-xs uppercase text-slate-500 font-semibold"><tr><th class="px-5 py-3 tracking-wide">Channel</th><th class="px-5 py-3 tracking-wide text-right">Users</th><th class="px-5 py-3 tracking-wide text-right">Sessions</th><th class="px-5 py-3 tracking-wide text-right">Conv. Rate</th><th class="px-5 py-3 tracking-wide text-right">Revenue</th></tr></thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-indigo-500"></div> Direct</td><td class="px-5 py-4 text-right">45,201</td><td class="px-5 py-4 text-right">58,100</td><td class="px-5 py-4 text-right text-emerald-600">4.2%</td><td class="px-5 py-4 text-right font-medium">$120,400</td></tr>
+                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-emerald-500"></div> Organic Search</td><td class="px-5 py-4 text-right">82,100</td><td class="px-5 py-4 text-right">104,230</td><td class="px-5 py-4 text-right text-emerald-600">2.8%</td><td class="px-5 py-4 text-right font-medium">$98,200</td></tr>
+                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-sky-500"></div> Social</td><td class="px-5 py-4 text-right">24,500</td><td class="px-5 py-4 text-right">32,100</td><td class="px-5 py-4 text-right text-slate-500">1.2%</td><td class="px-5 py-4 text-right font-medium">$15,300</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Right: Traffic Distribution (1/3) -->
+                    <div class="bg-white border border-slate-200 shadow-sm p-6 flex flex-col">
+                        <h3 class="font-bold text-slate-800 text-sm mb-6">Traffic Share</h3>
+                        <div class="flex-1 flex flex-col gap-6">
+                            <div><div class="flex justify-between text-xs mb-1"><span class="font-medium text-slate-700">Organic Search</span><span class="text-slate-500">45%</span></div><div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-emerald-500 h-2 rounded-full" style="width: 45%"></div></div></div>
+                            <div><div class="flex justify-between text-xs mb-1"><span class="font-medium text-slate-700">Direct</span><span class="text-slate-500">25%</span></div><div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-indigo-500 h-2 rounded-full" style="width: 25%"></div></div></div>
+                            <div><div class="flex justify-between text-xs mb-1"><span class="font-medium text-slate-700">Social</span><span class="text-slate-500">15%</span></div><div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-sky-500 h-2 rounded-full" style="width: 15%"></div></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: MARKETING CHANNELS -->
+            <div id="page-marketing" class="fade-in hidden">
+                 <!-- Header -->
+                <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 tracking-tight">Marketing Channels</h2>
+                        <p class="text-sm text-slate-500 mt-1">Deep dive into traffic sources and acquisition performance</p>
+                    </div>
+                    <button class="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"><i data-lucide="calendar-days" class="w-4 h-4 text-slate-400"></i><span>Last 30 Days</span><i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i></button>
+                </div>
+
+                <!-- Top Stats Row (FLAT) -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                      <div class="bg-white p-4 border border-slate-200 shadow-sm"><div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Total Sessions</div><div class="flex items-end gap-2 mt-1"><div class="text-xl font-bold text-slate-900">142.3K</div><div class="text-[10px] text-emerald-600 font-medium mb-1">+12%</div></div></div>
                      <div class="bg-white p-4 border border-slate-200 shadow-sm"><div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Avg. Duration</div><div class="flex items-end gap-2 mt-1"><div class="text-xl font-bold text-slate-900">4m 32s</div><div class="text-[10px] text-emerald-600 font-medium mb-1">+3%</div></div></div>
