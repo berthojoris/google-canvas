@@ -62,13 +62,20 @@
             background-color: #F8FAFC;
         }
 
-        /* Toggle Switch Checkbox */
+        /* Toggle Switch Checkbox (FLAT STYLE) */
         .toggle-checkbox:checked {
             right: 0;
             border-color: #f97316;
         }
         .toggle-checkbox:checked + .toggle-label {
             background-color: #f97316;
+        }
+        /* Override rounded for toggle */
+        .toggle-checkbox {
+            border-radius: 0 !important;
+        }
+        .toggle-label {
+            border-radius: 0 !important;
         }
     </style>
 </head>
@@ -81,14 +88,14 @@
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
             <div class="flex items-center gap-2">
-                <!-- Icon removed from Mobile Header -->
-                <span class="font-bold text-slate-900 text-sm">Hyperion Lab</span>
+                <!-- UPDATED: Text size increased to text-base -->
+                <span class="font-bold text-slate-900 text-base">Hyperion Lab</span>
             </div>
         </div>
         <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-500">JD</div>
     </div>
 
-    <!-- Mobile Overlay (Dark background when sidebar is open) -->
+    <!-- Mobile Overlay -->
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 z-40 hidden transition-opacity lg:hidden backdrop-blur-sm"></div>
 
     <!-- Sidebar Navigation (Fixed Left) -->
@@ -96,10 +103,11 @@
         <!-- Brand Header (Desktop) -->
         <div class="p-6 pb-8 hidden lg:block">
             <div class="flex items-center gap-3">
-                <!-- Icon removed here as requested -->
+                <!-- Icon removed -->
                 <div>
-                    <h1 class="font-bold text-slate-900 text-sm leading-tight">Hyperion Lab</h1>
-                    <p class="text-[11px] text-slate-400 font-medium">Professional Plan</p>
+                    <!-- UPDATED: Title size increased to text-base, Subtitle to text-xs -->
+                    <h1 class="font-bold text-slate-900 text-base leading-tight">Hyperion Lab</h1>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">Professional Plan</p>
                 </div>
                 <div class="ml-auto text-slate-400 cursor-pointer hover:text-slate-600">
                     <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
@@ -107,7 +115,7 @@
             </div>
         </div>
 
-        <!-- Mobile Close Button Header (Visible inside sidebar on mobile only) -->
+        <!-- Mobile Close Button Header -->
         <div class="p-4 flex justify-between items-center lg:hidden border-b border-slate-100">
             <span class="font-bold text-slate-900">Menu</span>
             <button onclick="toggleSidebar()" class="text-slate-400 hover:text-slate-600">
@@ -125,15 +133,15 @@
                 </div>
                 <div class="space-y-0.5">
                     <!-- Default Active: Overview -->
-                    <a href="#" id="btn-overview" onclick="switchPage('overview')" class="nav-item active group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium bg-orange-50 text-orange-600 cursor-default">
+                    <a href="#" id="btn-overview" onclick="switchPage('overview')" class="nav-item active group flex items-center justify-between px-3 py-2 text-sm font-medium bg-orange-50 text-orange-600 cursor-default">
                         <div class="flex items-center gap-3">
                             <i data-lucide="layout-dashboard" class="w-[18px] h-[18px] text-orange-500"></i>
                             <span>Overview</span>
                         </div>
-                        <div class="w-1.5 h-1.5 rounded-full bg-orange-500 shadow-sm indicator ml-auto"></div>
+                        <div class="w-1.5 h-1.5 bg-orange-500 shadow-sm indicator ml-auto"></div>
                     </a>
                     
-                    <a href="#" id="btn-marketing" onclick="switchPage('marketing')" class="nav-item group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
+                    <a href="#" id="btn-marketing" onclick="switchPage('marketing')" class="nav-item group flex items-center justify-between px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
                         <div class="flex items-center gap-3">
                             <i data-lucide="layers" class="w-[18px] h-[18px] text-slate-400 group-hover:text-slate-600"></i>
                             <span>Marketing Channels</span>
@@ -141,14 +149,14 @@
                     </a>
                     
                     <!-- Inactive by default -->
-                    <a href="#" id="btn-conversion" onclick="switchPage('conversion')" class="nav-item group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
+                    <a href="#" id="btn-conversion" onclick="switchPage('conversion')" class="nav-item group flex items-center justify-between px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
                         <div class="flex items-center gap-3">
                             <i data-lucide="zap" class="w-[18px] h-[18px] text-slate-400 group-hover:text-slate-600"></i>
                             <span>Conversion Funnel</span>
                         </div>
                     </a>
                     
-                    <a href="#" id="btn-ads" onclick="switchPage('ads')" class="nav-item group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
+                    <a href="#" id="btn-ads" onclick="switchPage('ads')" class="nav-item group flex items-center justify-between px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
                         <div class="flex items-center gap-3">
                             <i data-lucide="pie-chart" class="w-[18px] h-[18px] text-slate-400 group-hover:text-slate-600"></i>
                             <span>Ads Report</span>
@@ -164,15 +172,17 @@
                     <button class="text-slate-400 hover:text-slate-600 transition-colors"><i data-lucide="plus" class="w-3.5 h-3.5"></i></button>
                 </div>
                 <div class="space-y-0.5">
-                    <a href="#" class="nav-item group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
+                    <!-- Dropdown Trigger (OnClick functionality added) -->
+                    <a href="javascript:void(0)" onclick="toggleSubmenu('submenu-retention', this)" class="nav-item group flex items-center justify-between px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all cursor-pointer select-none">
                         <div class="flex items-center gap-3">
                             <i data-lucide="users" class="w-[18px] h-[18px] text-slate-400 group-hover:text-slate-600"></i>
                             <span>Retention Funnel</span>
                         </div>
-                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-300"></i>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-300 transition-transform duration-200"></i>
                     </a>
-                    <!-- Submenu -->
-                    <div class="pl-9 space-y-1 mt-1 mb-2 border-l border-slate-100 ml-3">
+                    
+                    <!-- Submenu Container -->
+                    <div id="submenu-retention" class="pl-4 space-y-1 mt-1 mb-2 border-l border-slate-100 ml-6 transition-all duration-300 overflow-hidden">
                         <a href="#" id="btn-cohort" onclick="switchPage('cohort')" class="submenu-item block text-[11px] text-slate-500 hover:text-orange-600 cursor-pointer py-1 pl-3 border-l-2 border-transparent hover:border-orange-200 transition-all">Funnel Cohort Analysis</a>
                         <a href="#" id="btn-lifecycle" onclick="switchPage('lifecycle')" class="submenu-item block text-[11px] text-slate-500 hover:text-orange-600 cursor-pointer py-1 pl-3 border-l-2 border-transparent hover:border-orange-200 transition-all">Paid User Lifecycle</a>
                     </div>
@@ -185,14 +195,14 @@
                     <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Settings</h3>
                 </div>
                  <div class="space-y-0.5">
-                    <a href="#" id="btn-appearance" onclick="switchPage('appearance')" class="nav-item group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
+                    <a href="#" id="btn-appearance" onclick="switchPage('appearance')" class="nav-item group flex items-center justify-between px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
                         <div class="flex items-center gap-3">
                             <i data-lucide="settings" class="w-[18px] h-[18px] text-slate-400 group-hover:text-slate-600"></i>
                             <span>Appearance</span>
                         </div>
                     </a>
                     
-                    <a href="#" id="btn-account" onclick="switchPage('account')" class="nav-item group flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
+                    <a href="#" id="btn-account" onclick="switchPage('account')" class="nav-item group flex items-center justify-between px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all">
                         <div class="flex items-center gap-3">
                             <i data-lucide="credit-card" class="w-[18px] h-[18px] text-slate-400 group-hover:text-slate-600"></i>
                             <span>Account Settings</span>
@@ -204,8 +214,8 @@
         
         <!-- User Profile Stub (Desktop) -->
         <div class="p-4 border-t border-slate-100 hidden lg:block">
-            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded-md transition-colors">
-                <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-500">JD</div>
+            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 transition-colors">
+                <div class="w-8 h-8 bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-500">JD</div>
                 <div class="flex-1">
                     <div class="text-xs font-semibold text-slate-700">John Doe</div>
                     <div class="text-[10px] text-slate-400">Admin</div>
@@ -227,7 +237,7 @@
                         <p class="text-sm text-slate-500 mt-1">Welcome back, John! Here's what's happening today.</p>
                     </div>
                     <div class="flex gap-2">
-                        <button class="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm font-medium transition-colors shadow-sm shadow-orange-200">
+                        <button class="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium transition-colors shadow-sm shadow-orange-200">
                             <i data-lucide="plus" class="w-4 h-4"></i>
                             <span>Create Report</span>
                         </button>
@@ -239,7 +249,7 @@
                     <!-- Stat 1: Active Users -->
                     <div class="bg-white border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col group">
                         <div class="p-5 flex items-center gap-4 flex-1">
-                            <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
+                            <div class="w-12 h-12 bg-blue-50 flex items-center justify-center text-blue-500">
                                 <i data-lucide="users" class="w-6 h-6"></i>
                             </div>
                             <div>
@@ -258,7 +268,7 @@
                     <!-- Stat 2: MRR -->
                     <div class="bg-white border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col group">
                         <div class="p-5 flex items-center gap-4 flex-1">
-                            <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500">
+                            <div class="w-12 h-12 bg-emerald-50 flex items-center justify-center text-emerald-500">
                                 <i data-lucide="credit-card" class="w-6 h-6"></i>
                             </div>
                             <div>
@@ -277,7 +287,7 @@
                     <!-- Stat 3: Bounce Rate -->
                     <div class="bg-white border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col group">
                         <div class="p-5 flex items-center gap-4 flex-1">
-                            <div class="w-12 h-12 rounded-full bg-violet-50 flex items-center justify-center text-violet-500">
+                            <div class="w-12 h-12 bg-violet-50 flex items-center justify-center text-violet-500">
                                 <i data-lucide="activity" class="w-6 h-6"></i>
                             </div>
                             <div>
@@ -296,7 +306,7 @@
                     <!-- Stat 4: New Signups -->
                     <div class="bg-white border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col group">
                         <div class="p-5 flex items-center gap-4 flex-1">
-                            <div class="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center text-orange-500">
+                            <div class="w-12 h-12 bg-orange-50 flex items-center justify-center text-orange-500">
                                 <i data-lucide="user-plus" class="w-6 h-6"></i>
                             </div>
                             <div>
@@ -319,7 +329,7 @@
                     <div class="lg:col-span-2 bg-white border border-slate-200 shadow-sm p-6">
                         <div class="flex justify-between items-center mb-6">
                             <div><h3 class="font-bold text-slate-800 text-sm">Revenue Growth</h3><p class="text-xs text-slate-500">Year to date performance</p></div>
-                            <button class="p-2 hover:bg-slate-50 rounded-lg text-slate-400 hover:text-slate-600"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
+                            <button class="p-2 hover:bg-slate-50 text-slate-400 hover:text-slate-600"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
                         </div>
                         <div class="h-64 w-full relative">
                              <svg viewBox="0 0 600 200" class="w-full h-full overflow-visible" preserveAspectRatio="none">
@@ -336,11 +346,11 @@
                         <h3 class="font-bold text-slate-800 text-sm mb-4">Recent Activity</h3>
                         <div class="space-y-6 relative">
                             <div class="absolute left-2.5 top-2 bottom-2 w-px bg-slate-100"></div>
-                            <div class="flex gap-4 relative"><div class="w-5 h-5 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center z-10"><div class="w-2 h-2 rounded-full bg-blue-500"></div></div><div><p class="text-xs text-slate-800 font-medium">New enterprise plan purchased</p><p class="text-[10px] text-slate-400 mt-0.5">Acme Corp upgraded to Pro</p><p class="text-[10px] text-slate-300 mt-1">2 mins ago</p></div></div>
-                            <div class="flex gap-4 relative"><div class="w-5 h-5 rounded-full bg-orange-100 border-2 border-white flex items-center justify-center z-10"><div class="w-2 h-2 rounded-full bg-orange-500"></div></div><div><p class="text-xs text-slate-800 font-medium">Server load warning</p><p class="text-[10px] text-slate-400 mt-0.5">CPU usage > 80% on us-east-1</p><p class="text-[10px] text-slate-300 mt-1">1 hour ago</p></div></div>
-                            <div class="flex gap-4 relative"><div class="w-5 h-5 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center z-10"><div class="w-2 h-2 rounded-full bg-emerald-500"></div></div><div><p class="text-xs text-slate-800 font-medium">New feature deployed</p><p class="text-[10px] text-slate-400 mt-0.5">v2.4.0 is live</p><p class="text-[10px] text-slate-300 mt-1">3 hours ago</p></div></div>
+                            <div class="flex gap-4 relative"><div class="w-5 h-5 bg-blue-100 border-2 border-white flex items-center justify-center z-10"><div class="w-2 h-2 bg-blue-500"></div></div><div><p class="text-xs text-slate-800 font-medium">New enterprise plan purchased</p><p class="text-[10px] text-slate-400 mt-0.5">Acme Corp upgraded to Pro</p><p class="text-[10px] text-slate-300 mt-1">2 mins ago</p></div></div>
+                            <div class="flex gap-4 relative"><div class="w-5 h-5 bg-orange-100 border-2 border-white flex items-center justify-center z-10"><div class="w-2 h-2 bg-orange-500"></div></div><div><p class="text-xs text-slate-800 font-medium">Server load warning</p><p class="text-[10px] text-slate-400 mt-0.5">CPU usage > 80% on us-east-1</p><p class="text-[10px] text-slate-300 mt-1">1 hour ago</p></div></div>
+                            <div class="flex gap-4 relative"><div class="w-5 h-5 bg-emerald-100 border-2 border-white flex items-center justify-center z-10"><div class="w-2 h-2 bg-emerald-500"></div></div><div><p class="text-xs text-slate-800 font-medium">New feature deployed</p><p class="text-[10px] text-slate-400 mt-0.5">v2.4.0 is live</p><p class="text-[10px] text-slate-300 mt-1">3 hours ago</p></div></div>
                         </div>
-                        <button class="w-full mt-6 py-2 border border-slate-100 rounded-lg text-xs text-slate-500 hover:bg-slate-50 transition-colors">View All Activity</button>
+                        <button class="w-full mt-6 py-2 border border-slate-100 text-xs text-slate-500 hover:bg-slate-50 transition-colors">View All Activity</button>
                     </div>
                 </div>
             </div>
@@ -354,8 +364,8 @@
                         <p class="text-sm text-slate-500 mt-1">See how new users progress toward their first meaningful action</p>
                     </div>
                     <div class="flex gap-2">
-                        <button class="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 shadow-sm transition-all"><i data-lucide="calendar" class="w-[18px] h-[18px]"></i></button>
-                        <button class="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-600 shadow-sm transition-all"><i data-lucide="download" class="w-[18px] h-[18px]"></i></button>
+                        <button class="p-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm transition-all"><i data-lucide="calendar" class="w-[18px] h-[18px]"></i></button>
+                        <button class="p-2 bg-white border border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-600 shadow-sm transition-all"><i data-lucide="download" class="w-[18px] h-[18px]"></i></button>
                     </div>
                 </div>
 
@@ -369,9 +379,9 @@
                                 <div class="pt-1"><i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-300 group-hover:text-emerald-500 transition-colors"></i></div>
                             </div>
                             <div class="flex items-end justify-between mt-6">
-                                <div class="text-[11px] font-medium px-2 py-1 rounded-md flex items-center gap-1 text-emerald-700 bg-emerald-50 border border-emerald-100"><i data-lucide="trending-up" class="w-3 h-3"></i> +6%</div>
+                                <div class="text-[11px] font-medium px-2 py-1 flex items-center gap-1 text-emerald-700 bg-emerald-50 border border-emerald-100"><i data-lucide="trending-up" class="w-3 h-3"></i> +6%</div>
                                 <div class="h-10 w-24 flex items-end gap-[2px]">
-                                    <div class="w-full bg-emerald-400 rounded-sm opacity-40 h-[20%]"></div><div class="w-full bg-emerald-400 rounded-sm opacity-50 h-[40%]"></div><div class="w-full bg-emerald-400 rounded-sm opacity-60 h-[35%]"></div><div class="w-full bg-emerald-400 rounded-sm opacity-70 h-[60%]"></div><div class="w-full bg-emerald-400 rounded-sm opacity-80 h-[50%]"></div><div class="w-full bg-emerald-400 rounded-sm opacity-90 h-[75%]"></div><div class="w-full bg-emerald-400 rounded-sm opacity-100 h-[65%]"></div><div class="w-full bg-emerald-400 rounded-sm opacity-100 h-[90%]"></div>
+                                    <div class="w-full bg-emerald-400 opacity-40 h-[20%]"></div><div class="w-full bg-emerald-400 opacity-50 h-[40%]"></div><div class="w-full bg-emerald-400 opacity-60 h-[35%]"></div><div class="w-full bg-emerald-400 opacity-70 h-[60%]"></div><div class="w-full bg-emerald-400 opacity-80 h-[50%]"></div><div class="w-full bg-emerald-400 opacity-90 h-[75%]"></div><div class="w-full bg-emerald-400 opacity-100 h-[65%]"></div><div class="w-full bg-emerald-400 opacity-100 h-[90%]"></div>
                                 </div>
                             </div>
                         </div>
@@ -388,9 +398,9 @@
                                 <div class="pt-1"><i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-300 group-hover:text-rose-500 transition-colors"></i></div>
                             </div>
                             <div class="flex items-end justify-between mt-6">
-                                <div class="text-[11px] font-medium px-2 py-1 rounded-md flex items-center gap-1 text-rose-700 bg-rose-50 border border-rose-100"><i data-lucide="trending-down" class="w-3 h-3"></i> -$1,250</div>
+                                <div class="text-[11px] font-medium px-2 py-1 flex items-center gap-1 text-rose-700 bg-rose-50 border border-rose-100"><i data-lucide="trending-down" class="w-3 h-3"></i> -$1,250</div>
                                 <div class="h-10 w-24 flex items-end gap-[2px]">
-                                    <div class="w-full bg-rose-400 rounded-sm opacity-40 h-[50%]"></div><div class="w-full bg-rose-400 rounded-sm opacity-50 h-[70%]"></div><div class="w-full bg-rose-400 rounded-sm opacity-60 h-[45%]"></div><div class="w-full bg-rose-400 rounded-sm opacity-70 h-[30%]"></div><div class="w-full bg-rose-400 rounded-sm opacity-80 h-[60%]"></div><div class="w-full bg-rose-400 rounded-sm opacity-90 h-[40%]"></div><div class="w-full bg-rose-400 rounded-sm opacity-100 h-[35%]"></div><div class="w-full bg-rose-400 rounded-sm opacity-100 h-[20%]"></div>
+                                    <div class="w-full bg-rose-400 opacity-40 h-[50%]"></div><div class="w-full bg-rose-400 opacity-50 h-[70%]"></div><div class="w-full bg-rose-400 opacity-60 h-[45%]"></div><div class="w-full bg-rose-400 opacity-70 h-[30%]"></div><div class="w-full bg-rose-400 opacity-80 h-[60%]"></div><div class="w-full bg-rose-400 opacity-90 h-[40%]"></div><div class="w-full bg-rose-400 opacity-100 h-[35%]"></div><div class="w-full bg-rose-400 opacity-100 h-[20%]"></div>
                                 </div>
                             </div>
                         </div>
@@ -407,9 +417,9 @@
                                 <div class="pt-1"><i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-300 group-hover:text-emerald-500 transition-colors"></i></div>
                             </div>
                             <div class="flex items-end justify-between mt-6">
-                                <div class="text-[11px] font-medium px-2 py-1 rounded-md flex items-center gap-1 text-emerald-700 bg-emerald-50 border border-emerald-100"><i data-lucide="trending-up" class="w-3 h-3"></i> +33K</div>
+                                <div class="text-[11px] font-medium px-2 py-1 flex items-center gap-1 text-emerald-700 bg-emerald-50 border border-emerald-100"><i data-lucide="trending-up" class="w-3 h-3"></i> +33K</div>
                                 <div class="h-10 w-24 flex items-end gap-[2px]">
-                                    <div class="w-full bg-emerald-400 rounded-sm opacity-40 h-[25%]"></div><div class="w-full bg-emerald-400 rounded-sm opacity-50 h-[35%]"></div><div class="w-full bg-emerald-400 rounded-sm opacity-60 h-[55%]"></div><div class="w-full bg-emerald-400 rounded-sm opacity-70 h-[45%]"></div><div class="w-full bg-emerald-400 rounded-sm opacity-80 h-[65%]"></div><div class="w-full bg-emerald-400 rounded-sm opacity-90 h-[85%]"></div><div class="w-full bg-emerald-400 rounded-sm opacity-100 h-[70%]"></div><div class="w-full bg-emerald-400 rounded-sm opacity-100 h-[95%]"></div>
+                                    <div class="w-full bg-emerald-400 opacity-40 h-[25%]"></div><div class="w-full bg-emerald-400 opacity-50 h-[35%]"></div><div class="w-full bg-emerald-400 opacity-60 h-[55%]"></div><div class="w-full bg-emerald-400 opacity-70 h-[45%]"></div><div class="w-full bg-emerald-400 opacity-80 h-[65%]"></div><div class="w-full bg-emerald-400 opacity-90 h-[85%]"></div><div class="w-full bg-emerald-400 opacity-100 h-[70%]"></div><div class="w-full bg-emerald-400 opacity-100 h-[95%]"></div>
                                 </div>
                             </div>
                         </div>
@@ -436,9 +446,9 @@
                             <table class="w-full text-left text-sm text-slate-600">
                                 <thead class="bg-slate-50 text-xs uppercase text-slate-500 font-semibold"><tr><th class="px-5 py-3 tracking-wide">Channel</th><th class="px-5 py-3 tracking-wide text-right">Users</th><th class="px-5 py-3 tracking-wide text-right">Sessions</th><th class="px-5 py-3 tracking-wide text-right">Conv. Rate</th><th class="px-5 py-3 tracking-wide text-right">Revenue</th></tr></thead>
                                 <tbody class="divide-y divide-slate-100">
-                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-indigo-500"></div> Direct</td><td class="px-5 py-4 text-right">45,201</td><td class="px-5 py-4 text-right">58,100</td><td class="px-5 py-4 text-right text-emerald-600">4.2%</td><td class="px-5 py-4 text-right font-medium">$120,400</td></tr>
-                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-emerald-500"></div> Organic Search</td><td class="px-5 py-4 text-right">82,100</td><td class="px-5 py-4 text-right">104,230</td><td class="px-5 py-4 text-right text-emerald-600">2.8%</td><td class="px-5 py-4 text-right font-medium">$98,200</td></tr>
-                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-sky-500"></div> Social</td><td class="px-5 py-4 text-right">24,500</td><td class="px-5 py-4 text-right">32,100</td><td class="px-5 py-4 text-right text-slate-500">1.2%</td><td class="px-5 py-4 text-right font-medium">$15,300</td></tr>
+                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900 flex items-center gap-2"><div class="w-2 h-2 bg-indigo-500"></div> Direct</td><td class="px-5 py-4 text-right">45,201</td><td class="px-5 py-4 text-right">58,100</td><td class="px-5 py-4 text-right text-emerald-600">4.2%</td><td class="px-5 py-4 text-right font-medium">$120,400</td></tr>
+                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900 flex items-center gap-2"><div class="w-2 h-2 bg-emerald-500"></div> Organic Search</td><td class="px-5 py-4 text-right">82,100</td><td class="px-5 py-4 text-right">104,230</td><td class="px-5 py-4 text-right text-emerald-600">2.8%</td><td class="px-5 py-4 text-right font-medium">$98,200</td></tr>
+                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900 flex items-center gap-2"><div class="w-2 h-2 bg-sky-500"></div> Social</td><td class="px-5 py-4 text-right">24,500</td><td class="px-5 py-4 text-right">32,100</td><td class="px-5 py-4 text-right text-slate-500">1.2%</td><td class="px-5 py-4 text-right font-medium">$15,300</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -447,9 +457,9 @@
                     <div class="bg-white border border-slate-200 shadow-sm p-6 flex flex-col">
                         <h3 class="font-bold text-slate-800 text-sm mb-6">Traffic Share</h3>
                         <div class="flex-1 flex flex-col gap-6">
-                            <div><div class="flex justify-between text-xs mb-1"><span class="font-medium text-slate-700">Organic Search</span><span class="text-slate-500">45%</span></div><div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-emerald-500 h-2 rounded-full" style="width: 45%"></div></div></div>
-                            <div><div class="flex justify-between text-xs mb-1"><span class="font-medium text-slate-700">Direct</span><span class="text-slate-500">25%</span></div><div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-indigo-500 h-2 rounded-full" style="width: 25%"></div></div></div>
-                            <div><div class="flex justify-between text-xs mb-1"><span class="font-medium text-slate-700">Social</span><span class="text-slate-500">15%</span></div><div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-sky-500 h-2 rounded-full" style="width: 15%"></div></div></div>
+                            <div><div class="flex justify-between text-xs mb-1"><span class="font-medium text-slate-700">Organic Search</span><span class="text-slate-500">45%</span></div><div class="w-full bg-slate-100 h-2"><div class="bg-emerald-500 h-2" style="width: 45%"></div></div></div>
+                            <div><div class="flex justify-between text-xs mb-1"><span class="font-medium text-slate-700">Direct</span><span class="text-slate-500">25%</span></div><div class="w-full bg-slate-100 h-2"><div class="bg-indigo-500 h-2" style="width: 25%"></div></div></div>
+                            <div><div class="flex justify-between text-xs mb-1"><span class="font-medium text-slate-700">Social</span><span class="text-slate-500">15%</span></div><div class="w-full bg-slate-100 h-2"><div class="bg-sky-500 h-2" style="width: 15%"></div></div></div>
                         </div>
                     </div>
                 </div>
@@ -463,7 +473,7 @@
                         <h2 class="text-xl font-bold text-slate-900 tracking-tight">Marketing Channels</h2>
                         <p class="text-sm text-slate-500 mt-1">Deep dive into traffic sources and acquisition performance</p>
                     </div>
-                    <button class="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"><i data-lucide="calendar-days" class="w-4 h-4 text-slate-400"></i><span>Last 30 Days</span><i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i></button>
+                    <button class="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"><i data-lucide="calendar-days" class="w-4 h-4 text-slate-400"></i><span>Last 30 Days</span><i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i></button>
                 </div>
 
                 <!-- Top Stats Row (FLAT) -->
@@ -483,9 +493,9 @@
                             <table class="w-full text-left text-sm text-slate-600">
                                 <thead class="bg-slate-50 text-xs uppercase text-slate-500 font-semibold"><tr><th class="px-5 py-3 tracking-wide">Channel</th><th class="px-5 py-3 tracking-wide text-right">Users</th><th class="px-5 py-3 tracking-wide text-right">Sessions</th><th class="px-5 py-3 tracking-wide text-right">Conv. Rate</th><th class="px-5 py-3 tracking-wide text-right">Revenue</th></tr></thead>
                                 <tbody class="divide-y divide-slate-100">
-                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-indigo-500"></div> Direct</td><td class="px-5 py-4 text-right">45,201</td><td class="px-5 py-4 text-right">58,100</td><td class="px-5 py-4 text-right text-emerald-600">4.2%</td><td class="px-5 py-4 text-right font-medium">$120,400</td></tr>
-                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-emerald-500"></div> Organic Search</td><td class="px-5 py-4 text-right">82,100</td><td class="px-5 py-4 text-right">104,230</td><td class="px-5 py-4 text-right text-emerald-600">2.8%</td><td class="px-5 py-4 text-right font-medium">$98,200</td></tr>
-                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-sky-500"></div> Social</td><td class="px-5 py-4 text-right">24,500</td><td class="px-5 py-4 text-right">32,100</td><td class="px-5 py-4 text-right text-slate-500">1.2%</td><td class="px-5 py-4 text-right font-medium">$15,300</td></tr>
+                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900 flex items-center gap-2"><div class="w-2 h-2 bg-indigo-500"></div> Direct</td><td class="px-5 py-4 text-right">45,201</td><td class="px-5 py-4 text-right">58,100</td><td class="px-5 py-4 text-right text-emerald-600">4.2%</td><td class="px-5 py-4 text-right font-medium">$120,400</td></tr>
+                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900 flex items-center gap-2"><div class="w-2 h-2 bg-emerald-500"></div> Organic Search</td><td class="px-5 py-4 text-right">82,100</td><td class="px-5 py-4 text-right">104,230</td><td class="px-5 py-4 text-right text-emerald-600">2.8%</td><td class="px-5 py-4 text-right font-medium">$98,200</td></tr>
+                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900 flex items-center gap-2"><div class="w-2 h-2 bg-sky-500"></div> Social</td><td class="px-5 py-4 text-right">24,500</td><td class="px-5 py-4 text-right">32,100</td><td class="px-5 py-4 text-right text-slate-500">1.2%</td><td class="px-5 py-4 text-right font-medium">$15,300</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -494,9 +504,9 @@
                     <div class="bg-white border border-slate-200 shadow-sm p-6 flex flex-col">
                         <h3 class="font-bold text-slate-800 text-sm mb-6">Traffic Share</h3>
                         <div class="flex-1 flex flex-col gap-6">
-                            <div><div class="flex justify-between text-xs mb-1"><span class="font-medium text-slate-700">Organic Search</span><span class="text-slate-500">45%</span></div><div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-emerald-500 h-2 rounded-full" style="width: 45%"></div></div></div>
-                            <div><div class="flex justify-between text-xs mb-1"><span class="font-medium text-slate-700">Direct</span><span class="text-slate-500">25%</span></div><div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-indigo-500 h-2 rounded-full" style="width: 25%"></div></div></div>
-                            <div><div class="flex justify-between text-xs mb-1"><span class="font-medium text-slate-700">Social</span><span class="text-slate-500">15%</span></div><div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-sky-500 h-2 rounded-full" style="width: 15%"></div></div></div>
+                            <div><div class="flex justify-between text-xs mb-1"><span class="font-medium text-slate-700">Organic Search</span><span class="text-slate-500">45%</span></div><div class="w-full bg-slate-100 h-2"><div class="bg-emerald-500 h-2" style="width: 45%"></div></div></div>
+                            <div><div class="flex justify-between text-xs mb-1"><span class="font-medium text-slate-700">Direct</span><span class="text-slate-500">25%</span></div><div class="w-full bg-slate-100 h-2"><div class="bg-indigo-500 h-2" style="width: 25%"></div></div></div>
+                            <div><div class="flex justify-between text-xs mb-1"><span class="font-medium text-slate-700">Social</span><span class="text-slate-500">15%</span></div><div class="w-full bg-slate-100 h-2"><div class="bg-sky-500 h-2" style="width: 15%"></div></div></div>
                         </div>
                     </div>
                 </div>
@@ -508,8 +518,8 @@
                 <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                     <div><h2 class="text-xl font-bold text-slate-900 tracking-tight">Ads Performance Report</h2><p class="text-sm text-slate-500 mt-1">Campaign ROI analysis across all paid channels</p></div>
                     <div class="flex gap-2">
-                         <button class="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"><i data-lucide="filter" class="w-4 h-4 text-slate-400"></i><span>Filter</span></button>
-                        <button class="flex items-center gap-2 px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm shadow-indigo-200"><i data-lucide="download" class="w-4 h-4"></i><span>Export CSV</span></button>
+                         <button class="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"><i data-lucide="filter" class="w-4 h-4 text-slate-400"></i><span>Filter</span></button>
+                        <button class="flex items-center gap-2 px-3 py-2 bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm shadow-indigo-200"><i data-lucide="download" class="w-4 h-4"></i><span>Export CSV</span></button>
                     </div>
                 </div>
 
@@ -528,13 +538,13 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Left: Campaign Table (2/3) -->
                     <div class="lg:col-span-2 bg-white border border-slate-200 shadow-sm flex flex-col">
-                        <div class="p-5 border-b border-slate-100 flex justify-between items-center"><h3 class="font-bold text-slate-800 text-sm">Active Campaigns</h3><div class="flex gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-slate-500">Live</span></div></div>
+                        <div class="p-5 border-b border-slate-100 flex justify-between items-center"><h3 class="font-bold text-slate-800 text-sm">Active Campaigns</h3><div class="flex gap-2"><span class="w-2 h-2 bg-emerald-500"></span><span class="text-xs text-slate-500">Live</span></div></div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm text-slate-600">
                                 <thead class="bg-slate-50 text-xs uppercase text-slate-500 font-semibold"><tr><th class="px-5 py-3 tracking-wide">Campaign</th><th class="px-5 py-3 tracking-wide">Status</th><th class="px-5 py-3 tracking-wide text-right">Spend</th><th class="px-5 py-3 tracking-wide text-right">Conv.</th><th class="px-5 py-3 tracking-wide text-right">CPA</th></tr></thead>
                                 <tbody class="divide-y divide-slate-100">
-                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900"><div>Summer Sale - Search</div><div class="text-[10px] text-slate-400 font-normal">Google Ads</div></td><td class="px-5 py-4"><span class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold">ACTIVE</span></td><td class="px-5 py-4 text-right font-medium">$4,200</td><td class="px-5 py-4 text-right">320</td><td class="px-5 py-4 text-right text-slate-500">$13.12</td></tr>
-                                     <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900"><div>Retargeting - Q1</div><div class="text-[10px] text-slate-400 font-normal">Facebook Ads</div></td><td class="px-5 py-4"><span class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold">ACTIVE</span></td><td class="px-5 py-4 text-right font-medium">$2,150</td><td class="px-5 py-4 text-right">145</td><td class="px-5 py-4 text-right text-slate-500">$14.80</td></tr>
+                                    <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900"><div>Summer Sale - Search</div><div class="text-[10px] text-slate-400 font-normal">Google Ads</div></td><td class="px-5 py-4"><span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold">ACTIVE</span></td><td class="px-5 py-4 text-right font-medium">$4,200</td><td class="px-5 py-4 text-right">320</td><td class="px-5 py-4 text-right text-slate-500">$13.12</td></tr>
+                                     <tr class="table-row-hover transition-colors"><td class="px-5 py-4 font-medium text-slate-900"><div>Retargeting - Q1</div><div class="text-[10px] text-slate-400 font-normal">Facebook Ads</div></td><td class="px-5 py-4"><span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold">ACTIVE</span></td><td class="px-5 py-4 text-right font-medium">$2,150</td><td class="px-5 py-4 text-right">145</td><td class="px-5 py-4 text-right text-slate-500">$14.80</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -542,13 +552,13 @@
                     <!-- Right: Platform Breakdown (1/3) -->
                     <div class="space-y-6">
                         <div class="bg-white p-5 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex justify-between items-start mb-2"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-[10px]">G</div><span class="font-bold text-sm text-slate-700">Google Ads</span></div><span class="text-xs font-bold text-slate-900">$7,300</span></div>
-                            <div class="w-full bg-slate-100 rounded-full h-1.5 mb-2"><div class="bg-blue-500 h-1.5 rounded-full" style="width: 65%"></div></div>
+                            <div class="flex justify-between items-start mb-2"><div class="flex items-center gap-2"><div class="w-6 h-6 bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-[10px]">G</div><span class="font-bold text-sm text-slate-700">Google Ads</span></div><span class="text-xs font-bold text-slate-900">$7,300</span></div>
+                            <div class="w-full bg-slate-100 h-1.5 mb-2"><div class="bg-blue-500 h-1.5" style="width: 65%"></div></div>
                             <div class="flex justify-between text-[10px] text-slate-500"><span>65% of Spend</span><span class="text-emerald-600">ROAS 4.8x</span></div>
                         </div>
                         <div class="bg-white p-5 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex justify-between items-start mb-2"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-[10px]">fb</div><span class="font-bold text-sm text-slate-700">Facebook / IG</span></div><span class="text-xs font-bold text-slate-900">$3,200</span></div>
-                            <div class="w-full bg-slate-100 rounded-full h-1.5 mb-2"><div class="bg-indigo-500 h-1.5 rounded-full" style="width: 25%"></div></div>
+                            <div class="flex justify-between items-start mb-2"><div class="flex items-center gap-2"><div class="w-6 h-6 bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-[10px]">fb</div><span class="font-bold text-sm text-slate-700">Facebook / IG</span></div><span class="text-xs font-bold text-slate-900">$3,200</span></div>
+                            <div class="w-full bg-slate-100 h-1.5 mb-2"><div class="bg-indigo-500 h-1.5" style="width: 25%"></div></div>
                             <div class="flex justify-between text-[10px] text-slate-500"><span>25% of Spend</span><span class="text-emerald-600">ROAS 3.1x</span></div>
                         </div>
                     </div>
@@ -561,7 +571,7 @@
                 <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                     <div><h2 class="text-xl font-bold text-slate-900 tracking-tight">Retention Cohorts</h2><p class="text-sm text-slate-500 mt-1">Analyze user retention over time based on acquisition date</p></div>
                     <div class="flex gap-2">
-                        <button class="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"><i data-lucide="filter" class="w-4 h-4 text-slate-400"></i><span>Weekly</span></button>
+                        <button class="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"><i data-lucide="filter" class="w-4 h-4 text-slate-400"></i><span>Weekly</span></button>
                     </div>
                 </div>
 
@@ -573,9 +583,9 @@
                             <table class="w-full text-center text-xs">
                                 <thead><tr><th class="text-left pb-4 font-semibold text-slate-500 min-w-[120px]">Cohort</th><th class="pb-4 font-semibold text-slate-500 min-w-[80px]">Users</th><th class="pb-4 font-semibold text-slate-500">Week 0</th><th class="pb-4 font-semibold text-slate-500">Week 1</th><th class="pb-4 font-semibold text-slate-500">Week 2</th><th class="pb-4 font-semibold text-slate-500">Week 3</th><th class="pb-4 font-semibold text-slate-500">Week 4</th></tr></thead>
                                 <tbody class="space-y-2">
-                                    <tr class="h-10"><td class="text-left font-medium text-slate-700">Dec 01 - Dec 07</td><td class="text-slate-500">2,450</td><td class="px-1"><div class="bg-indigo-600 text-white rounded py-2">100%</div></td><td class="px-1"><div class="bg-indigo-400 text-white rounded py-2">45%</div></td><td class="px-1"><div class="bg-indigo-300 text-white rounded py-2">32%</div></td><td class="px-1"><div class="bg-indigo-200 text-indigo-900 rounded py-2">28%</div></td><td class="px-1"><div class="bg-indigo-100 text-indigo-900 rounded py-2">25%</div></td></tr>
-                                    <tr class="h-10"><td class="text-left font-medium text-slate-700">Dec 08 - Dec 14</td><td class="text-slate-500">2,680</td><td class="px-1"><div class="bg-indigo-600 text-white rounded py-2">100%</div></td><td class="px-1"><div class="bg-indigo-400 text-white rounded py-2">48%</div></td><td class="px-1"><div class="bg-indigo-300 text-white rounded py-2">35%</div></td><td class="px-1"><div class="bg-indigo-200 text-indigo-900 rounded py-2">30%</div></td><td class="px-1"><div class="bg-indigo-100 text-indigo-900 rounded py-2">28%</div></td></tr>
-                                    <tr class="h-10"><td class="text-left font-medium text-slate-700">Dec 15 - Dec 21</td><td class="text-slate-500">3,100</td><td class="px-1"><div class="bg-indigo-600 text-white rounded py-2">100%</div></td><td class="px-1"><div class="bg-indigo-400 text-white rounded py-2">42%</div></td><td class="px-1"><div class="bg-indigo-300 text-white rounded py-2">30%</div></td><td class="px-1"><div class="bg-indigo-200 text-indigo-900 rounded py-2">25%</div></td><td class="px-1"></td></tr>
+                                    <tr class="h-10"><td class="text-left font-medium text-slate-700">Dec 01 - Dec 07</td><td class="text-slate-500">2,450</td><td class="px-1"><div class="bg-indigo-600 text-white py-2">100%</div></td><td class="px-1"><div class="bg-indigo-400 text-white py-2">45%</div></td><td class="px-1"><div class="bg-indigo-300 text-white py-2">32%</div></td><td class="px-1"><div class="bg-indigo-200 text-indigo-900 py-2">28%</div></td><td class="px-1"><div class="bg-indigo-100 text-indigo-900 py-2">25%</div></td></tr>
+                                    <tr class="h-10"><td class="text-left font-medium text-slate-700">Dec 08 - Dec 14</td><td class="text-slate-500">2,680</td><td class="px-1"><div class="bg-indigo-600 text-white py-2">100%</div></td><td class="px-1"><div class="bg-indigo-400 text-white py-2">48%</div></td><td class="px-1"><div class="bg-indigo-300 text-white py-2">35%</div></td><td class="px-1"><div class="bg-indigo-200 text-indigo-900 py-2">30%</div></td><td class="px-1"><div class="bg-indigo-100 text-indigo-900 py-2">28%</div></td></tr>
+                                    <tr class="h-10"><td class="text-left font-medium text-slate-700">Dec 15 - Dec 21</td><td class="text-slate-500">3,100</td><td class="px-1"><div class="bg-indigo-600 text-white py-2">100%</div></td><td class="px-1"><div class="bg-indigo-400 text-white py-2">42%</div></td><td class="px-1"><div class="bg-indigo-300 text-white py-2">30%</div></td><td class="px-1"><div class="bg-indigo-200 text-indigo-900 py-2">25%</div></td><td class="px-1"></td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -599,7 +609,7 @@
                  <!-- Header -->
                 <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                     <div><h2 class="text-xl font-bold text-slate-900 tracking-tight">Paid User Lifecycle</h2><p class="text-sm text-slate-500 mt-1">Track financial journey from trial to loyal customer</p></div>
-                    <div class="flex gap-2"><button class="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"><i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i><span>This Year</span></button></div>
+                    <div class="flex gap-2"><button class="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"><i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i><span>This Year</span></button></div>
                 </div>
 
                 <!-- Financial KPIs (FLAT) -->
@@ -625,22 +635,22 @@
                         <div class="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-10 -translate-y-1/2"></div>
                         <!-- Step 1 -->
                         <div class="bg-white border border-slate-200 p-4 w-full md:w-1/4 relative shadow-sm hover:border-orange-200 transition-colors">
-                            <div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Step 1</div><div class="font-bold text-slate-800 text-lg">Sign Up</div><div class="text-2xl font-bold text-slate-900 mt-2">15,200</div><div class="w-full bg-slate-100 h-1.5 rounded-full mt-3 overflow-hidden"><div class="bg-slate-400 h-full w-full"></div></div>
+                            <div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Step 1</div><div class="font-bold text-slate-800 text-lg">Sign Up</div><div class="text-2xl font-bold text-slate-900 mt-2">15,200</div><div class="w-full bg-slate-100 h-1.5 mt-3 overflow-hidden"><div class="bg-slate-400 h-full w-full"></div></div>
                         </div>
                         <i data-lucide="arrow-right" class="w-6 h-6 text-slate-300 hidden md:block"></i>
                         <!-- Step 2 -->
                         <div class="bg-white border border-slate-200 p-4 w-full md:w-1/4 relative shadow-sm hover:border-orange-200 transition-colors">
-                            <div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Step 2</div><div class="font-bold text-slate-800 text-lg">Trial Active</div><div class="text-2xl font-bold text-slate-900 mt-2">8,450</div><div class="text-[10px] text-slate-500 mt-1">55% Conversion</div><div class="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden"><div class="bg-orange-300 h-full w-[55%]"></div></div>
+                            <div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Step 2</div><div class="font-bold text-slate-800 text-lg">Trial Active</div><div class="text-2xl font-bold text-slate-900 mt-2">8,450</div><div class="text-[10px] text-slate-500 mt-1">55% Conversion</div><div class="w-full bg-slate-100 h-1.5 mt-2 overflow-hidden"><div class="bg-orange-300 h-full w-[55%]"></div></div>
                         </div>
                          <i data-lucide="arrow-right" class="w-6 h-6 text-slate-300 hidden md:block"></i>
                         <!-- Step 3 -->
                         <div class="bg-white border-2 border-orange-100 p-4 w-full md:w-1/4 relative shadow-sm bg-orange-50/50">
-                            <div class="text-[10px] text-orange-600 uppercase font-bold mb-1">Step 3</div><div class="font-bold text-slate-800 text-lg">Paid Customer</div><div class="text-2xl font-bold text-orange-600 mt-2">1,240</div><div class="text-[10px] text-slate-500 mt-1">14.6% Conversion</div><div class="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden"><div class="bg-orange-500 h-full w-[14%]"></div></div>
+                            <div class="text-[10px] text-orange-600 uppercase font-bold mb-1">Step 3</div><div class="font-bold text-slate-800 text-lg">Paid Customer</div><div class="text-2xl font-bold text-orange-600 mt-2">1,240</div><div class="text-[10px] text-slate-500 mt-1">14.6% Conversion</div><div class="w-full bg-slate-100 h-1.5 mt-2 overflow-hidden"><div class="bg-orange-500 h-full w-[14%]"></div></div>
                         </div>
                          <i data-lucide="arrow-right" class="w-6 h-6 text-slate-300 hidden md:block"></i>
                         <!-- Step 4 -->
                         <div class="bg-white border border-slate-200 p-4 w-full md:w-1/4 relative shadow-sm hover:border-orange-200 transition-colors">
-                            <div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Step 4</div><div class="font-bold text-slate-800 text-lg">Renewal</div><div class="text-2xl font-bold text-slate-900 mt-2">980</div><div class="text-[10px] text-slate-500 mt-1">79% Retention</div><div class="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden"><div class="bg-emerald-500 h-full w-[79%]"></div></div>
+                            <div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Step 4</div><div class="font-bold text-slate-800 text-lg">Renewal</div><div class="text-2xl font-bold text-slate-900 mt-2">980</div><div class="text-[10px] text-slate-500 mt-1">79% Retention</div><div class="w-full bg-slate-100 h-1.5 mt-2 overflow-hidden"><div class="bg-emerald-500 h-full w-[79%]"></div></div>
                         </div>
                     </div>
                 </div>
@@ -654,8 +664,8 @@
                             <table class="w-full text-left text-sm text-slate-600">
                                 <thead class="bg-slate-50 text-xs uppercase text-slate-500 font-semibold"><tr><th class="px-5 py-3">User</th><th class="px-5 py-3">Plan</th><th class="px-5 py-3">Date</th><th class="px-5 py-3 text-right">Value</th></tr></thead>
                                 <tbody class="divide-y divide-slate-100">
-                                    <tr class="table-row-hover"><td class="px-5 py-3 font-medium text-slate-900">acme_inc@company.com</td><td class="px-5 py-3"><span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-[10px] font-bold">PRO</span></td><td class="px-5 py-3 text-slate-500 text-xs">Today, 10:23 AM</td><td class="px-5 py-3 text-right font-medium">$499.00</td></tr>
-                                    <tr class="table-row-hover"><td class="px-5 py-3 font-medium text-slate-900">sarah.j@startup.io</td><td class="px-5 py-3"><span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] font-bold">STARTER</span></td><td class="px-5 py-3 text-slate-500 text-xs">Yesterday</td><td class="px-5 py-3 text-right font-medium">$99.00</td></tr>
+                                    <tr class="table-row-hover"><td class="px-5 py-3 font-medium text-slate-900">acme_inc@company.com</td><td class="px-5 py-3"><span class="bg-orange-100 text-orange-700 px-2 py-0.5 text-[10px] font-bold">PRO</span></td><td class="px-5 py-3 text-slate-500 text-xs">Today, 10:23 AM</td><td class="px-5 py-3 text-right font-medium">$499.00</td></tr>
+                                    <tr class="table-row-hover"><td class="px-5 py-3 font-medium text-slate-900">sarah.j@startup.io</td><td class="px-5 py-3"><span class="bg-slate-100 text-slate-600 px-2 py-0.5 text-[10px] font-bold">STARTER</span></td><td class="px-5 py-3 text-slate-500 text-xs">Yesterday</td><td class="px-5 py-3 text-right font-medium">$99.00</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -664,11 +674,11 @@
                     <div class="bg-white border border-slate-200 shadow-sm p-6">
                         <h3 class="font-bold text-slate-800 text-sm mb-4">Churn Reasons</h3>
                         <div class="flex items-center gap-4">
-                            <div class="w-24 h-24 rounded-full border-[12px] border-slate-100 relative shrink-0" style="background: conic-gradient(#f43f5e 0% 35%, #fb923c 35% 60%, #cbd5e1 60% 100%); border-width: 0;"><div class="absolute inset-4 bg-white rounded-full flex items-center justify-center"><span class="text-xs font-bold text-slate-600">Total</span></div></div>
+                            <div class="w-24 h-24 border-[12px] border-slate-100 relative shrink-0 rounded-full" style="background: conic-gradient(#f43f5e 0% 35%, #fb923c 35% 60%, #cbd5e1 60% 100%); border-width: 0;"><div class="absolute inset-4 bg-white rounded-full flex items-center justify-center"><span class="text-xs font-bold text-slate-600">Total</span></div></div>
                             <div class="space-y-2 w-full">
-                                <div class="flex justify-between text-xs"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-rose-500"></div> Price too high</div><span class="font-bold">35%</span></div>
-                                <div class="flex justify-between text-xs"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-orange-400"></div> Missing features</div><span class="font-bold">25%</span></div>
-                                 <div class="flex justify-between text-xs"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-slate-300"></div> Other</div><span class="font-bold">40%</span></div>
+                                <div class="flex justify-between text-xs"><div class="flex items-center gap-2"><div class="w-2 h-2 bg-rose-500"></div> Price too high</div><span class="font-bold">35%</span></div>
+                                <div class="flex justify-between text-xs"><div class="flex items-center gap-2"><div class="w-2 h-2 bg-orange-400"></div> Missing features</div><span class="font-bold">25%</span></div>
+                                 <div class="flex justify-between text-xs"><div class="flex items-center gap-2"><div class="w-2 h-2 bg-slate-300"></div> Other</div><span class="font-bold">40%</span></div>
                             </div>
                         </div>
                     </div>
@@ -682,37 +692,81 @@
                     <p class="text-sm text-slate-500 mt-1">Customize how the dashboard looks and feels on your device.</p>
                 </div>
                 <div class="max-w-2xl">
+                    <!-- Theme Selector -->
                     <div class="bg-white border border-slate-200 shadow-sm p-6 mb-6">
                         <h3 class="font-bold text-slate-800 text-sm mb-4">Interface Theme</h3>
                         <div class="grid grid-cols-3 gap-4">
+                            <!-- Light Mode -->
                             <div class="cursor-pointer group">
                                 <div class="h-32 border-2 border-orange-500 bg-slate-50 p-2 relative overflow-hidden">
                                     <div class="h-full w-full bg-white border border-slate-200 shadow-sm flex flex-col">
                                         <div class="h-3 w-full border-b border-slate-100 flex items-center px-1 gap-1">
-                                            <div class="w-1 h-1 rounded-full bg-slate-300"></div><div class="w-1 h-1 rounded-full bg-slate-300"></div>
+                                            <div class="w-1 h-1 bg-slate-300"></div>
+                                            <div class="w-1 h-1 bg-slate-300"></div>
                                         </div>
-                                        <div class="flex-1 p-2 space-y-1"><div class="w-2/3 h-2 bg-slate-100 rounded"></div><div class="w-1/2 h-2 bg-slate-100 rounded"></div></div>
+                                        <div class="flex-1 p-2 space-y-1">
+                                            <div class="w-2/3 h-2 bg-slate-100"></div>
+                                            <div class="w-1/2 h-2 bg-slate-100"></div>
+                                        </div>
                                     </div>
-                                    <div class="absolute bottom-2 right-2 w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center text-white"><i data-lucide="check" class="w-3 h-3"></i></div>
+                                    <div class="absolute bottom-2 right-2 w-5 h-5 bg-orange-500 flex items-center justify-center text-white">
+                                        <i data-lucide="check" class="w-3 h-3"></i>
+                                    </div>
                                 </div>
                                 <div class="text-xs font-medium text-slate-700 mt-2 text-center">Light Mode</div>
                             </div>
+
+                            <!-- Dark Mode -->
                             <div class="cursor-pointer group opacity-60 hover:opacity-100 transition-opacity">
                                 <div class="h-32 border-2 border-transparent group-hover:border-slate-300 bg-slate-900 p-2 relative overflow-hidden">
                                     <div class="h-full w-full bg-slate-800 border border-slate-700 shadow-sm flex flex-col">
                                         <div class="h-3 w-full border-b border-slate-700 flex items-center px-1 gap-1">
-                                            <div class="w-1 h-1 rounded-full bg-slate-600"></div><div class="w-1 h-1 rounded-full bg-slate-600"></div>
+                                            <div class="w-1 h-1 bg-slate-600"></div>
+                                            <div class="w-1 h-1 bg-slate-600"></div>
                                         </div>
-                                        <div class="flex-1 p-2 space-y-1"><div class="w-2/3 h-2 bg-slate-700 rounded"></div><div class="w-1/2 h-2 bg-slate-700 rounded"></div></div>
+                                        <div class="flex-1 p-2 space-y-1">
+                                            <div class="w-2/3 h-2 bg-slate-700"></div>
+                                            <div class="w-1/2 h-2 bg-slate-700"></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="text-xs font-medium text-slate-700 mt-2 text-center">Dark Mode</div>
                             </div>
+
+                            <!-- System -->
                             <div class="cursor-pointer group opacity-60 hover:opacity-100 transition-opacity">
                                 <div class="h-32 border-2 border-transparent group-hover:border-slate-300 bg-gradient-to-br from-slate-50 to-slate-900 p-2 relative overflow-hidden flex items-center justify-center">
                                     <i data-lucide="monitor" class="text-slate-400 w-8 h-8"></i>
                                 </div>
                                 <div class="text-xs font-medium text-slate-700 mt-2 text-center">System Preference</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accent Color (Flat) -->
+                    <div class="bg-white border border-slate-200 shadow-sm p-6 mb-6">
+                        <h3 class="font-bold text-slate-800 text-sm mb-4">Brand Accent Color</h3>
+                        <div class="flex gap-4">
+                            <button class="w-8 h-8 bg-orange-500 ring-2 ring-offset-2 ring-orange-500 cursor-default"></button>
+                            <button class="w-8 h-8 bg-blue-500 hover:ring-2 hover:ring-offset-2 hover:ring-blue-500 transition-all"></button>
+                            <button class="w-8 h-8 bg-violet-500 hover:ring-2 hover:ring-offset-2 hover:ring-violet-500 transition-all"></button>
+                            <button class="w-8 h-8 bg-emerald-500 hover:ring-2 hover:ring-offset-2 hover:ring-emerald-500 transition-all"></button>
+                            <button class="w-8 h-8 bg-rose-500 hover:ring-2 hover:ring-offset-2 hover:ring-rose-500 transition-all"></button>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-3">This color will be used for buttons, active states, and highlights.</p>
+                    </div>
+
+                    <!-- Density (Flat Toggle) -->
+                    <div class="bg-white border border-slate-200 shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-sm">Compact Mode</h3>
+                                <p class="text-xs text-slate-500">Reduce whitespace for higher data density</p>
+                            </div>
+                            <!-- Simple Toggle -->
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle" id="toggle-density" class="toggle-checkbox absolute block w-5 h-5 bg-white border-4 appearance-none cursor-pointer border-slate-300"/>
+                                <label for="toggle-density" class="toggle-label block overflow-hidden h-5 bg-slate-300 cursor-pointer"></label>
                             </div>
                         </div>
                     </div>
@@ -725,24 +779,110 @@
                     <h2 class="text-xl font-bold text-slate-900 tracking-tight">Account Settings</h2>
                     <p class="text-sm text-slate-500 mt-1">Manage your personal information and security preferences.</p>
                 </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Left: Profile Form (2/3) -->
                     <div class="lg:col-span-2 space-y-6">
+                        
+                        <!-- Profile Card -->
                         <div class="bg-white border border-slate-200 shadow-sm p-6">
                             <h3 class="font-bold text-slate-800 text-sm mb-6 pb-4 border-b border-slate-100">Public Profile</h3>
+                            
                             <div class="flex items-start gap-6 mb-6">
-                                <div class="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 text-slate-400 text-xl font-bold shrink-0 relative group cursor-pointer">
+                                <div class="w-20 h-20 bg-slate-100 flex items-center justify-center border border-slate-200 text-slate-400 text-xl font-bold shrink-0 relative group cursor-pointer">
                                     JD
-                                    <div class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity text-[10px]">Change</div>
+                                    <div class="absolute inset-0 bg-black/50 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity text-[10px]">
+                                        Change
+                                    </div>
                                 </div>
                                 <div class="space-y-4 flex-1">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div><label class="block text-xs font-semibold text-slate-500 mb-1.5">First Name</label><input type="text" value="John" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors"></div>
-                                        <div><label class="block text-xs font-semibold text-slate-500 mb-1.5">Last Name</label><input type="text" value="Doe" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors"></div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-500 mb-1.5">First Name</label>
+                                            <input type="text" value="John" class="w-full px-3 py-2 border border-slate-200 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-500 mb-1.5">Last Name</label>
+                                            <input type="text" value="Doe" class="w-full px-3 py-2 border border-slate-200 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Role / Job Title</label>
+                                        <input type="text" value="Administrator" class="w-full px-3 py-2 border border-slate-200 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors">
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex justify-end"><button class="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors">Save Changes</button></div>
+                            
+                            <div class="flex justify-end">
+                                <button class="px-4 py-2 bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition-colors">Save Changes</button>
+                            </div>
                         </div>
+
+                        <!-- Email Card -->
+                        <div class="bg-white border border-slate-200 shadow-sm p-6">
+                            <h3 class="font-bold text-slate-800 text-sm mb-6 pb-4 border-b border-slate-100">Contact Email</h3>
+                            <div class="flex items-center gap-4 justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-slate-900">john.doe@insightfy.ai</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">This email will be used for account notifications and login.</p>
+                                </div>
+                                <button class="text-xs text-slate-500 border border-slate-200 px-3 py-1.5 hover:bg-slate-50">Edit</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right: Security & Prefs (1/3) -->
+                    <div class="space-y-6">
+                        
+                        <!-- Security -->
+                        <div class="bg-white border border-slate-200 shadow-sm p-6">
+                            <h3 class="font-bold text-slate-800 text-sm mb-4">Security</h3>
+                            <div class="space-y-4">
+                                <button class="w-full text-left px-3 py-2.5 border border-slate-100 hover:border-slate-300 hover:bg-slate-50 transition-all flex justify-between items-center group">
+                                    <span class="text-sm text-slate-600 group-hover:text-slate-900">Change Password</span>
+                                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                                </button>
+                                <button class="w-full text-left px-3 py-2.5 border border-slate-100 hover:border-slate-300 hover:bg-slate-50 transition-all flex justify-between items-center group">
+                                    <span class="text-sm text-slate-600 group-hover:text-slate-900">Two-Factor Auth</span>
+                                    <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 font-bold">ENABLED</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Notifications -->
+                        <div class="bg-white border border-slate-200 shadow-sm p-6">
+                            <h3 class="font-bold text-slate-800 text-sm mb-4">Notifications</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-slate-600">Weekly Reports</span>
+                                    <div class="relative inline-block w-8 align-middle select-none">
+                                        <input type="checkbox" checked class="toggle-checkbox absolute block w-4 h-4 bg-white border-2 appearance-none cursor-pointer border-slate-300"/>
+                                        <label class="toggle-label block overflow-hidden h-4 bg-slate-300 cursor-pointer"></label>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-slate-600">Product Updates</span>
+                                    <div class="relative inline-block w-8 align-middle select-none">
+                                        <input type="checkbox" checked class="toggle-checkbox absolute block w-4 h-4 bg-white border-2 appearance-none cursor-pointer border-slate-300"/>
+                                        <label class="toggle-label block overflow-hidden h-4 bg-slate-300 cursor-pointer"></label>
+                                    </div>
+                                </div>
+                                 <div class="flex justify-between items-center">
+                                    <span class="text-sm text-slate-600">Security Alerts</span>
+                                    <div class="relative inline-block w-8 align-middle select-none">
+                                        <input type="checkbox" checked disabled class="toggle-checkbox absolute block w-4 h-4 bg-white border-2 appearance-none cursor-not-allowed border-slate-300 right-0 border-emerald-500"/>
+                                        <label class="toggle-label block overflow-hidden h-4 bg-emerald-500 cursor-not-allowed"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Danger Zone -->
+                        <div class="pt-4 border-t border-slate-100">
+                            <button class="text-xs text-rose-500 hover:text-rose-700 font-medium">Delete Account</button>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -772,7 +912,20 @@
             }
         }
 
-        // 3. Navigation Logic (SPA Switcher)
+        // 3. Submenu Toggle Logic (Fixed)
+        function toggleSubmenu(elementId, trigger) {
+            const submenu = document.getElementById(elementId);
+            submenu.classList.toggle('hidden');
+            
+            // Find the SVG icon generated by Lucide
+            const icon = trigger.querySelector('svg:last-child');
+            if (icon) {
+                // Toggle rotation
+                icon.classList.toggle('rotate-180');
+            }
+        }
+
+        // 4. Navigation Logic (SPA Switcher)
         function switchPage(pageName) {
             // Mobile: Close sidebar automatically when a link is clicked
             const sidebar = document.getElementById('sidebar');
@@ -834,7 +987,7 @@
                 }
 
                 const dot = document.createElement('div');
-                dot.className = 'w-1.5 h-1.5 rounded-full bg-orange-500 shadow-sm indicator ml-auto';
+                dot.className = 'w-1.5 h-1.5 bg-orange-500 shadow-sm indicator ml-auto';
                 activeItem.appendChild(dot);
             } 
             else if (submenuItems[pageName]) {
