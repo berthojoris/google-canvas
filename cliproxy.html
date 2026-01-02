@@ -672,10 +672,10 @@
                 if (settings[provider.key] !== false) { // Show if enabled or not set (default true)
                     hasEnabled = true;
                     const providerDiv = document.createElement('div');
-                    providerDiv.className = 'space-y-2';
+                    providerDiv.className = 'space-y-2 p-3 border-2 border-dashed border-green-300 bg-transparent text-green-800';
                     providerDiv.innerHTML = `
                         <div class="flex items-center justify-between">
-                            <span class="text-sm font-medium text-textMain">${provider.name}</span>
+                            <span class="text-sm font-medium">${provider.name}</span>
                             <button onclick="addOAuth('${provider.name.toLowerCase()}')" class="flex items-center px-3 py-1 bg-gradient-green text-white text-sm font-medium hover:bg-green-600 transition-colors">
                                 <i data-lucide="link" class="w-4 h-4 mr-1"></i>Add OAuth
                             </button>
