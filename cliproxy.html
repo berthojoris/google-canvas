@@ -134,6 +134,11 @@
             line-height: 1.6;
         }
 
+        .terminal-logs {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
         .log-entry {
             animation: slideIn 0.2s ease-out;
         }
@@ -268,7 +273,7 @@
         </div>
     </div>
 
-    <main class="relative z-10 pt-24 pb-12 px-4 max-w-7xl mx-auto h-screen flex flex-col">
+    <main class="relative z-10 pt-24 pb-12 px-4 max-w-7xl mx-auto h-screen flex flex-col overflow-x-hidden">
         <div class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             <div class="lg:col-span-1 space-y-6">
