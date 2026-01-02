@@ -672,7 +672,9 @@
                     providerDiv.innerHTML = `
                         <div class="flex items-center justify-between">
                             <span class="text-sm font-medium text-textMain">${provider.name}</span>
-                            <button onclick="addOAuth('${provider.name.toLowerCase()}')" class="px-3 py-1 bg-green-500 text-white text-sm font-medium hover:bg-green-600 transition-colors">Add OAuth</button>
+                            <button onclick="addOAuth('${provider.name.toLowerCase()}')" class="flex items-center px-3 py-1 bg-green-500 text-white text-sm font-medium hover:bg-green-600 transition-colors">
+                                <i data-lucide="link" class="w-4 h-4 mr-1"></i>Add OAuth
+                            </button>
                         </div>
                         <div id="accounts-${provider.name.toLowerCase()}" class="space-y-1">
                             <!-- Accounts will be listed here -->
@@ -702,19 +704,32 @@
             }
         }
 
+        function deleteAccount(provider, accountName) {
+            const accounts = JSON.parse(localStorage.getItem('oauthAccounts') || '{}');
+            if (accounts[provider]) {
+                accounts[provider] = accounts[provider].filter(account => account.name !== accountName);
+                localStorage.setItem('oauthAccounts', JSON.stringify(accounts));
+                loadAccounts();
+                addLog(`OAuth deleted for ${provider}: ${accountName}`, 'warning');
+            }
+        }
+
         function loadAccounts() {
             const accounts = JSON.parse(localStorage.getItem('oauthAccounts') || '{}');
             Object.keys(accounts).forEach(provider => {
                 const accountList = document.getElementById(`accounts-${provider}`);
                 if (accountList) {
                     accountList.innerHTML = accounts[provider].map(account => `
-                        <div class="flex items-center justify-between px-2 py-1 bg-background border border-border text-sm">
+                        <div class="flex items-center justify-between px-3 py-2 bg-green-50 border-2 border-dashed border-green-300 text-green-800 text-sm">
                             <span>${account.name}</span>
-                            <div class="w-2 h-2 bg-green-500 rounded-full" title="Authenticated"></div>
+                            <button onclick="deleteAccount('${provider}', '${account.name}')" class="text-red-500 hover:text-red-700">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
                         </div>
                     `).join('');
                 }
             });
+            lucide.createIcons();
         }
 
         function closeAuth() {
