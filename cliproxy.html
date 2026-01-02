@@ -321,8 +321,8 @@
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            <div class="space-y-4">
-                <p class="text-textMuted">Authentication settings will be implemented here.</p>
+            <div id="auth-content" class="space-y-4">
+                <!-- Dynamic content will be inserted here -->
             </div>
         </div>
     </div>
@@ -648,7 +648,67 @@
 
         function openAuth() {
             console.log('Open auth');
+            renderAuthPanel();
             document.getElementById('auth-panel').classList.remove('translate-x-full');
+        }
+
+        function renderAuthPanel() {
+            const settings = JSON.parse(localStorage.getItem('cliProxySettings') || '{}');
+            const authContent = document.getElementById('auth-content');
+            authContent.innerHTML = '';
+
+            const providers = [
+                { name: 'Gemini', key: 'geminiEnabled' },
+                { name: 'Qwen', key: 'qwenEnabled' },
+                { name: 'iFlow', key: 'iflowEnabled' }
+            ];
+
+            providers.forEach(provider => {
+                if (settings[provider.key]) {
+                    const providerDiv = document.createElement('div');
+                    providerDiv.className = 'space-y-2';
+                    providerDiv.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-textMain">${provider.name}</span>
+                            <button onclick="addOAuth('${provider.name.toLowerCase()}')" class="px-3 py-1 bg-green-500 text-white text-sm font-medium hover:bg-green-600 transition-colors">Add OAuth</button>
+                        </div>
+                        <div id="accounts-${provider.name.toLowerCase()}" class="space-y-1">
+                            <!-- Accounts will be listed here -->
+                        </div>
+                    `;
+                    authContent.appendChild(providerDiv);
+                }
+            });
+
+            // Load and display accounts
+            loadAccounts();
+        }
+
+        function addOAuth(provider) {
+            const accountName = prompt(`Enter account name for ${provider}:`);
+            if (accountName) {
+                const accounts = JSON.parse(localStorage.getItem('oauthAccounts') || '{}');
+                if (!accounts[provider]) accounts[provider] = [];
+                accounts[provider].push({ name: accountName, authenticated: true });
+                localStorage.setItem('oauthAccounts', JSON.stringify(accounts));
+                loadAccounts();
+                addLog(`OAuth added for ${provider}: ${accountName}`, 'success');
+            }
+        }
+
+        function loadAccounts() {
+            const accounts = JSON.parse(localStorage.getItem('oauthAccounts') || '{}');
+            Object.keys(accounts).forEach(provider => {
+                const accountList = document.getElementById(`accounts-${provider}`);
+                if (accountList) {
+                    accountList.innerHTML = accounts[provider].map(account => `
+                        <div class="flex items-center justify-between px-2 py-1 bg-background border border-border text-sm">
+                            <span>${account.name}</span>
+                            <div class="w-2 h-2 bg-green-500 rounded-full" title="Authenticated"></div>
+                        </div>
+                    `).join('');
+                }
+            });
         }
 
         function closeAuth() {
@@ -661,7 +721,9 @@
             const geminiEnabled = document.getElementById('gemini-toggle').checked;
             const qwenEnabled = document.getElementById('qwen-toggle').checked;
             const iflowEnabled = document.getElementById('iflow-toggle').checked;
-            console.log('Save settings, path:', path, 'gemini:', geminiEnabled, 'qwen:', qwenEnabled, 'iflow:', iflowEnabled);
+            const settings = { path, geminiEnabled, qwenEnabled, iflowEnabled };
+            localStorage.setItem('cliProxySettings', JSON.stringify(settings));
+            console.log('Save settings:', settings);
             addLog('Settings saved', 'success');
             closeSettings();
         }
