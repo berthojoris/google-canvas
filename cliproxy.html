@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLI Proxy Manager</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        background: 'var(--bg-background)',
+                        surface: 'var(--bg-surface)',
+                        surfaceHighlight: 'var(--bg-surface-highlight)',
+                        border: 'var(--border-color)',
+                        textMain: 'var(--text-main)',
+                        textMuted: 'var(--text-muted)',
+                        primary: '#6366f1',
+                        primaryGlow: 'rgba(99, 102, 241, 0.15)',
+                        accent: '#a855f7',
+                        brand: '#10b981',
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, var(--grid-color) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px)",
+                        'radial-glow': 'radial-gradient(circle at center, var(--tw-gradient-stops))',
+                        'gradient-green': 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                        'gradient-red': 'linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%)',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                        'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 3s linear infinite',
+                        'bounce-subtle': 'bounceSubtle 1s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)' },
+                            '50%': { boxShadow: '0 0 40px rgba(16, 185, 129, 0.8)' },
+                        },
+                        bounceSubtle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-background: #ffffff;
+            --bg-surface: #f4f4f5;
+            --bg-surface-highlight: #e4e4e7;
+            --border-color: #e4e4e7;
+            --text-main: #18181b;
+            --text-muted: #71717a;
+            --grid-color: #e4e4e7;
+        }
+
+        .dark {
+            --bg-background: #09090b;
+            --bg-surface: #18181b;
+            --bg-surface-highlight: #27272a;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --grid-color: #27272a;
+        }
+
+        html, body {
+            overflow-x: hidden;
+            max-width: 100%;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-background); }
+        ::-webkit-scrollbar-thumb { background: var(--bg-surface-highlight); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a1a1aa; }
+
+        .bg-grid {
+            background-size: 40px 40px;
+            mask-image: linear-gradient(to bottom, transparent, 10%, black, 90%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, 5%, black, 95%, transparent);
+        }
+
+        .control-button {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .control-button:hover {
+            transform: scale(1.05);
+        }
+
+        .control-button:active {
+            transform: scale(0.95);
+        }
+
+        .status-indicator {
+            transition: all 0.3s ease;
+        }
+
+        .terminal-container {
+        background: #1e1e1e;
+        overflow: hidden;
+    }
+
+        .terminal-header {
+            background: #2d2d2d;
+            border-bottom: 1px solid #3a3a3a;
+        }
+
+        .terminal-content {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            animation: slideIn 0.2s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .log-time {
+            color: #6b7280;
+        }
+
+        .log-info {
+            color: #60a5fa;
+        }
+
+        .log-success {
+            color: #4ade80;
+        }
+
+        .log-warning {
+            color: #fbbf24;
+        }
+
+        .log-error {
+            color: #f87171;
+        }
+
+        .glow-effect {
+            filter: drop-shadow(0 0 20px currentColor);
+        }
+
+        .running-glow {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        .card-hoverable {
+            transition: all 0.3s ease;
+        }
+
+        .card-hoverable:hover {
+            background-color: var(--bg-surface-highlight);
+        }
+
+        #glow-ring {
+            transition: all 0.3s ease;
+        }
+
+        #glow-ring.opacity-60 {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                opacity: 0.4;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-textMain antialiased selection:bg-brand selection:text-white overflow-x-hidden font-sans transition-colors duration-300">
+
+    <div class="absolute inset-0 bg-grid opacity-[0.03] pointer-events-none"></div>
+    <div class="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/15 via-zinc-400/10 to-transparent blur-[100px] pointer-events-none z-0 opacity-80 dark:opacity-50"></div>
+
+    <nav class="fixed w-full z-50 top-0 border-b border-border bg-background transition-colors duration-200">
+        <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-6 h-6 flex items-center justify-center">
+                    <i data-lucide="shield" class="w-5 h-5 text-textMain"></i>
+                </div>
+                <span class="font-display font-semibold text-base text-textMain">CLI Proxy Manager</span>
+                <span class="px-2 py-0.5 text-xs font-mono bg-surface border border-border text-textMuted">v1.0.0</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="settings-btn" class="flex items-center gap-2 px-3 py-1.5 text-sm text-textMuted hover:text-textMain hover:bg-surface border border-transparent hover:border-border transition-colors">
+                    <i data-lucide="settings" class="w-4 h-4"></i>
+                    <span>Settings</span>
+                </button>
+                <button id="auth-btn" class="flex items-center gap-2 px-3 py-1.5 text-sm text-textMuted hover:text-textMain hover:bg-surface border border-transparent hover:border-border transition-colors">
+                    <i data-lucide="lock" class="w-4 h-4"></i>
+                    <span>Auth</span>
+                </button>
+                <div class="w-px h-5 bg-border mx-1"></div>
+                <button id="theme-toggle" class="p-1.5 text-textMuted hover:text-textMain hover:bg-surface transition-colors">
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="relative z-10 pt-24 pb-12 px-4 max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="lg:col-span-1 space-y-6">
+                
+                <div class="card-hoverable bg-surface border border-border p-8 text-center">
+                    <h2 class="font-display font-semibold text-lg text-textMain mb-8">Proxy Control</h2>
+                    
+                    <div class="relative inline-block mb-8">
+                        <div id="glow-ring" class="absolute inset-0 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 blur-2xl opacity-0 transition-opacity duration-300"></div>
+                        <button id="control-btn" class="control-button relative w-40 h-40 rounded-full bg-gradient-green text-white flex flex-col items-center justify-center shadow-2xl z-10">
+                            <i data-lucide="play" id="play-icon" class="w-16 h-16 mb-2"></i>
+                            <i data-lucide="square" id="stop-icon" class="w-16 h-16 mb-2 hidden"></i>
+                            <span id="control-text" class="font-display font-bold text-2xl">RUN</span>
+                        </button>
+                    </div>
+
+                    <div id="status-display" class="space-y-3">
+                        <div class="flex items-center justify-between px-4 py-3 bg-background/50 border border-border">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="activity" class="w-4 h-4 text-brand"></i>
+                                <span class="text-sm text-textMuted">Status</span>
+                            </div>
+                            <span id="status-text" class="text-sm font-semibold text-zinc-500">Stopped</span>
+                        </div>
+                        <div class="flex items-center justify-between px-4 py-3 bg-background/50 border border-border">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="cpu" class="w-4 h-4 text-primary"></i>
+                                <span class="text-sm text-textMuted">Memory</span>
+                            </div>
+                            <span id="memory-text" class="text-sm font-semibold text-textMain">0 MB</span>
+                        </div>
+                        <div class="flex items-center justify-between px-4 py-3 bg-background/50 border border-border">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="network" class="w-4 h-4 text-accent"></i>
+                                <span class="text-sm text-textMuted">Network</span>
+                            </div>
+                            <span id="network-text" class="text-sm font-semibold text-textMain">0 KB/s</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-hoverable bg-surface border border-border p-6">
+                    <h3 class="font-display font-semibold text-base text-textMain mb-4 flex items-center gap-2">
+                        <i data-lucide="info" class="w-4 h-4 text-primary"></i>
+                        Proxy Info
+                    </h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-textMuted">Version</span>
+                            <span class="font-mono text-textMain">v1.0.0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-textMuted">Port</span>
+                            <span class="font-mono text-textMain">8080</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-textMuted">Protocol</span>
+                            <span class="font-mono text-textMain">HTTP/HTTPS</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-textMuted">Uptime</span>
+                            <span id="uptime-text" class="font-mono text-textMain">00:00:00</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="lg:col-span-2">
+                <div class="bg-surface border border-border overflow-hidden h-full flex flex-col">
+                    <div class="terminal-header px-4 py-3 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500/80 hover:bg-red-500 cursor-pointer transition-colors"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500/80 hover:bg-yellow-500 cursor-pointer transition-colors"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500/80 hover:bg-green-500 cursor-pointer transition-colors"></div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="terminal" class="w-4 h-4 text-zinc-400"></i>
+                            <span class="text-xs font-mono text-zinc-400">proxy — bash — 80x24</span>
+                        </div>
+                    </div>
+                    <div class="terminal-content flex-1 overflow-hidden flex flex-col">
+                        <div id="terminal-logs" class="flex-1 overflow-y-auto p-4 space-y-1 min-h-[500px] max-h-[600px]">
+                            <div class="log-entry">
+                                <span class="log-time">[12:00:00]</span>
+                                <span class="log-info"> [INFO]</span>
+                                <span class="text-zinc-300"> CLI Proxy Manager initialized</span>
+                            </div>
+                            <div class="log-entry">
+                                <span class="log-time">[12:00:00]</span>
+                                <span class="log-info"> [INFO]</span>
+                                <span class="text-zinc-300"> Version: v1.0.0</span>
+                            </div>
+                            <div class="log-entry">
+                                <span class="log-time">[12:00:00]</span>
+                                <span class="log-info"> [INFO]</span>
+                                <span class="text-zinc-300"> Ready to start proxy server</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        let isRunning = false;
+        let uptimeSeconds = 0;
+        let uptimeInterval = null;
+
+        const controlBtn = document.getElementById('control-btn');
+        const playIcon = document.getElementById('play-icon');
+        const stopIcon = document.getElementById('stop-icon');
+        const controlText = document.getElementById('control-text');
+        const glowRing = document.getElementById('glow-ring');
+        const statusText = document.getElementById('status-text');
+        const memoryText = document.getElementById('memory-text');
+        const networkText = document.getElementById('network-text');
+        const uptimeText = document.getElementById('uptime-text');
+        const terminalLogs = document.getElementById('terminal-logs');
+
+        function formatTime(seconds) {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString('en-US', { hour12: false });
+        }
+
+        function addLog(message, type = 'info') {
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            
+            let typeClass = 'log-info';
+            let typeLabel = 'INFO';
+            
+            switch(type) {
+                case 'success':
+                    typeClass = 'log-success';
+                    typeLabel = 'SUCCESS';
+                    break;
+                case 'warning':
+                    typeClass = 'log-warning';
+                    typeLabel = 'WARNING';
+                    break;
+                case 'error':
+                    typeClass = 'log-error';
+                    typeLabel = 'ERROR';
+                    break;
+                default:
+                    typeClass = 'log-info';
+                    typeLabel = 'INFO';
+            }
+            
+            logEntry.innerHTML = `
+                <span class="log-time">[${getCurrentTime()}]</span>
+                <span class="${typeClass}"> [${typeLabel}]</span>
+                <span class="text-zinc-300"> ${message}</span>
+            `;
+            
+            terminalLogs.appendChild(logEntry);
+            terminalLogs.scrollTop = terminalLogs.scrollHeight;
+        }
+
+        function updateStatusUI() {
+            if (isRunning) {
+                controlBtn.classList.remove('bg-gradient-green');
+                controlBtn.classList.add('bg-gradient-red', 'running-glow');
+                controlText.textContent = 'STOP';
+                statusText.textContent = 'Running';
+                statusText.classList.remove('text-zinc-500');
+                statusText.classList.add('text-brand');
+                glowRing.classList.remove('opacity-0');
+                glowRing.classList.add('opacity-60');
+                
+                playIcon.classList.add('hidden');
+                stopIcon.classList.remove('hidden');
+            } else {
+                controlBtn.classList.remove('bg-gradient-red', 'running-glow');
+                controlBtn.classList.add('bg-gradient-green');
+                controlText.textContent = 'RUN';
+                statusText.textContent = 'Stopped';
+                statusText.classList.remove('text-brand');
+                statusText.classList.add('text-zinc-500');
+                glowRing.classList.remove('opacity-60');
+                glowRing.classList.add('opacity-0');
+                
+                stopIcon.classList.add('hidden');
+                playIcon.classList.remove('hidden');
+            }
+        }
+
+        function startProxy() {
+            isRunning = true;
+            updateStatusUI();
+            addLog('Starting CLI Proxy server...', 'info');
+            
+            setTimeout(() => {
+                addLog('Proxy server listening on port 8080', 'success');
+                addLog('HTTP/HTTPS proxy enabled', 'info');
+            }, 500);
+            
+            uptimeInterval = setInterval(() => {
+                uptimeSeconds++;
+                uptimeText.textContent = formatTime(uptimeSeconds);
+                
+                const memoryUsage = Math.floor(50 + Math.random() * 100);
+                memoryText.textContent = `${memoryUsage} MB`;
+                
+                const networkSpeed = (Math.random() * 500).toFixed(1);
+                networkText.textContent = `${networkSpeed} KB/s`;
+            }, 1000);
+        }
+
+        function stopProxy() {
+            isRunning = false;
+            updateStatusUI();
+            addLog('Stopping CLI Proxy server...', 'warning');
+            
+            setTimeout(() => {
+                addLog('Proxy server stopped', 'info');
+                clearInterval(uptimeInterval);
+                uptimeSeconds = 0;
+                uptimeText.textContent = '00:00:00';
+                memoryText.textContent = '0 MB';
+                networkText.textContent = '0 KB/s';
+            }, 500);
+        }
+
+        controlBtn.addEventListener('click', () => {
+            if (isRunning) {
+                stopProxy();
+            } else {
+                startProxy();
+            }
+        });
+
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        document.getElementById('settings-btn').addEventListener('click', () => {
+            addLog('Opening settings panel...', 'info');
+        });
+
+        document.getElementById('auth-btn').addEventListener('click', () => {
+            addLog('Opening authentication panel...', 'info');
+        });
+    </script>
+
+</body>
+</html>
