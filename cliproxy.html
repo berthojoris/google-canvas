@@ -219,7 +219,7 @@
         <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
             <div class="flex items-center gap-4">
                 <button id="menu-toggle" class="md:hidden p-1.5 text-textMuted hover:text-textMain hover:bg-surface transition-colors" onclick="toggleMenu()">
-                    <i data-lucide="menu" class="w-5 h-5 transition-all duration-300"></i>
+                    <i data-lucide="sidebar" class="w-5 h-5 transition-all duration-300"></i>
                 </button>
                 <div class="w-6 h-6 flex items-center justify-center">
                     <i data-lucide="shield" class="w-5 h-5 text-textMain"></i>
@@ -551,9 +551,9 @@
             menu.classList.toggle('-translate-x-full');
             overlay.classList.toggle('hidden');
             if (isOpen) {
-                menuIcon.setAttribute('data-lucide', 'x');
+                menuIcon.setAttribute('data-lucide', 'sidebar-close');
             } else {
-                menuIcon.setAttribute('data-lucide', 'menu');
+                menuIcon.setAttribute('data-lucide', 'sidebar');
             }
             lucide.createIcons();
         }
