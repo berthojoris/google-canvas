@@ -213,13 +213,16 @@
     <nav class="fixed w-full z-50 top-0 border-b border-border bg-background transition-colors duration-200">
         <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
             <div class="flex items-center gap-4">
+                <button id="menu-toggle" class="md:hidden p-1.5 text-textMuted hover:text-textMain hover:bg-surface transition-colors" onclick="toggleMenu()">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
                 <div class="w-6 h-6 flex items-center justify-center">
                     <i data-lucide="shield" class="w-5 h-5 text-textMain"></i>
                 </div>
                 <span class="font-display font-semibold text-base text-textMain">CLI Proxy Manager</span>
                 <span class="px-2 py-0.5 text-xs font-mono bg-surface border border-border text-textMuted">v1.0.0</span>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="hidden md:flex items-center gap-2">
                 <button id="settings-btn" class="flex items-center gap-2 px-3 py-1.5 text-sm text-textMuted hover:text-textMain hover:bg-surface border border-transparent hover:border-border transition-colors">
                     <i data-lucide="settings" class="w-4 h-4"></i>
                     <span>Settings</span>
@@ -236,6 +239,34 @@
             </div>
         </div>
     </nav>
+
+    <div id="menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden" onclick="closeMenu()"></div>
+    <div id="side-menu" class="fixed inset-y-0 left-0 z-50 w-64 bg-surface border-r border-border transform -translate-x-full transition-transform duration-300 md:hidden">
+        <div class="p-4">
+            <div class="flex items-center justify-between mb-6">
+                <span class="font-display font-semibold text-lg text-textMain">Menu</span>
+                <button onclick="closeMenu()" class="p-1 text-textMuted hover:text-textMain">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="space-y-2">
+                <button id="settings-btn-mobile" class="w-full flex items-center gap-2 px-3 py-2 text-sm text-textMuted hover:text-textMain hover:bg-background border border-transparent hover:border-border transition-colors">
+                    <i data-lucide="settings" class="w-4 h-4"></i>
+                    <span>Settings</span>
+                </button>
+                <button id="auth-btn-mobile" class="w-full flex items-center gap-2 px-3 py-2 text-sm text-textMuted hover:text-textMain hover:bg-background border border-transparent hover:border-border transition-colors">
+                    <i data-lucide="lock" class="w-4 h-4"></i>
+                    <span>Auth</span>
+                </button>
+                <div class="border-t border-border my-2"></div>
+                <button id="theme-toggle-mobile" class="w-full flex items-center gap-2 px-3 py-2 text-sm text-textMuted hover:text-textMain hover:bg-background border border-transparent hover:border-border transition-colors">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                    <span>Toggle Theme</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <main class="relative z-10 pt-24 pb-12 px-4 max-w-7xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -503,6 +534,38 @@
         document.getElementById('auth-btn').addEventListener('click', () => {
             console.log('Auth button clicked');
             addLog('Opening authentication panel...', 'info');
+        });
+
+        function toggleMenu() {
+            console.log('Toggle menu');
+            const menu = document.getElementById('side-menu');
+            const overlay = document.getElementById('menu-overlay');
+            menu.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        function closeMenu() {
+            console.log('Close menu');
+            document.getElementById('side-menu').classList.add('-translate-x-full');
+            document.getElementById('menu-overlay').classList.add('hidden');
+        }
+
+        document.getElementById('settings-btn-mobile').addEventListener('click', () => {
+            console.log('Settings mobile button clicked');
+            closeMenu();
+            addLog('Opening settings panel...', 'info');
+        });
+
+        document.getElementById('auth-btn-mobile').addEventListener('click', () => {
+            console.log('Auth mobile button clicked');
+            closeMenu();
+            addLog('Opening authentication panel...', 'info');
+        });
+
+        document.getElementById('theme-toggle-mobile').addEventListener('click', () => {
+            console.log('Theme toggle mobile clicked');
+            closeMenu();
+            document.documentElement.classList.toggle('dark');
         });
     </script>
 
