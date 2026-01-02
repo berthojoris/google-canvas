@@ -213,7 +213,7 @@
 <body class="bg-background text-textMain antialiased selection:bg-brand selection:text-white overflow-x-hidden font-sans transition-colors duration-300">
 
     <div class="absolute inset-0 bg-grid opacity-[0.03] pointer-events-none"></div>
-    <div class="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/15 via-zinc-400/10 to-transparent blur-[100px] pointer-events-none z-0 opacity-80 dark:opacity-50"></div>
+    <div class="absolute top-[-10%] left-1/2 -translate-x-1/2 w-screen h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/15 via-zinc-400/10 to-transparent blur-[100px] pointer-events-none z-0 opacity-80 dark:opacity-50"></div>
 
     <nav class="fixed w-full z-50 top-0 border-b border-border bg-background transition-colors duration-200">
         <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
@@ -273,7 +273,7 @@
         </div>
     </div>
 
-    <main class="relative z-10 pt-24 pb-12 px-4 max-w-7xl mx-auto h-screen flex flex-col overflow-x-hidden">
+    <main class="relative z-10 pt-24 pb-4 px-4 max-w-7xl mx-auto h-screen flex flex-col overflow-x-hidden">
         <div class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             <div class="lg:col-span-1 space-y-6">
@@ -356,7 +356,7 @@
                         </div>
                     </div>
                     <div class="terminal-content flex-1 overflow-hidden flex flex-col">
-                        <div id="terminal-logs" class="flex-1 overflow-y-auto p-4 space-y-1">
+                        <div id="terminal-logs" class="flex-1 overflow-y-auto p-4 space-y-1 flex flex-col">
                             <div class="log-entry">
                                 <span class="log-time">[12:00:00]</span>
                                 <span class="log-info"> [INFO]</span>
@@ -372,6 +372,7 @@
                                 <span class="log-info"> [INFO]</span>
                                 <span class="text-zinc-300"> Ready to start proxy server</span>
                             </div>
+                            <div class="flex-1"></div>
                         </div>
 
                     </div>
