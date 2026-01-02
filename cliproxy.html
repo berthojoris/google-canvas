@@ -225,7 +225,6 @@
                     <i data-lucide="shield" class="w-5 h-5 text-textMain"></i>
                 </div>
                 <span class="font-display font-semibold text-base text-textMain">CLI Proxy Manager</span>
-                <span class="px-2 py-0.5 text-xs font-mono bg-surface border border-border text-textMuted">v1.0.0</span>
             </div>
             <div class="hidden md:flex items-center gap-2">
                 <button id="settings-btn" class="flex items-center gap-2 px-3 py-1.5 text-sm text-textMuted hover:text-textMain hover:bg-surface border border-transparent hover:border-border transition-colors">
@@ -273,10 +272,57 @@
         </div>
     </div>
 
+    <div id="settings-panel" class="fixed inset-y-0 right-0 z-50 w-full md:w-96 bg-surface border-l border-border transform translate-x-full transition-transform duration-300">
+        <div class="p-4">
+            <div class="flex items-center justify-between mb-6">
+                <span class="font-display font-semibold text-lg text-textMain">Settings</span>
+                <button onclick="closeSettings()" class="p-1 text-textMuted hover:text-textMain">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-textMain mb-2">CLI Proxy Path</label>
+                    <input type="text" id="proxy-path" class="w-full px-3 py-2 bg-background border border-border text-textMain placeholder-textMuted focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Enter CLI Proxy Path">
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-textMain">Provider</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="provider-toggle" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                    </label>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-textMain mb-2">Select Provider</label>
+                    <select id="provider-select" class="w-full px-3 py-2 bg-background border border-border text-textMain focus:outline-none focus:ring-2 focus:ring-primary">
+                        <option value="gemini">Gemini</option>
+                        <option value="qwen">Qwen</option>
+                        <option value="iflow">iFlow</option>
+                    </select>
+                </div>
+                <button onclick="saveSettings()" class="w-full px-4 py-2 bg-primary text-white font-medium hover:bg-primary/90 transition-colors">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="auth-panel" class="fixed inset-y-0 right-0 z-50 w-full md:w-96 bg-surface border-l border-border transform translate-x-full transition-transform duration-300">
+        <div class="p-4">
+            <div class="flex items-center justify-between mb-6">
+                <span class="font-display font-semibold text-lg text-textMain">Authentication</span>
+                <button onclick="closeAuth()" class="p-1 text-textMuted hover:text-textMain">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <p class="text-textMuted">Authentication settings will be implemented here.</p>
+            </div>
+        </div>
+    </div>
+
     <main class="relative z-10 pt-24 pb-4 px-4 max-w-7xl mx-auto h-screen flex flex-col overflow-x-hidden">
-        <div class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
-            <div class="lg:col-span-1 space-y-6">
+            <div class="md:col-span-1 lg:col-span-1 space-y-6">
                 
                 <div class="card-hoverable bg-surface border border-border p-8 text-center">
                     <h2 class="font-display font-semibold text-lg text-textMain mb-8">Proxy Control</h2>
@@ -342,7 +388,7 @@
 
             </div>
 
-            <div class="lg:col-span-2 h-full">
+            <div class="md:col-span-1 lg:col-span-2 h-full">
                 <div class="bg-surface border border-border overflow-hidden h-full flex flex-col">
                     <div class="terminal-header px-4 py-3 flex items-center justify-between">
                         <div class="flex items-center gap-2">
@@ -534,12 +580,12 @@
 
         document.getElementById('settings-btn').addEventListener('click', () => {
             console.log('Settings button clicked');
-            addLog('Opening settings panel...', 'info');
+            openSettings();
         });
 
         document.getElementById('auth-btn').addEventListener('click', () => {
             console.log('Auth button clicked');
-            addLog('Opening authentication panel...', 'info');
+            openAuth();
         });
 
         function toggleMenu() {
@@ -567,13 +613,13 @@
         document.getElementById('settings-btn-mobile').addEventListener('click', () => {
             console.log('Settings mobile button clicked');
             closeMenu();
-            addLog('Opening settings panel...', 'info');
+            openSettings();
         });
 
         document.getElementById('auth-btn-mobile').addEventListener('click', () => {
             console.log('Auth mobile button clicked');
             closeMenu();
-            addLog('Opening authentication panel...', 'info');
+            openAuth();
         });
 
         document.getElementById('theme-toggle-mobile').addEventListener('click', () => {
@@ -581,6 +627,35 @@
             closeMenu();
             document.documentElement.classList.toggle('dark');
         });
+
+        function openSettings() {
+            console.log('Open settings');
+            document.getElementById('settings-panel').classList.remove('translate-x-full');
+        }
+
+        function closeSettings() {
+            console.log('Close settings');
+            document.getElementById('settings-panel').classList.add('translate-x-full');
+        }
+
+        function openAuth() {
+            console.log('Open auth');
+            document.getElementById('auth-panel').classList.remove('translate-x-full');
+        }
+
+        function closeAuth() {
+            console.log('Close auth');
+            document.getElementById('auth-panel').classList.add('translate-x-full');
+        }
+
+        function saveSettings() {
+            const path = document.getElementById('proxy-path').value;
+            const providerEnabled = document.getElementById('provider-toggle').checked;
+            const provider = document.getElementById('provider-select').value;
+            console.log('Save settings, path:', path, 'provider enabled:', providerEnabled, 'provider:', provider);
+            addLog('Settings saved', 'success');
+            closeSettings();
+        }
     </script>
 
 </body>
