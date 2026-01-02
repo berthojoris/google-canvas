@@ -663,8 +663,10 @@
                 { name: 'iFlow', key: 'iflowEnabled' }
             ];
 
+            let hasEnabled = false;
             providers.forEach(provider => {
-                if (settings[provider.key]) {
+                if (settings[provider.key] !== false) { // Show if enabled or not set (default true)
+                    hasEnabled = true;
                     const providerDiv = document.createElement('div');
                     providerDiv.className = 'space-y-2';
                     providerDiv.innerHTML = `
@@ -680,8 +682,12 @@
                 }
             });
 
-            // Load and display accounts
-            loadAccounts();
+            if (!hasEnabled) {
+                authContent.innerHTML = '<p class="text-textMuted">No providers enabled. Enable providers in Settings.</p>';
+            } else {
+                // Load and display accounts
+                loadAccounts();
+            }
         }
 
         function addOAuth(provider) {
