@@ -308,7 +308,11 @@
                         </label>
                     </div>
                 </div>
-                <button onclick="saveSettings()" class="w-full px-4 py-2 bg-primary text-white font-medium hover:bg-primary/90 transition-colors">Save Settings</button>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-textMain">Build</span>
+                    <button onclick="buildProject()" class="px-4 py-2 bg-gradient-green text-white font-medium hover:bg-green-600 transition-colors">Build</button>
+                </div>
+                <button onclick="saveSettings()" class="w-full px-4 py-2 bg-gradient-green text-white font-medium hover:bg-green-600 transition-colors">Save Settings</button>
             </div>
         </div>
     </div>
@@ -747,6 +751,14 @@
             console.log('Save settings:', settings);
             addLog('Settings saved', 'success');
             closeSettings();
+        }
+
+        function buildProject() {
+            console.log('Build project');
+            addLog('Building project...', 'info');
+            setTimeout(() => {
+                addLog('Project built successfully', 'success');
+            }, 2000);
         }
     </script>
 
