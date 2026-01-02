@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com" onload="console.log('Tailwind CSS loaded successfully')" onerror="console.log('Failed to load Tailwind CSS')"></script>
+    <script src="https://unpkg.com/lucide@latest" onload="console.log('Lucide icons loaded successfully')" onerror="console.log('Failed to load Lucide icons')"></script>
 
     <script>
         tailwind.config = {
@@ -174,7 +174,7 @@
         }
 
         .running-glow {
-            animation: pulseGlow 2s ease-in-out infinite;
+            animation: glowPulse 2s ease-in-out infinite;
         }
 
         .card-hoverable {
@@ -190,10 +190,10 @@
         }
 
         #glow-ring.opacity-60 {
-            animation: pulseGlow 2s ease-in-out infinite;
+            animation: glowPulse 2s ease-in-out infinite;
         }
 
-        @keyframes pulseGlow {
+        @keyframes glowPulse {
             0%, 100% {
                 opacity: 0.4;
                 transform: scale(1);
@@ -346,7 +346,9 @@
     </main>
 
     <script>
+        console.log('CLI Proxy Manager script initialized');
         lucide.createIcons();
+        console.log('Lucide icons created');
 
         let isRunning = false;
         let uptimeSeconds = 0;
@@ -376,12 +378,13 @@
         }
 
         function addLog(message, type = 'info') {
+            console.log(`Adding log: [${type}] ${message}`);
             const logEntry = document.createElement('div');
             logEntry.className = 'log-entry';
-            
+
             let typeClass = 'log-info';
             let typeLabel = 'INFO';
-            
+
             switch(type) {
                 case 'success':
                     typeClass = 'log-success';
@@ -399,18 +402,19 @@
                     typeClass = 'log-info';
                     typeLabel = 'INFO';
             }
-            
+
             logEntry.innerHTML = `
                 <span class="log-time">[${getCurrentTime()}]</span>
                 <span class="${typeClass}"> [${typeLabel}]</span>
                 <span class="text-zinc-300"> ${message}</span>
             `;
-            
+
             terminalLogs.appendChild(logEntry);
             terminalLogs.scrollTop = terminalLogs.scrollHeight;
         }
 
         function updateStatusUI() {
+            console.log('Updating status UI, isRunning:', isRunning);
             if (isRunning) {
                 controlBtn.classList.remove('bg-gradient-green');
                 controlBtn.classList.add('bg-gradient-red', 'running-glow');
@@ -439,6 +443,7 @@
         }
 
         function startProxy() {
+            console.log('Starting proxy server simulation');
             isRunning = true;
             updateStatusUI();
             addLog('Starting CLI Proxy server...', 'info');
@@ -461,6 +466,7 @@
         }
 
         function stopProxy() {
+            console.log('Stopping proxy server simulation');
             isRunning = false;
             updateStatusUI();
             addLog('Stopping CLI Proxy server...', 'warning');
@@ -476,6 +482,7 @@
         }
 
         controlBtn.addEventListener('click', () => {
+            console.log('Control button clicked');
             if (isRunning) {
                 stopProxy();
             } else {
@@ -484,14 +491,17 @@
         });
 
         document.getElementById('theme-toggle').addEventListener('click', () => {
+            console.log('Theme toggle clicked');
             document.documentElement.classList.toggle('dark');
         });
 
         document.getElementById('settings-btn').addEventListener('click', () => {
+            console.log('Settings button clicked');
             addLog('Opening settings panel...', 'info');
         });
 
         document.getElementById('auth-btn').addEventListener('click', () => {
+            console.log('Auth button clicked');
             addLog('Opening authentication panel...', 'info');
         });
     </script>
