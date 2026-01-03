@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Proxy Dashboard</title>
+    
+    <!-- 1. Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. Load Babel (to compile JSX in browser) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: white;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Text Shadow Glow */
+        .text-shadow-glow {
+            text-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+        }
+
+        /* Animation Utilities */
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-in {
+            animation-duration: 0.3s;
+            animation-fill-mode: both;
+        }
+        .fade-in {
+            animation-name: fade-in;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- MAIN REACT CODE (Using ES Modules via esm.sh) -->
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useRef } from 'https://esm.sh/react@18.2.0?dev';
+        import { createRoot } from 'https://esm.sh/react-dom@18.2.0/client?dev';
+        
+        // Import Icons explicitly from esm.sh
+        import { 
+            Activity, Cpu, HardDrive, Terminal, Power, Settings, Shield, 
+            Zap, X, Minus, Square, LayoutDashboard, Box, Lock, Key, 
+            ChevronRight, ChevronDown, ToggleLeft, ToggleRight, Save, FolderOpen,
+            GitBranch, Hammer, RefreshCw, CheckCircle2, AlertCircle, Info,
+            Plus, Trash2, User, Copy
+        } from 'https://esm.sh/lucide-react@0.344.0?dev';
+
+        // --- Components ---
+
+        // 1. Toast Notification Component
+        const ToastContainer = ({ notifications, removeNotification }) => {
+            return (
+                <div className="fixed top-6 right-6 z-50 flex flex-col gap-2 pointer-events-none">
+                {notifications.map((note) => (
+                    <div 
+                    key={note.id}
+                    className={`
+                        pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg border backdrop-blur-md shadow-lg min-w-[300px]
+                        animate-in fade-in duration-300
+                        ${note.type === 'success' 
+                        ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+                        : note.type === 'error'
+                        ? 'bg-red-500/10 border-red-500/20 text-red-400'
+                        : 'bg-blue-500/10 border-blue-500/20 text-blue-400'}
+                    `}
+                    >
+                    {note.type === 'success' ? <CheckCircle2 size={18} /> : note.type === 'error' ? <AlertCircle size={18} /> : <Info size={18} />}
+                    <div className="flex-1">
+                        <h4 className="text-xs font-bold uppercase tracking-wide">{note.title}</h4>
+                        <p className="text-xs opacity-80">{note.message}</p>
+                    </div>
+                    <button onClick={() => removeNotification(note.id)} className="hover:opacity-70">
+                        <X size={14} />
+                    </button>
+                    </div>
+                ))}
+                </div>
+            );
+        };
+
+        // 2. Simple Custom Line Chart (SVG)
+        const LineChart = ({ data, color, label, value, suffix }) => {
+            const width = 300;
+            const height = 100;
+            const max = 100;
+
+            const points = data.map((d, i) => {
+                const x = (i / (data.length - 1)) * width;
+                const y = height - (d / max) * height;
+                return `${x},${y}`;
+            }).join(' ');
+
+            return (
+                <div className="relative flex flex-col p-4 bg-white/5 border border-white/5 backdrop-blur-md overflow-hidden group hover:border-white/10 transition-all duration-300">
+                <div className="flex justify-between items-center mb-2 z-10">
+                    <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider flex items-center gap-2">
+                    {label === 'CPU' ? <Cpu size={14} /> : <HardDrive size={14} />}
+                    {label}
+                    </span>
+                    <span className={`text-sm font-bold font-mono ${color === 'green' ? 'text-emerald-400' : 'text-blue-400'}`}>
+                    {value}{suffix}
+                    </span>
+                </div>
+                <div className="relative h-24 w-full opacity-80 group-hover:opacity-100 transition-opacity">
+                    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible">
+                    <defs>
+                        <linearGradient id={`grad-${label}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor={color === 'green' ? '#10b981' : '#3b82f6'} stopOpacity="0.5" />
+                        <stop offset="100%" stopColor={color === 'green' ? '#10b981' : '#3b82f6'} stopOpacity="0" />
+                        </linearGradient>
+                    </defs>
+                    <path d={`M0,${height} ${points} L${width},${height} Z`} fill={`url(#grad-${label})`} className="transition-all duration-300 ease-linear" />
+                    <path d={`M${points}`} fill="none" stroke={color === 'green' ? '#34d399' : '#60a5fa'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-300 ease-linear" />
+                    </svg>
+                </div>
+                </div>
+            );
+        };
+
+        // 3. Terminal Log Component
+        const LogConsole = ({ logs }) => {
+            const scrollRef = useRef(null);
+
+            useEffect(() => { 
+                if (scrollRef.current) {
+                scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+                }
+            }, [logs]);
+
+            return (
+                <div className="flex flex-col h-full bg-black/40 border border-white/5 overflow-hidden font-mono text-xs">
+                <div className="flex items-center px-4 py-2 bg-white/5 border-b border-white/5 gap-2 shrink-0">
+                    <Terminal size={12} className="text-neutral-500" />
+                    <span className="text-neutral-500">System Logs</span>
+                </div>
+                <div 
+                    ref={scrollRef}
+                    className="flex-1 p-4 overflow-y-auto space-y-1 text-neutral-300 custom-scrollbar"
+                >
+                    {logs.length === 0 && <span className="text-neutral-600 italic">Ready to initialize...</span>}
+                    {logs.map((log, i) => (
+                    <div key={i} className="flex gap-2 animate-in fade-in duration-300">
+                        <span className="text-neutral-600">[{log.time}]</span>
+                        <span className={log.type === 'error' ? 'text-red-400' : log.type === 'success' ? 'text-emerald-400' : 'text-neutral-300'}>
+                        {log.msg}
+                        </span>
+                    </div>
+                    ))}
+                </div>
+                </div>
+            );
+        };
+
+        // 4. Models Page
+        const ModelsPage = ({ addNotification }) => {
+            const handleCopy = (text) => {
+                // Clipboard API might be restricted in some contexts, using fallback
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(text);
+                } else {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    textarea.style.position = "fixed";
+                    textarea.style.left = "-9999px";
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    try {
+                        document.execCommand('copy');
+                    } catch (ex) {
+                        console.warn("Copy to clipboard failed.", ex);
+                    } finally {
+                        document.body.removeChild(textarea);
+                    }
+                }
+                
+                addNotification({ title: 'Copied', message: `Model name copied to clipboard.`, type: 'success' });
+            };
+
+            return (
+                <div className="h-full flex flex-col gap-4 animate-in fade-in duration-500">
+                <div className="flex justify-between items-center mb-2">
+                    <h2 className="text-lg font-bold text-white">Installed Models</h2>
+                    <button className="px-3 py-1.5 text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors">
+                    + Add New
+                    </button>
+                </div>
+                <div className="space-y-3 overflow-y-auto pr-2">
+                    {[
+                    { name: "Llama-3-8B-Instruct", size: "4.7 GB", type: "GGUF", status: "Active" },
+                    { name: "Mistral-7B-v0.3", size: "4.1 GB", type: "GGUF", status: "Ready" },
+                    { name: "Gemma-2-9B-It", size: "5.2 GB", type: "AWQ", status: "Ready" },
+                    ].map((model, i) => (
+                    <div key={i} className="flex items-center justify-between p-4 bg-white/5 border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+                        <div className="flex items-center gap-4">
+                        <div className={`w-2 h-2 rounded-full ${model.status === 'Active' ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-neutral-600'}`} />
+                        <div>
+                            <div className="flex items-center gap-2">
+                            <div className="font-medium text-white group-hover:text-emerald-300 transition-colors">{model.name}</div>
+                            <button 
+                                onClick={(e) => { e.stopPropagation(); handleCopy(model.name); }}
+                                className="text-neutral-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-white/10"
+                                title="Copy model name"
+                            >
+                                <Copy size={12} />
+                            </button>
+                            </div>
+                            <div className="text-xs text-neutral-500 flex gap-2 mt-0.5">
+                            <span>{model.type}</span> • <span>{model.size}</span>
+                            </div>
+                        </div>
+                        </div>
+                        <ChevronRight size={16} className="text-neutral-600 group-hover:text-white transition-colors" />
+                    </div>
+                    ))}
+                </div>
+                </div>
+            );
+        };
+
+        // 5. Settings Page
+        const SettingsPage = ({ addNotification }) => {
+            const [providers, setProviders] = useState([
+                { 
+                id: 'openai', 
+                name: 'OpenAI', 
+                active: true, 
+                expanded: false,
+                models: [
+                    { id: 'gpt-4o', name: 'GPT-4o', active: true },
+                    { id: 'gpt-4-turbo', name: 'GPT-4 Turbo', active: true },
+                    { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', active: false },
+                    { id: 'dalle-3', name: 'DALL·E 3 (Image)', active: true }
+                ]
+                },
+                { 
+                id: 'anthropic', 
+                name: 'Anthropic', 
+                active: false, 
+                expanded: false,
+                models: [
+                    { id: 'claude-3-opus', name: 'Claude 3 Opus', active: true },
+                    { id: 'claude-3-sonnet', name: 'Claude 3.5 Sonnet', active: true },
+                    { id: 'claude-3-haiku', name: 'Claude 3 Haiku', active: true }
+                ]
+                },
+                { 
+                id: 'google', 
+                name: 'Google Gemini', 
+                active: true, 
+                expanded: false,
+                models: [
+                    { id: 'gemini-pro', name: 'Gemini Pro 1.5', active: true },
+                    { id: 'gemini-flash', name: 'Gemini Flash', active: true }
+                ]
+                },
+                { 
+                id: 'ollama', 
+                name: 'Ollama (Local)', 
+                active: true, 
+                expanded: false,
+                models: [
+                    { id: 'llama3', name: 'Llama 3 8B', active: true },
+                    { id: 'mistral', name: 'Mistral 7B', active: false }
+                ]
+                },
+            ]);
+
+            const toggleProvider = (id) => {
+                setProviders(prev => prev.map(p => p.id === id ? { ...p, active: !p.active } : p));
+            };
+
+            const toggleExpand = (id) => {
+                setProviders(prev => prev.map(p => p.id === id ? { ...p, expanded: !p.expanded } : p));
+            };
+
+            const toggleModel = (providerId, modelId) => {
+                setProviders(prev => prev.map(p => {
+                if (p.id === providerId) {
+                    return {
+                    ...p,
+                    models: p.models.map(m => m.id === modelId ? { ...m, active: !m.active } : m)
+                    };
+                }
+                return p;
+                }));
+            };
+
+            const handleAction = (actionName, type = 'success', msg = 'Operation completed successfully.') => {
+                setTimeout(() => {
+                addNotification({
+                    title: actionName,
+                    message: msg,
+                    type: type
+                });
+                }, 600);
+            };
+
+            return (
+                <div className="h-full flex flex-col gap-6 animate-in fade-in duration-500 pb-4">
+                <h2 className="text-lg font-bold text-white mb-2">Configuration</h2>
+                
+                <div className="space-y-6 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                    <div className="space-y-2">
+                    <label className="text-xs text-neutral-400 uppercase tracking-wider flex items-center gap-2">
+                        <FolderOpen size={12} />
+                        Direktori Project
+                    </label>
+                    <div className="flex gap-2">
+                        <input 
+                        type="text" 
+                        value="C:/Users/Admin/Dev/LLM-Proxy-Server" 
+                        readOnly 
+                        className="flex-1 bg-black/40 border border-white/10 px-4 py-2 text-xs text-neutral-300 font-mono focus:border-emerald-500/50 outline-none transition-colors truncate" 
+                        />
+                        <button className="px-4 py-2 bg-white/5 border border-white/10 text-xs text-white hover:bg-white/10 hover:border-white/20 transition-all whitespace-nowrap">
+                        Pilih Direktori
+                        </button>
+                    </div>
+                    </div>
+
+                    <div className="space-y-2">
+                    <label className="text-xs text-neutral-400 uppercase tracking-wider flex items-center gap-2">
+                        <Key size={12} />
+                        Master API Key
+                    </label>
+                    <div className="relative">
+                        <input 
+                        type="password" 
+                        value="sk-89sfd789s7df89s7df89s7df" 
+                        disabled 
+                        className="w-full bg-neutral-900/50 border border-white/5 px-4 py-2 text-sm text-neutral-500 cursor-not-allowed select-none" 
+                        />
+                        <Lock size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-600" />
+                    </div>
+                    </div>
+
+                    <div className="space-y-2">
+                    <label className="text-xs text-neutral-400 uppercase tracking-wider">Enable Providers & Models</label>
+                    <div className="flex flex-col gap-2">
+                        {providers.map((provider) => (
+                        <div 
+                            key={provider.id} 
+                            className={`border transition-all duration-300 overflow-hidden ${provider.active ? 'border-white/10 bg-black/20' : 'border-white/5 bg-black/10'}`}
+                        >
+                            <div className="flex items-center justify-between p-3 bg-white/5 hover:bg-white/10 transition-colors">
+                            <div 
+                                className="flex items-center gap-3 flex-1 cursor-pointer select-none"
+                                onClick={() => toggleExpand(provider.id)}
+                            >
+                                <button className="text-neutral-500 hover:text-white transition-colors">
+                                {provider.expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                                </button>
+                                <div className="flex items-center gap-2">
+                                <div className={`w-2 h-2 rounded-full ${provider.active ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-neutral-600'}`} />
+                                <span className={`text-sm font-medium ${provider.active ? 'text-white' : 'text-neutral-500'}`}>
+                                    {provider.name}
+                                </span>
+                                <span className="text-[10px] text-neutral-600 ml-1">
+                                    ({provider.models.filter(m => m.active).length}/{provider.models.length})
+                                </span>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => toggleProvider(provider.id)} 
+                                className="pl-4 text-neutral-400 hover:text-white transition-colors"
+                            >
+                                {provider.active 
+                                ? <ToggleRight size={26} className="text-emerald-500" /> 
+                                : <ToggleLeft size={26} className="text-neutral-600" />}
+                            </button>
+                            </div>
+
+                            {provider.expanded && (
+                            <div className={`border-t border-white/5 bg-black/20 ${!provider.active ? 'opacity-40 pointer-events-none grayscale' : ''}`}>
+                                {provider.models.map((model, mIdx) => (
+                                <div 
+                                    key={model.id} 
+                                    className={`flex items-center justify-between px-4 py-2 pl-10 hover:bg-white/5 transition-colors ${mIdx !== provider.models.length - 1 ? 'border-b border-white/5' : ''}`}
+                                >
+                                    <span className={`text-xs ${model.active ? 'text-neutral-300' : 'text-neutral-600'}`}>
+                                    {model.name}
+                                    </span>
+                                    <button 
+                                    onClick={() => toggleModel(provider.id, model.id)} 
+                                    className="text-neutral-400 hover:text-white transition-colors"
+                                    >
+                                    {model.active 
+                                        ? <ToggleRight size={22} className="text-blue-500" /> 
+                                        : <ToggleLeft size={22} className="text-neutral-700" />}
+                                    </button>
+                                </div>
+                                ))}
+                                {provider.models.length === 0 && (
+                                <div className="px-4 py-3 text-xs text-neutral-600 italic text-center">No models configured</div>
+                                )}
+                            </div>
+                            )}
+                        </div>
+                        ))}
+                    </div>
+                    </div>
+                </div>
+
+                <div className="pt-4 border-t border-white/5 mt-auto flex gap-3">
+                    <button 
+                    onClick={() => handleAction("Git Pull", "success", "Repository updated to latest version.")}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-[#0F0F0F] border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all duration-200 group"
+                    >
+                    <GitBranch size={14} className="text-neutral-500 group-hover:text-blue-400 transition-colors" />
+                    <span className="text-[10px] font-medium text-neutral-400 group-hover:text-neutral-200 uppercase tracking-wide">Git Pull</span>
+                    </button>
+                    <button 
+                    onClick={() => handleAction("Build App", "info", "Build process started in background.")}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-[#0F0F0F] border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all duration-200 group"
+                    >
+                    <Hammer size={14} className="text-neutral-500 group-hover:text-amber-400 transition-colors" />
+                    <span className="text-[10px] font-medium text-neutral-400 group-hover:text-neutral-200 uppercase tracking-wide">Build</span>
+                    </button>
+                    <button 
+                    onClick={() => handleAction("Save Config", "success", "System configuration saved successfully.")}
+                    className="flex-[1.5] flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500/20 active:scale-[0.98] transition-all duration-100 shadow-lg shadow-emerald-900/20"
+                    >
+                    <Save size={16} />
+                    <span className="text-xs font-bold uppercase tracking-wider">Save Config</span>
+                    </button>
+                </div>
+                </div>
+            );
+        };
+
+        // 6. Auth Page
+        const AuthPage = ({ addNotification }) => {
+            const [providerAccounts, setProviderAccounts] = useState([
+                {
+                id: 'openai',
+                name: 'OpenAI',
+                accounts: [
+                    { id: 101, name: 'Personal-Key', created: '2024-01-15' },
+                    { id: 102, name: 'Team-Project-Alpha', created: '2024-02-20' }
+                ]
+                },
+                {
+                id: 'anthropic',
+                name: 'Anthropic',
+                accounts: [
+                    { id: 201, name: 'Claude-Research', created: '2024-03-01' }
+                ]
+                },
+                {
+                id: 'google',
+                name: 'Google Gemini',
+                accounts: []
+                },
+                {
+                id: 'ollama',
+                name: 'Ollama (Local)',
+                accounts: [
+                    { id: 401, name: 'Localhost-Default', created: '2023-12-10' }
+                ]
+                }
+            ]);
+
+            const handleDelete = (providerId, accountId) => {
+                setProviderAccounts(prev => prev.map(provider => {
+                if (provider.id === providerId) {
+                    return {
+                    ...provider,
+                    accounts: provider.accounts.filter(acc => acc.id !== accountId)
+                    };
+                }
+                return provider;
+                }));
+                addNotification({ title: 'Account Removed', message: 'API credentials removed successfully.', type: 'success' });
+            };
+
+            const handleAdd = (providerName) => {
+                addNotification({ title: 'Action Required', message: `Adding new account for ${providerName} initiated.`, type: 'info' });
+            };
+
+            const handleReload = () => {
+                addNotification({ title: 'Syncing', message: 'Refreshing account data...', type: 'info' });
+                setTimeout(() => {
+                    addNotification({ title: 'Synced', message: 'Account list updated.', type: 'success' });
+                }, 1000);
+            };
+
+            return (
+                <div className="h-full flex flex-col gap-6 animate-in fade-in duration-500">
+                <h2 className="text-lg font-bold text-white mb-2">Access Control</h2>
+                
+                {/* Master API Key Section */}
+                <div className="p-6 bg-gradient-to-br from-emerald-900/10 to-transparent border border-emerald-500/20 flex flex-col items-center justify-center text-center gap-3">
+                    <div className="w-12 h-12 flex items-center justify-center text-emerald-400 mb-1 bg-emerald-500/10">
+                    <Key size={24} />
+                    </div>
+                    <h3 className="text-white font-medium">Master API Key</h3>
+                    <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 border border-emerald-500/20 text-emerald-400/80 font-mono text-xs">
+                    sk-proxy-8293...9a8f
+                    </div>
+                </div>
+
+                {/* Provider Accounts List */}
+                <div className="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                    <div className="flex items-center justify-between">
+                        <label className="text-xs text-neutral-400 uppercase tracking-wider">Provider Credential Management</label>
+                        <button 
+                            onClick={handleReload}
+                            className="p-1.5 text-neutral-500 hover:text-white hover:bg-white/10 rounded-lg transition-all active:rotate-180"
+                            title="Refresh Accounts"
+                        >
+                            <RefreshCw size={14} />
+                        </button>
+                    </div>
+                    
+                    <div className="flex flex-col gap-3">
+                    {providerAccounts.map((provider) => (
+                        <div key={provider.id} className="border border-white/5 bg-black/20 overflow-hidden transition-all hover:border-white/10">
+                        
+                        {/* Provider Header */}
+                        <div className="flex items-center justify-between p-3 bg-white/5 border-b border-white/5">
+                            <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 flex items-center justify-center bg-white/5 rounded border border-white/5">
+                                <Box size={14} className="text-neutral-400" />
+                            </div>
+                            <span className="text-sm font-bold text-white tracking-wide">{provider.name}</span>
+                            </div>
+                            <button 
+                            onClick={() => handleAdd(provider.name)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase transition-colors"
+                            >
+                            <Plus size={12} />
+                            Add
+                            </button>
+                        </div>
+
+                        {/* Accounts List */}
+                        <div className="p-1">
+                            {provider.accounts.length > 0 ? (
+                            <div className="flex flex-col">
+                                {provider.accounts.map((account) => (
+                                <div key={account.id} className="group flex items-center justify-between p-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0">
+                                    <div className="flex items-center gap-3">
+                                    <User size={14} className="text-neutral-500" />
+                                    <div className="flex flex-col">
+                                        <span className="text-xs text-neutral-200 font-medium">{account.name}</span>
+                                        <span className="text-[10px] text-neutral-600 font-mono">Added: {account.created}</span>
+                                    </div>
+                                    </div>
+                                    <button 
+                                    onClick={() => handleDelete(provider.id, account.id)}
+                                    className="p-1.5 text-neutral-600 hover:text-red-400 hover:bg-red-500/10 rounded transition-all opacity-0 group-hover:opacity-100"
+                                    title="Remove Account"
+                                    >
+                                    <Trash2 size={14} />
+                                    </button>
+                                </div>
+                                ))}
+                            </div>
+                            ) : (
+                            <div className="p-4 text-center">
+                                <span className="text-[10px] text-neutral-600 italic">No accounts linked yet.</span>
+                            </div>
+                            )}
+                        </div>
+
+                        </div>
+                    ))}
+                    </div>
+                </div>
+                </div>
+            );
+        };
+
+        // --- Main App Component ---
+
+        function App() {
+            const [isRunning, setIsRunning] = useState(false);
+            const [activeTab, setActiveTab] = useState('dashboard');
+            const [cpuData, setCpuData] = useState(Array(20).fill(0));
+            const [memData, setMemData] = useState(Array(20).fill(0));
+            const [logs, setLogs] = useState([]);
+            const [uptime, setUptime] = useState(0);
+            
+            // Notification State
+            const [notifications, setNotifications] = useState([]);
+
+            const addNotification = ({ title, message, type = 'success' }) => {
+                const id = Date.now();
+                setNotifications(prev => [...prev, { id, title, message, type }]);
+
+                // Auto dismiss after 5 seconds
+                setTimeout(() => {
+                setNotifications(prev => prev.filter(n => n.id !== id));
+                }, 5000);
+            };
+
+            const removeNotification = (id) => {
+                setNotifications(prev => prev.filter(n => n.id !== id));
+            };
+
+            const addLog = (msg, type = 'info') => {
+                const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+                setLogs(prev => [...prev.slice(-50), { time, msg, type }]);
+            };
+
+            useEffect(() => {
+                let interval;
+                if (isRunning) {
+                if (logs.length === 0) addLog("Proxy service started on port 8080", "success");
+                interval = setInterval(() => {
+                    setCpuData(prev => [...prev.slice(1), Math.floor(Math.random() * 30) + 40]); 
+                    setMemData(prev => [...prev.slice(1), Math.floor(Math.random() * 20) + 60]); 
+                    setUptime(prev => prev + 1);
+                    if (Math.random() > 0.8) {
+                    const events = ["Processing request from 192.168.1.10", "Token generation speed: 45 t/s", "Cache hit: model_weights_v2", "Optimizing KV cache..."];
+                    addLog(events[Math.floor(Math.random() * events.length)]);
+                    }
+                }, 1000);
+                } else {
+                setCpuData(prev => [...prev.slice(1), Math.floor(Math.random() * 5) + 2]);
+                setMemData(prev => [...prev.slice(1), Math.floor(Math.random() * 2) + 15]);
+                setUptime(0);
+                }
+                return () => clearInterval(interval);
+            }, [isRunning]);
+
+            const toggleProxy = () => {
+                if (isRunning) {
+                addLog("Stopping proxy service...", "error");
+                setTimeout(() => addLog("Service stopped gracefully."), 500);
+                } else {
+                addLog("Initializing LLM Engine...");
+                }
+                setIsRunning(!isRunning);
+            };
+
+            const formatUptime = (seconds) => {
+                const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+                const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+                const s = (seconds % 60).toString().padStart(2, '0');
+                return `${h}:${m}:${s}`;
+            };
+
+            // Navigation Item Helper
+            const NavItem = ({ id, icon: Icon, label }) => (
+                <button
+                onClick={() => setActiveTab(id)}
+                className={`
+                    w-full p-3 flex flex-col items-center gap-1 transition-all duration-300 group relative
+                    ${activeTab === id ? 'bg-white/10 text-emerald-400' : 'text-neutral-500 hover:text-neutral-300 hover:bg-white/5'}
+                `}
+                >
+                <Icon size={20} className={`transition-transform duration-300 ${activeTab === id ? 'scale-110' : 'group-hover:scale-110'}`} />
+                <span className="text-[10px] font-medium tracking-wide">{label}</span>
+                {activeTab === id && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-emerald-500" />
+                )}
+                </button>
+            );
+
+            return (
+                <div className="min-h-screen bg-neutral-950 text-white font-sans selection:bg-emerald-500/30 flex items-center justify-center p-4">
+                
+                {/* Toast Overlay */}
+                <ToastContainer notifications={notifications} removeNotification={removeNotification} />
+
+                {/* Main Window Container */}
+                <div className="w-full max-w-4xl h-[650px] bg-[#0f0f0f]/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col relative">
+                    
+                    {/* Decor */}
+                    <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
+                    <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
+
+                    {/* Custom Title Bar */}
+                    <div className="h-10 bg-white/5 border-b border-white/5 flex items-center px-4 justify-between select-none draggable z-20">
+                    <div className="flex gap-2 group">
+                        <div className="w-3 h-3 rounded-full bg-red-500/80 group-hover:bg-red-500 shadow-inner" />
+                        <div className="w-3 h-3 rounded-full bg-yellow-500/80 group-hover:bg-yellow-500 shadow-inner" />
+                        <div className="w-3 h-3 rounded-full bg-emerald-500/80 group-hover:bg-emerald-500 shadow-inner" />
+                    </div>
+                    <div className="text-xs font-medium text-neutral-400 tracking-wide flex items-center gap-2">
+                        <Shield size={12} />
+                        LLM PROXY SERVER
+                    </div>
+                    <div className="w-12" /> {/* Spacer for centering */}
+                    </div>
+
+                    {/* Main Body with Sidebar */}
+                    <div className="flex-1 flex overflow-hidden">
+                    
+                    {/* SIDEBAR NAVIGATION */}
+                    <div className="w-20 bg-black/20 border-r border-white/5 flex flex-col items-center py-6 gap-2 z-10 backdrop-blur-sm">
+                        <NavItem id="dashboard" icon={LayoutDashboard} label="Dash" />
+                        <NavItem id="models" icon={Box} label="Models" />
+                        <NavItem id="settings" icon={Settings} label="Settings" />
+                        <NavItem id="auth" icon={Lock} label="Auth" />
+                    </div>
+
+                    {/* PAGE CONTENT */}
+                    <div className="flex-1 relative overflow-hidden">
+                        
+                        {/* Dashboard View */}
+                        {activeTab === 'dashboard' && (
+                        <div className="absolute inset-0 grid grid-cols-12 p-6 gap-6 animate-in fade-in zoom-in-95 duration-300 overflow-y-auto md:overflow-hidden">
+                            {/* Left Panel: Controls */}
+                            <div className="col-span-12 md:col-span-5 flex flex-col justify-between">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                <h1 className="text-xl font-bold tracking-tight text-white">Controller</h1>
+                                <p className="text-xs text-neutral-500 mt-1">Status Monitor</p>
+                                </div>
+                                <div className={`px-2 py-1 text-[10px] font-bold tracking-wider uppercase border ${isRunning ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-neutral-800 border-neutral-700 text-neutral-400'}`}>
+                                {isRunning ? 'Active' : 'Standby'}
+                                </div>
+                            </div>
+
+                            {/* BIG BUTTON */}
+                            <div className="flex-1 flex flex-col items-center justify-center py-4">
+                                <button
+                                onClick={toggleProxy}
+                                className={`
+                                    relative w-40 h-40 rounded-full flex items-center justify-center
+                                    transition-all duration-500 group outline-none z-10
+                                    ${isRunning ? 'shadow-[0_0_80px_-10px_rgba(16,185,129,0.5)]' : 'shadow-none'}
+                                `}
+                                >
+                                {/* --- BEACON ANIMATIONS --- */}
+                                {isRunning && (
+                                    <>
+                                    {/* Layer 1: Strong Pulse Glow (Static but breathing) */}
+                                    <div className="absolute -inset-4 rounded-full bg-emerald-500/20 blur-xl animate-pulse" />
+                                    
+                                    {/* Layer 2: Slow Wide Wave */}
+                                    <div className="absolute inset-0 rounded-full bg-emerald-500/30 animate-ping" style={{ animationDuration: '3s' }} />
+                                    
+                                    {/* Layer 3: Fast Sharp Ring (Delayed) */}
+                                    <div className="absolute inset-0 rounded-full border-2 border-emerald-400/60 animate-ping" style={{ animationDuration: '1.5s', animationDelay: '0.5s' }} />
+                                    </>
+                                )}
+
+                                <div className={`
+                                    w-full h-full rounded-full flex items-center justify-center flex-col gap-2 border relative z-20
+                                    transition-all duration-300 backdrop-blur-md
+                                    ${isRunning 
+                                    ? 'bg-gradient-to-br from-emerald-950/90 to-emerald-900/80 border-emerald-500/50 hover:border-red-500/50 hover:from-red-950/80 hover:to-red-900/50' 
+                                    : 'bg-neutral-900/50 border-white/10 hover:border-emerald-500/50 hover:bg-neutral-800/50'}
+                                `}>
+                                    <div className={`transition-all duration-300 transform group-hover:scale-110 ${isRunning ? 'group-hover:rotate-180' : ''}`}>
+                                    {isRunning ? (
+                                        <div className="group-hover:hidden"><Activity size={40} className="text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]" /></div>
+                                    ) : (
+                                        <Power size={40} className="text-neutral-400 group-hover:text-emerald-400" />
+                                    )}
+                                    {isRunning && <div className="hidden group-hover:block"><Square size={40} className="text-red-400 fill-red-400/20" /></div>}
+                                    </div>
+                                    <span className={`text-xs font-bold tracking-widest uppercase transition-colors ${isRunning ? 'text-emerald-400 group-hover:text-red-400 text-shadow-glow' : 'text-neutral-400 group-hover:text-white'}`}>
+                                    {isRunning ? <span className="group-hover:hidden">Running</span> : 'Start'}
+                                    {isRunning && <span className="hidden group-hover:inline">Stop</span>}
+                                    </span>
+                                </div>
+                                </button>
+                                <div className={`mt-6 font-mono text-xs transition-opacity duration-500 ${isRunning ? 'opacity-100' : 'opacity-0'}`}>
+                                <span className="text-neutral-500">Uptime: </span>
+                                <span className="text-emerald-400">{formatUptime(uptime)}</span>
+                                </div>
+                            </div>
+
+                            {/* Stats Grid */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-white/5 p-2.5 border border-white/5 flex flex-col items-center justify-center">
+                                    <span className="text-neutral-500 text-[10px] uppercase">Latency</span>
+                                    <span className="text-white font-mono font-bold text-sm">{isRunning ? '24ms' : '-'}</span>
+                                </div>
+                                <div className="bg-white/5 p-2.5 border border-white/5 flex flex-col items-center justify-center">
+                                    <span className="text-neutral-500 text-[10px] uppercase">Requests</span>
+                                    <span className="text-white font-mono font-bold text-sm">{isRunning ? '1,204' : '0'}</span>
+                                </div>
+                            </div>
+                            </div>
+
+                            {/* Right Panel */}
+                            <div className="col-span-12 md:col-span-7 flex flex-col gap-4 pl-0 md:pl-4 border-l border-white/5 min-h-0">
+                            <div className="flex flex-col gap-3">
+                                <LineChart data={cpuData} color="green" label="CPU Usage" value={cpuData[cpuData.length - 1]} suffix="%" />
+                                <LineChart data={memData} color="blue" label="Memory Usage" value={(memData[memData.length - 1] / 10).toFixed(1)} suffix=" GB" />
+                            </div>
+                            <div className="flex-1 min-h-[120px]">
+                                <LogConsole logs={logs} />
+                            </div>
+                            </div>
+                        </div>
+                        )}
+
+                        {/* Other Pages Container */}
+                        {activeTab !== 'dashboard' && (
+                        <div className="h-full p-8 overflow-y-auto custom-scrollbar">
+                            {activeTab === 'models' && <ModelsPage addNotification={addNotification} />}
+                            {activeTab === 'settings' && <SettingsPage addNotification={addNotification} />}
+                            {activeTab === 'auth' && <AuthPage addNotification={addNotification} />}
+                        </div>
+                        )}
+
+                    </div>
+                    </div>
+                </div>
+                </div>
+            );
+        }
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
