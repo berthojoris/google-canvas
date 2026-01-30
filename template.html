@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arafat Express - Vessel Tracking</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            dark: {
+              bg: '#0f1115',
+              surface: '#1a1d24',
+              border: '#2a2e3a',
+              text: '#e4e6eb',
+              muted: '#8b949e',
+            },
+            brand: {
+              green: '#10b981',
+              orange: '#f97316',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f1115;
+      color: #e4e6eb;
+      overflow-x: hidden;
+    }
+
+    .sidebar-icon {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8b949e;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .sidebar-icon:hover {
+      background: rgba(255,255,255,0.05);
+      color: #e4e6eb;
+    }
+
+    .sidebar-icon.active {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+    }
+
+    .kpi-card {
+      background: #1a1d24;
+      border: 1px solid #2a2e3a;
+      padding: 16px 20px;
+      transition: all 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      border-color: #3a3f4d;
+    }
+
+    .tag-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .tag-laden {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+    }
+
+    .nav-tab {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      font-size: 13px;
+      color: #8b949e;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-tab:hover {
+      background: rgba(255,255,255,0.05);
+      color: #e4e6eb;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 28px;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 24px;
+      bottom: -16px;
+      width: 2px;
+      background: #2a2e3a;
+    }
+
+    .timeline-item:last-child::before {
+      display: none;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: 0;
+      top: 4px;
+      width: 18px;
+      height: 18px;
+      background: #1a1d24;
+      border: 2px solid #10b981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .timeline-dot::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #10b981;
+    }
+
+    .map-container {
+      position: relative;
+      background: #0d0f12;
+      overflow: hidden;
+    }
+
+    .map-dark {
+      background: 
+        radial-gradient(ellipse at 30% 40%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 60%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 70%),
+        #0d0f12;
+    }
+
+    /* Radar Sweep Animation */
+    .radar-sweep {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 150vmax;
+      height: 150vmax;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .radar-sweep::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        transparent 300deg,
+        rgba(16, 185, 129, 0.15) 330deg,
+        rgba(16, 185, 129, 0.4) 360deg
+      );
+      transform: translate(-50%, -50%);
+      animation: radar-rotate 4s linear infinite;
+      border-radius: 50%;
+    }
+
+    .radar-sweep::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      background: conic-gradient(
+        from 180deg,
+        transparent 0deg,
+        transparent 300deg,
+        rgba(249, 115, 22, 0.1) 330deg,
+        rgba(249, 115, 22, 0.25) 360deg
+      );
+      transform: translate(-50%, -50%);
+      animation: radar-rotate 4s linear infinite reverse;
+      border-radius: 50%;
+    }
+
+    @keyframes radar-rotate {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* Radar Grid Rings */
+    .radar-rings {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .radar-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      border-radius: 50%;
+      animation: radar-ring-pulse 3s ease-out infinite;
+    }
+
+    .radar-ring:nth-child(1) { width: 200px; height: 200px; animation-delay: 0s; }
+    .radar-ring:nth-child(2) { width: 400px; height: 400px; animation-delay: 0.5s; }
+    .radar-ring:nth-child(3) { width: 600px; height: 600px; animation-delay: 1s; }
+    .radar-ring:nth-child(4) { width: 800px; height: 800px; animation-delay: 1.5s; }
+    .radar-ring:nth-child(5) { width: 1000px; height: 1000px; animation-delay: 2s; }
+
+    @keyframes radar-ring-pulse {
+      0%, 100% { 
+        border-color: rgba(16, 185, 129, 0.1);
+        box-shadow: 0 0 0 rgba(16, 185, 129, 0);
+      }
+      50% { 
+        border-color: rgba(16, 185, 129, 0.25);
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+      }
+    }
+
+    /* Scan Lines */
+    .scan-lines {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(16, 185, 129, 0.03) 2px,
+        rgba(16, 185, 129, 0.03) 4px
+      );
+      pointer-events: none;
+      animation: scan-move 8s linear infinite;
+    }
+
+    @keyframes scan-move {
+      from { transform: translateY(0); }
+      to { transform: translateY(4px); }
+    }
+
+    /* Crosshair Overlay */
+    .radar-crosshair {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
+      pointer-events: none;
+    }
+
+    .radar-crosshair::before,
+    .radar-crosshair::after {
+      content: '';
+      position: absolute;
+      background: rgba(16, 185, 129, 0.2);
+    }
+
+    .radar-crosshair::before {
+      width: 100%;
+      height: 1px;
+      top: 50%;
+      left: 0;
+    }
+
+    .radar-crosshair::after {
+      width: 1px;
+      height: 100%;
+      left: 50%;
+      top: 0;
+    }
+
+    .crosshair-circle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(16, 185, 129, 0.4);
+      border-radius: 50%;
+      animation: crosshair-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes crosshair-pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+      50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+    }
+
+    .position-marker {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #10b981;
+      border: 3px solid #0d0f12;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+    }
+
+    .position-pulse {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border: 2px dashed rgba(16, 185, 129, 0.4);
+      animation: pulse-ring 3s ease-out infinite;
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(0.8); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+
+    .vessel-icon {
+      width: 36px;
+      height: 36px;
+      background: #10b981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      box-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+    }
+
+    .location-label {
+      position: absolute;
+      background: rgba(26, 29, 36, 0.95);
+      border: 1px solid #2a2e3a;
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .trend-down {
+      color: #ef4444;
+    }
+
+    .trend-up {
+      color: #10b981;
+    }
+
+    .route-line {
+      position: absolute;
+      border-top: 2px dashed rgba(16, 185, 129, 0.5);
+      transform-origin: left center;
+    }
+
+    .weather-marker {
+      position: absolute;
+      width: 8px;
+      height: 4px;
+      background: #f97316;
+      transform: rotate(-30deg);
+    }
+
+    /* Moving Target / Beacon Animation */
+    .tracking-target {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      z-index: 20;
+      animation: target-move 12s ease-in-out infinite;
+    }
+
+    .tracking-target::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 2px solid #f97316;
+      border-radius: 50%;
+      animation: target-pulse 1s ease-out infinite;
+    }
+
+    .tracking-target::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 8px;
+      height: 8px;
+      background: #f97316;
+      border-radius: 50%;
+      box-shadow: 0 0 20px #f97316, 0 0 40px #f97316;
+    }
+
+    .target-ring {
+      position: absolute;
+      inset: -10px;
+      border: 1px dashed rgba(249, 115, 22, 0.5);
+      border-radius: 50%;
+      animation: target-ring-rotate 3s linear infinite;
+    }
+
+    .target-cross {
+      position: absolute;
+      inset: -15px;
+      pointer-events: none;
+    }
+
+    .target-cross::before,
+    .target-cross::after {
+      content: '';
+      position: absolute;
+      background: rgba(249, 115, 22, 0.6);
+    }
+
+    .target-cross::before {
+      width: 100%;
+      height: 1px;
+      top: 50%;
+      left: 0;
+    }
+
+    .target-cross::after {
+      width: 1px;
+      height: 100%;
+      left: 50%;
+      top: 0;
+    }
+
+    .target-label {
+      position: absolute;
+      left: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(249, 115, 22, 0.9);
+      color: #000;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      animation: target-label-flicker 0.1s infinite;
+    }
+
+    .target-label::before {
+      content: '';
+      position: absolute;
+      left: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 6px solid transparent;
+      border-right-color: rgba(249, 115, 22, 0.9);
+    }
+
+    .target-scan-line {
+      position: absolute;
+      top: 50%;
+      left: -100px;
+      right: -100px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(249, 115, 22, 0.8), transparent);
+      animation: scan-line-pass 2s ease-in-out infinite;
+    }
+
+    @keyframes target-move {
+      0% { left: 15%; top: 25%; }
+      15% { left: 15%; top: 25%; }
+      20% { left: 35%; top: 20%; }
+      35% { left: 35%; top: 20%; }
+      40% { left: 55%; top: 35%; }
+      55% { left: 55%; top: 35%; }
+      60% { left: 75%; top: 45%; }
+      75% { left: 75%; top: 45%; }
+      80% { left: 85%; top: 60%; }
+      95% { left: 85%; top: 60%; }
+      100% { left: 15%; top: 25%; }
+    }
+
+    @keyframes target-pulse {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2.5); opacity: 0; }
+    }
+
+    @keyframes target-ring-rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes target-label-flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.85; }
+    }
+
+    @keyframes scan-line-pass {
+      0% { transform: translateY(-30px); opacity: 0; }
+      50% { opacity: 1; }
+      100% { transform: translateY(30px); opacity: 0; }
+    }
+
+    /* Target Trail Effect */
+    .target-trail {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(249, 115, 22, 0.6);
+      border-radius: 50%;
+      animation: trail-fade 1.5s ease-out forwards;
+    }
+
+    @keyframes trail-fade {
+      0% { opacity: 0.6; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.5); }
+    }
+
+    /* City Markers with Radar Lock Effect */
+    .city-marker {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: rgba(16, 185, 129, 0.3);
+      border: 2px solid rgba(16, 185, 129, 0.6);
+      border-radius: 50%;
+      animation: city-pulse 2s ease-in-out infinite;
+    }
+
+    .city-marker::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 50%;
+      animation: city-ring-expand 2s ease-out infinite;
+    }
+
+    @keyframes city-pulse {
+      0%, 100% { box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
+      50% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+    }
+
+    @keyframes city-ring-expand {
+      0% { transform: scale(0.5); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+
+    .city-label {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(139, 148, 158, 0.8);
+      font-size: 10px;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Connection Lines Between Cities */
+    .city-connections {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .connection-line {
+      position: absolute;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(16, 185, 129, 0.3) 20%, 
+        rgba(16, 185, 129, 0.3) 80%, 
+        transparent 100%
+      );
+      transform-origin: left center;
+    }
+
+    .connection-pulse {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10b981;
+      animation: connection-move 3s linear infinite;
+    }
+
+    @keyframes connection-move {
+      0% { left: 0; opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { left: 100%; opacity: 0; }
+    }
+
+    /* Radar Lock-on Effect */
+    .radar-lock {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      pointer-events: none;
+      opacity: 0;
+      animation: lock-appear 12s ease-in-out infinite;
+    }
+
+    .radar-lock::before,
+    .radar-lock::after {
+      content: '';
+      position: absolute;
+      border: 2px solid #ef4444;
+    }
+
+    .radar-lock::before {
+      width: 20px;
+      height: 20px;
+      top: 0;
+      left: 0;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .radar-lock::after {
+      width: 20px;
+      height: 20px;
+      bottom: 0;
+      right: 0;
+      border-left: none;
+      border-top: none;
+    }
+
+    .radar-lock-inner::before,
+    .radar-lock-inner::after {
+      content: '';
+      position: absolute;
+      border: 2px solid #ef4444;
+    }
+
+    .radar-lock-inner::before {
+      width: 20px;
+      height: 20px;
+      top: 0;
+      right: 0;
+      border-left: none;
+      border-bottom: none;
+    }
+
+    .radar-lock-inner::after {
+      width: 20px;
+      height: 20px;
+      bottom: 0;
+      left: 0;
+      border-right: none;
+      border-top: none;
+    }
+
+    @keyframes lock-appear {
+      0%, 14% { opacity: 0; }
+      15%, 19% { opacity: 1; }
+      20%, 34% { opacity: 0; }
+      35%, 39% { opacity: 1; }
+      40%, 54% { opacity: 0; }
+      55%, 59% { opacity: 1; }
+      60%, 74% { opacity: 0; }
+      75%, 79% { opacity: 1; }
+      80%, 94% { opacity: 0; }
+      95%, 99% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* World Map SVG Styling */
+    .world-map-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.4;
+    }
+
+    .world-map-svg path {
+      fill: #1e293b;
+      stroke: rgba(16, 185, 129, 0.15);
+      stroke-width: 0.5;
+      transition: all 0.3s ease;
+    }
+
+    .world-map-svg path:hover {
+      fill: #263449;
+      stroke: rgba(16, 185, 129, 0.3);
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-16 bg-[#1a1d24] border-r border-[#2a2e3a] flex flex-col items-center py-4 gap-2">
+      <!-- Logo -->
+      <div class="sidebar-icon active mb-2">
+        <i class="fas fa-compass text-xl"></i>
+      </div>
+      
+      <!-- Nav Icons -->
+      <div class="sidebar-icon">
+        <i class="fas fa-search"></i>
+      </div>
+      <div class="sidebar-icon">
+        <i class="fas fa-th-large"></i>
+      </div>
+      <div class="sidebar-icon">
+        <i class="fas fa-ship"></i>
+      </div>
+      <div class="sidebar-icon">
+        <i class="fas fa-bell"></i>
+      </div>
+      <div class="sidebar-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div class="sidebar-icon">
+        <i class="fas fa-bullhorn"></i>
+      </div>
+      <div class="sidebar-icon">
+        <i class="fas fa-cog"></i>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex overflow-hidden">
+      <!-- Left Panel -->
+      <div class="w-[420px] bg-[#0f1115] border-r border-[#2a2e3a] overflow-y-auto">
+        <!-- Breadcrumb -->
+        <div class="px-6 py-4 border-b border-[#2a2e3a]">
+          <div class="flex items-center gap-2 text-sm">
+            <span class="text-[#8b949e]">Vessels</span>
+            <span class="text-[#8b949e]">/</span>
+            <span class="text-[#10b981] font-medium">Arafat Express</span>
+          </div>
+        </div>
+
+        <!-- Vessel Header -->
+        <div class="px-6 py-5">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <h1 class="text-2xl font-semibold text-white mb-2">Arafat Express</h1>
+              <div class="flex items-center gap-3">
+                <span class="tag-badge tag-laden">
+                  <i class="fas fa-box"></i>
+                  Laden
+                </span>
+                <span class="text-[#8b949e] text-sm">69,765 MTs · 2025 · IMMO...</span>
+              </div>
+            </div>
+            <button class="w-8 h-8 flex items-center justify-center hover:bg-[#2a2e3a] transition-colors">
+              <i class="fas fa-chevron-left text-[#8b949e]"></i>
+            </button>
+          </div>
+
+          <!-- Navigation Tabs -->
+          <div class="flex items-center gap-1 mt-4">
+            <div class="nav-tab">
+              <i class="fas fa-cloud-sun text-xs"></i>
+              Weather <span class="text-[#8b949e]">(18)</span>
+            </div>
+            <div class="nav-tab">
+              <i class="fas fa-gas-pump text-xs"></i>
+              Cons <span class="text-[#8b949e]">(12)</span>
+            </div>
+            <div class="nav-tab">
+              <i class="fas fa-calendar text-xs"></i>
+              Sched <span class="text-[#8b949e]">(16)</span>
+            </div>
+            <div class="nav-tab">
+              <i class="fas fa-tachometer-alt text-xs"></i>
+              Perf <span class="text-[#8b949e]">(13)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPIs Section -->
+        <div class="px-6 py-4">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-medium text-white">KPIs</h2>
+            <button class="text-[#8b949e] hover:text-white transition-colors">
+              <i class="fas fa-bell"></i>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <!-- Required Speed -->
+            <div class="kpi-card">
+              <div class="text-[#8b949e] text-xs mb-1">Required Speed</div>
+              <div class="flex items-baseline gap-1">
+                <span class="text-xl font-semibold text-white">32.43</span>
+                <span class="text-[#8b949e] text-xs">/None</span>
+              </div>
+            </div>
+
+            <!-- FOC/Day -->
+            <div class="kpi-card">
+              <div class="text-[#8b949e] text-xs mb-1">FOC/Day</div>
+              <div class="flex items-baseline gap-1">
+                <span class="text-xl font-semibold text-white">32.43</span>
+                <span class="text-[#8b949e] text-xs">mt/day</span>
+              </div>
+              <div class="flex items-center gap-1 mt-1">
+                <i class="fas fa-arrow-down text-[10px] trend-down"></i>
+                <span class="text-[10px] trend-down">-0.5%</span>
+              </div>
+            </div>
+
+            <!-- Distance -->
+            <div class="kpi-card">
+              <div class="text-[#8b949e] text-xs mb-1">Distance</div>
+              <div class="flex items-baseline gap-1">
+                <span class="text-xl font-semibold text-white">3,242</span>
+                <span class="text-[#8b949e] text-xs">/None</span>
+              </div>
+            </div>
+
+            <!-- Speed Loss -->
+            <div class="kpi-card">
+              <div class="text-[#8b949e] text-xs mb-1">Speed Loss</div>
+              <div class="text-xl font-semibold trend-down">-13.42%</div>
+            </div>
+
+            <!-- CII -->
+            <div class="kpi-card">
+              <div class="text-[#8b949e] text-xs mb-1">CII (add AFR)</div>
+              <div class="flex items-baseline gap-1">
+                <span class="text-xl font-semibold text-[#10b981]">10.56</span>
+                <span class="text-[#8b949e] text-xs">/None</span>
+              </div>
+            </div>
+
+            <!-- View Performance -->
+            <div class="kpi-card flex items-center justify-center cursor-pointer hover:bg-[#252830]">
+              <span class="text-[#10b981] text-sm font-medium">View Performance</span>
+              <i class="fas fa-chevron-right text-[#10b981] text-xs ml-2"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Voyage Section -->
+        <div class="px-6 py-4">
+          <h2 class="text-lg font-semibold text-white mb-4">Voyage KNRT0183E</h2>
+
+          <!-- Departure -->
+          <div class="mb-6">
+            <div class="flex items-center gap-2 mb-1">
+              <i class="fas fa-map-marker-alt text-[#8b949e]"></i>
+              <span class="text-white font-medium">Bremerhaven</span>
+            </div>
+            <div class="text-[#8b949e] text-sm ml-6">Departure Wed, Jul 12 · 10:00 UTC</div>
+          </div>
+
+          <!-- Passage Positions -->
+          <div class="mb-4">
+            <h3 class="text-sm text-[#8b949e] mb-3">Passage Positions</h3>
+            
+            <!-- Timeline Item 1 -->
+            <div class="timeline-item pb-4">
+              <div class="timeline-dot"></div>
+              <div class="bg-[#1a1d24] border border-[#2a2e3a] p-3">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-[#10b981] font-medium text-sm">1</span>
+                  <span class="text-[#8b949e] text-xs">Oct 9 · 10:00 UTC</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-white">
+                  <i class="fas fa-map-pin text-[#8b949e] text-xs"></i>
+                  43°00'N 41°01'E
+                </div>
+              </div>
+            </div>
+
+            <!-- Timeline Item 2 -->
+            <div class="timeline-item">
+              <div class="timeline-dot" style="border-color: #3a3f4d;"></div>
+              <div class="flex items-center gap-4 text-xs text-[#8b949e] mt-1">
+                <span class="flex items-center gap-1">
+                  <i class="far fa-clock"></i>
+                  10:00 UTC
+                </span>
+                <span class="flex items-center gap-1">
+                  <i class="fas fa-tachometer-alt"></i>
+                  28 mt/24h
+                </span>
+                <span class="flex items-center gap-1">
+                  <i class="fas fa-wind"></i>
+                  12kn
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel - Map -->
+      <div class="flex-1 bg-[#0a0c0f] p-4">
+        <!-- Top Info Bar -->
+        <div class="grid grid-cols-4 gap-4 mb-4">
+          <div class="bg-[#1a1d24] border border-[#2a2e3a] p-3">
+            <div class="text-[#8b949e] text-xs mb-1">Current Position</div>
+            <div class="text-white font-medium text-sm">43°00'N 41°01'E</div>
+            <div class="text-[#8b949e] text-xs mt-1">Last Updated</div>
+          </div>
+          <div class="bg-[#1a1d24] border border-[#2a2e3a] p-3">
+            <div class="text-[#8b949e] text-xs mb-1">Expected Position (ETA)</div>
+            <div class="text-white font-medium text-sm">43°00'N 41°01'E</div>
+            <div class="text-[#8b949e] text-xs mt-1">29-07-2023 2:16:28</div>
+          </div>
+          <div class="bg-[#1a1d24] border border-[#2a2e3a] p-3">
+            <div class="text-[#8b949e] text-xs mb-1">Deviation Distance</div>
+            <div class="text-white font-medium text-sm">43°00'N 41°01'E</div>
+          </div>
+          <div class="bg-[#1a1d24] border border-[#2a2e3a] p-3">
+            <div class="text-[#8b949e] text-xs mb-1">Remaining</div>
+            <div class="text-white font-medium text-sm">117 nm</div>
+          </div>
+        </div>
+
+        <!-- Map Area -->
+        <div class="map-container map-dark h-[calc(100vh-140px)] relative">
+          <!-- Radar Sweep Effect -->
+          <div class="radar-sweep"></div>
+          
+          <!-- Radar Rings -->
+          <div class="radar-rings">
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+          </div>
+          
+          <!-- Scan Lines -->
+          <div class="scan-lines"></div>
+          
+          <!-- Crosshair -->
+          <div class="radar-crosshair">
+            <div class="crosshair-circle"></div>
+          </div>
+
+          <!-- Map Controls -->
+          <div class="absolute top-4 left-4 z-10 flex items-center gap-2">
+            <button class="w-8 h-8 bg-[#1a1d24] border border-[#2a2e3a] flex items-center justify-center text-[#8b949e] hover:text-white transition-colors">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="bg-[#1a1d24] border border-[#2a2e3a] px-3 py-1.5 flex items-center gap-2">
+              <span class="text-white text-sm">2025-09-14</span>
+              <span class="text-[#8b949e] text-sm">12:34 UTC (Past)</span>
+              <i class="fas fa-clock text-[#8b949e] text-xs"></i>
+            </div>
+          </div>
+
+          <!-- Map Content -->
+          <div class="absolute inset-0">
+            <!-- Realistic World Map SVG Background -->
+            <svg class="world-map-svg" viewBox="0 0 2000 1000" preserveAspectRatio="xMidYMid slice">
+              <!-- Defs for gradients and filters -->
+              <defs>
+                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="2" result="blur"/>
+                  <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                </filter>
+                <linearGradient id="oceanGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#0a0c0f;stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:#0d1117;stop-opacity:1" />
+                </linearGradient>
+              </defs>
+              
+              <!-- Ocean Background -->
+              <rect width="100%" height="100%" fill="url(#oceanGradient)"/>
+              
+              <!-- North America - Detailed -->
+              <!-- Canada & Alaska -->
+              <path class="continent" d="M120,180 L180,160 L240,140 L320,130 L380,120 L420,100 L460,80 L500,70 L540,75 L580,85 L600,100 L620,120 L640,140 L660,160 L680,180 L700,200 L720,220 L740,240 L760,260 L780,280 L800,300 L820,320 L840,340 L860,360 L880,380 L900,400 L920,420 L940,440 L960,460 L980,480 L1000,500 L1020,520 L1040,540 L1060,560 L1080,580 L1100,600 L1120,620 L1140,640 L1160,660 L1180,680 L1200,700 L1220,720 L1240,740 L1260,760 L1280,780 L1300,800 L1320,820 L1340,840 L1360,860 L1380,880 L1400,900 L1420,920 L1440,940 L1460,960 L1480,980 L1500,1000 L1520,1020 L1540,1040 L1560,1060 L1580,1080 L1600,1100 L1620,1120 L1640,1140 L1660,1160 L1680,1180 L1700,1200 L1720,1220 L1740,1240 L1760,1260 L1780,1280 L1800,1300 L1820,1320 L1840,1340 L1860,1360 L1880,1380 L1900,1400 L1920,1420 L1940,1440 L1960,1460 L1980,1480 L2000,1500" fill="none" stroke="none"/>
+              
+              <!-- Simplified but realistic continent shapes -->
+              <!-- North America -->
+              <path class="continent" d="M50,200 Q100,150 200,140 Q300,130 400,150 Q450,180 480,220 Q500,260 480,300 Q450,340 400,350 Q350,360 300,340 Q250,320 200,300 Q150,280 100,260 Q50,240 50,200 Z" fill="#1a2332"/>
+              <path class="continent" d="M180,360 Q220,340 260,350 Q300,360 320,400 Q340,440 320,480 Q300,520 260,540 Q220,560 180,550 Q140,540 120,500 Q100,460 120,420 Q140,380 180,360 Z" fill="#1a2332"/>
+              
+              <!-- South America -->
+              <path class="continent" d="M280,520 Q320,500 360,520 Q400,540 420,580 Q440,620 450,660 Q460,700 450,740 Q440,780 420,820 Q400,860 360,880 Q320,900 280,880 Q240,860 220,820 Q200,780 190,740 Q180,700 190,660 Q200,620 220,580 Q240,540 280,520 Z" fill="#1a2332"/>
+              
+              <!-- Europe -->
+              <path class="continent" d="M520,180 Q560,160 600,170 Q640,180 670,200 Q700,220 720,250 Q740,280 730,310 Q720,340 690,360 Q660,380 620,390 Q580,400 540,390 Q500,380 480,350 Q460,320 470,290 Q480,260 500,230 Q520,200 520,180 Z" fill="#1a2332"/>
+              <path class="continent" d="M480,200 Q500,190 520,200 Q540,210 550,230 Q560,250 550,270 Q540,290 520,300 Q500,310 480,300 Q460,290 450,270 Q440,250 450,230 Q460,210 480,200 Z" fill="#1a2332"/>
+              
+              <!-- Africa -->
+              <path class="continent" d="M520,400 Q580,380 640,400 Q700,420 740,460 Q780,500 800,550 Q820,600 810,650 Q800,700 770,740 Q740,780 690,800 Q640,820 580,810 Q520,800 480,760 Q440,720 420,670 Q400,620 410,570 Q420,520 450,480 Q480,440 520,400 Z" fill="#1a2332"/>
+              
+              <!-- Middle East -->
+              <path class="continent" d="M720,360 Q760,340 800,350 Q840,360 870,390 Q900,420 910,460 Q920,500 900,540 Q880,580 840,600 Q800,620 760,610 Q720,600 690,570 Q660,540 650,500 Q640,460 660,420 Q680,380 720,360 Z" fill="#1a2332"/>
+              
+              <!-- India -->
+              <path class="continent" d="M920,400 Q960,380 1000,400 Q1040,420 1060,460 Q1080,500 1070,540 Q1060,580 1030,610 Q1000,640 960,650 Q920,660 880,640 Q840,620 820,580 Q800,540 810,500 Q820,460 850,430 Q880,400 920,400 Z" fill="#1a2332"/>
+              
+              <!-- Russia / Asia -->
+              <path class="continent" d="M700,80 Q800,60 900,70 Q1000,80 1100,100 Q1200,120 1300,140 Q1400,160 1500,180 Q1600,200 1700,220 Q1800,240 1900,260 L1920,300 Q1900,340 1800,360 Q1700,380 1600,390 Q1500,400 1400,410 Q1300,420 1200,430 Q1100,440 1000,450 Q900,460 800,470 Q700,480 600,470 Q500,460 450,420 Q400,380 420,340 Q440,300 500,260 Q560,220 620,180 Q680,140 700,80 Z" fill="#1a2332"/>
+              
+              <!-- China/East Asia -->
+              <path class="continent" d="M1100,280 Q1160,260 1220,280 Q1280,300 1320,340 Q1360,380 1380,430 Q1400,480 1380,530 Q1360,580 1310,610 Q1260,640 1200,650 Q1140,660 1080,640 Q1020,620 980,580 Q940,540 920,490 Q900,440 920,390 Q940,340 980,300 Q1020,260 1100,280 Z" fill="#1a2332"/>
+              
+              <!-- Southeast Asia / Indonesia -->
+              <path class="continent" d="M1200,600 Q1240,580 1280,600 Q1320,620 1340,660 Q1360,700 1350,740 Q1340,780 1300,800 Q1260,820 1220,810 Q1180,800 1150,770 Q1120,740 1110,700 Q1100,660 1120,620 Q1140,580 1200,600 Z" fill="#1a2332"/>
+              <path class="continent" d="M1300,720 Q1340,700 1380,720 Q1420,740 1440,780 Q1460,820 1440,860 Q1420,900 1380,920 Q1340,940 1300,920 Q1260,900 1240,860 Q1220,820 1240,780 Q1260,740 1300,720 Z" fill="#1a2332"/>
+              <path class="continent" d="M1400,800 Q1440,780 1480,800 Q1520,820 1540,860 Q1560,900 1540,940 Q1520,980 1480,1000 Q1440,1020 1400,1000 Q1360,980 1340,940 Q1320,900 1340,860 Q1360,820 1400,800 Z" fill="#1a2332"/>
+              
+              <!-- Australia -->
+              <path class="continent" d="M1500,700 Q1580,680 1660,700 Q1740,720 1800,760 Q1860,800 1900,860 Q1940,920 1920,980 Q1900,1040 1840,1080 Q1780,1120 1700,1140 Q1620,1160 1540,1140 Q1460,1120 1400,1080 Q1340,1040 1320,980 Q1300,920 1340,860 Q1380,800 1440,760 Q1500,720 1500,700 Z" fill="#1a2332"/>
+              
+              <!-- Japan -->
+              <path class="continent" d="M1680,320 Q1720,300 1760,320 Q1800,340 1820,380 Q1840,420 1820,460 Q1800,500 1760,520 Q1720,540 1680,520 Q1640,500 1620,460 Q1600,420 1620,380 Q1640,340 1680,320 Z" fill="#1a2332"/>
+              
+              <!-- UK -->
+              <path class="continent" d="M460,220 Q480,210 500,220 Q520,230 530,250 Q540,270 530,290 Q520,310 500,320 Q480,330 460,320 Q440,310 430,290 Q420,270 430,250 Q440,230 460,220 Z" fill="#1a2332"/>
+              
+              <!-- Greenland -->
+              <path class="continent" d="M380,60 Q440,40 500,60 Q560,80 600,120 Q640,160 650,200 Q660,240 640,280 Q620,320 580,340 Q540,360 500,350 Q460,340 420,320 Q380,300 360,260 Q340,220 350,180 Q360,140 380,100 Q400,60 380,60 Z" fill="#1a2332"/>
+              
+              <!-- Iceland -->
+              <path class="continent" d="M420,140 Q440,130 460,140 Q480,150 490,170 Q500,190 490,210 Q480,230 460,240 Q440,250 420,240 Q400,230 390,210 Q380,190 390,170 Q400,150 420,140 Z" fill="#1a2332"/>
+              
+              <!-- Madagascar -->
+              <path class="continent" d="M740,720 Q760,710 780,720 Q800,730 810,750 Q820,770 810,790 Q800,810 780,820 Q760,830 740,820 Q720,810 710,790 Q700,770 710,750 Q720,730 740,720 Z" fill="#1a2332"/>
+              
+              <!-- New Zealand -->
+              <path class="continent" d="M1860,920 Q1900,900 1940,920 Q1980,940 2000,980 Q2020,1020 2000,1060 Q1980,1100 1940,1120 Q1900,1140 1860,1120 Q1820,1100 1800,1060 Q1780,1020 1800,980 Q1820,940 1860,920 Z" fill="#1a2332"/>
+              
+              <!-- Sri Lanka -->
+              <path class="continent" d="M960,620 Q980,610 1000,620 Q1020,630 1030,650 Q1040,670 1030,690 Q1020,710 1000,720 Q980,730 960,720 Q940,710 930,690 Q920,670 930,650 Q940,630 960,620 Z" fill="#1a2332"/>
+              
+              <!-- Philippines -->
+              <path class="continent" d="M1340,520 Q1360,510 1380,520 Q1400,530 1410,550 Q1420,570 1410,590 Q1400,610 1380,620 Q1360,630 1340,620 Q1320,610 1310,590 Q1300,570 1310,550 Q1320,530 1340,520 Z" fill="#1a2332"/>
+              
+              <!-- Papua New Guinea -->
+              <path class="continent" d="M1580,680 Q1620,660 1660,680 Q1700,700 1720,740 Q1740,780 1720,820 Q1700,860 1660,880 Q1620,900 1580,880 Q1540,860 1520,820 Q1500,780 1520,740 Q1540,700 1580,680 Z" fill="#1a2332"/>
+              
+              <!-- Grid Lines - Latitude -->
+              <line x1="0" y1="250" x2="2000" y2="250" stroke="rgba(16, 185, 129, 0.06)" stroke-width="1"/>
+              <line x1="0" y1="500" x2="2000" y2="500" stroke="rgba(16, 185, 129, 0.06)" stroke-width="1"/>
+              <line x1="0" y1="750" x2="2000" y2="750" stroke="rgba(16, 185, 129, 0.06)" stroke-width="1"/>
+              
+              <!-- Grid Lines - Longitude -->
+              <line x1="500" y1="0" x2="500" y2="1000" stroke="rgba(16, 185, 129, 0.06)" stroke-width="1"/>
+              <line x1="1000" y1="0" x2="1000" y2="1000" stroke="rgba(16, 185, 129, 0.06)" stroke-width="1"/>
+              <line x1="1500" y1="0" x2="1500" y2="1000" stroke="rgba(16, 185, 129, 0.06)" stroke-width="1"/>
+            </svg>
+
+            <!-- Grid Lines -->
+            <div class="absolute inset-0" style="background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 50px 50px;"></div>
+
+            <!-- City Markers -->
+            <div class="city-marker" style="left: 15%; top: 25%;">
+              <span class="city-label">Lisbon</span>
+            </div>
+            <div class="city-marker" style="left: 35%; top: 20%;">
+              <span class="city-label">Marseille</span>
+            </div>
+            <div class="city-marker" style="left: 55%; top: 35%;">
+              <span class="city-label">Cairo</span>
+            </div>
+            <div class="city-marker" style="left: 75%; top: 45%;">
+              <span class="city-label">Dubai</span>
+            </div>
+            <div class="city-marker" style="left: 85%; top: 60%;">
+              <span class="city-label">Mumbai</span>
+            </div>
+
+            <!-- Moving Tracking Target -->
+            <div class="tracking-target">
+              <div class="target-ring"></div>
+              <div class="target-cross"></div>
+              <div class="target-label">TARGET-01</div>
+              <div class="target-scan-line"></div>
+            </div>
+
+            <!-- Radar Lock Effect (follows target) -->
+            <div class="radar-lock" style="left: 15%; top: 25%; transform: translate(-50%, -50%);">
+              <div class="radar-lock-inner"></div>
+            </div>
+            <div class="radar-lock" style="left: 35%; top: 20%; transform: translate(-50%, -50%); animation-delay: -2.4s;">
+              <div class="radar-lock-inner"></div>
+            </div>
+            <div class="radar-lock" style="left: 55%; top: 35%; transform: translate(-50%, -50%); animation-delay: -4.8s;">
+              <div class="radar-lock-inner"></div>
+            </div>
+            <div class="radar-lock" style="left: 75%; top: 45%; transform: translate(-50%, -50%); animation-delay: -7.2s;">
+              <div class="radar-lock-inner"></div>
+            </div>
+            <div class="radar-lock" style="left: 85%; top: 60%; transform: translate(-50%, -50%); animation-delay: -9.6s;">
+              <div class="radar-lock-inner"></div>
+            </div>
+
+            <!-- Position Circle (Oman Area) -->
+            <div class="absolute" style="left: 58%; top: 35%;">
+              <div class="position-pulse"></div>
+              <div class="relative">
+                <div class="vessel-icon">
+                  <i class="fas fa-anchor"></i>
+                </div>
+                <!-- Location Label -->
+                <div class="location-label absolute left-10 top-0 whitespace-nowrap">
+                  <div class="flex items-center gap-2">
+                    <span class="text-[#8b949e]">Oman</span>
+                  </div>
+                  <div class="text-white font-medium">Al Juwairiya</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Route Line -->
+            <svg class="absolute inset-0 w-full h-full pointer-events-none">
+              <line x1="65%" y1="45%" x2="85%" y2="65%" stroke="#10b981" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+            </svg>
+
+            <!-- Second Position (Lower right) -->
+            <div class="absolute" style="left: 82%; top: 62%;">
+              <div class="position-marker"></div>
+            </div>
+
+            <!-- Weather Markers -->
+            <div class="weather-marker" style="left: 45%; top: 50%;"></div>
+            <div class="weather-marker" style="left: 50%; top: 55%;"></div>
+            <div class="weather-marker" style="left: 55%; top: 48%;"></div>
+            <div class="weather-marker" style="left: 60%; top: 60%;"></div>
+            <div class="weather-marker" style="left: 65%; top: 52%;"></div>
+            <div class="weather-marker" style="left: 70%; top: 58%;"></div>
+            <div class="weather-marker" style="left: 75%; top: 65%;"></div>
+            <div class="weather-marker" style="left: 80%; top: 55%;"></div>
+            <div class="weather-marker" style="left: 85%; top: 70%;"></div>
+            <div class="weather-marker" style="left: 90%; top: 60%;"></div>
+
+            <!-- Port Markers -->
+            <div class="absolute" style="left: 48%; top: 45%;">
+              <div class="w-2 h-2 bg-[#64748b]"></div>
+            </div>
+            <div class="absolute" style="left: 52%; top: 40%;">
+              <div class="w-2 h-2 bg-[#64748b]"></div>
+            </div>
+            <div class="absolute" style="left: 62%; top: 55%;">
+              <div class="w-2 h-2 bg-[#64748b]"></div>
+            </div>
+            <div class="absolute" style="left: 72%; top: 50%;">
+              <div class="w-2 h-2 bg-[#64748b]"></div>
+            </div>
+            <div class="absolute" style="left: 88%; top: 58%;">
+              <div class="w-2 h-2 bg-[#64748b]"></div>
+            </div>
+          </div>
+
+          <!-- Map Legend/Controls Bottom Right -->
+          <div class="absolute bottom-4 right-4">
+            <button class="w-10 h-10 bg-[#1a1d24] border border-[#2a2e3a] flex items-center justify-center text-[#8b949e] hover:text-white transition-colors">
+              <i class="fas fa-layer-group"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
