@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maritime Surveillance Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e17;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .dashboard {
+            display: flex;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a0e17 0%, #1a1f2e 50%, #0d1119 100%);
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 60px;
+            background: rgba(20, 25, 35, 0.9);
+            border-right: 1px solid rgba(100, 200, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            gap: 15px;
+        }
+
+        .sidebar-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 18px;
+        }
+
+        .sidebar-icon:hover {
+            background: rgba(0, 255, 200, 0.1);
+            color: #00ffc8;
+        }
+
+        .sidebar-icon.active {
+            background: rgba(0, 255, 200, 0.15);
+            color: #00ffc8;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Info Panel */
+        .top-panel {
+            display: flex;
+            gap: 15px;
+            padding: 15px 20px;
+            background: rgba(20, 25, 35, 0.6);
+            border-bottom: 1px solid rgba(100, 200, 255, 0.1);
+        }
+
+        .info-card {
+            flex: 1;
+            background: rgba(30, 40, 55, 0.8);
+            border: 1px solid rgba(100, 150, 200, 0.2);
+            border-radius: 8px;
+            padding: 12px 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(0, 200, 255, 0.5), transparent);
+            animation: scan-line 3s linear infinite;
+        }
+
+        @keyframes scan-line {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .info-card h3 {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .info-card .value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+        }
+
+        .info-card .sub-value {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 3px;
+        }
+
+        /* Map Container */
+        .map-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(ellipse at center, #1a2535 0%, #0d1119 70%);
+        }
+
+        /* Grid Overlay */
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 200, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 200, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+
+        /* World Map Background */
+        .world-map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.3;
+        }
+
+        .world-map svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Radar Container */
+        .radar-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+        }
+
+        /* Radar Circles */
+        .radar-circles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .radar-circle {
+            position: absolute;
+            border: 1px solid rgba(0, 200, 255, 0.15);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .radar-circle:nth-child(1) { width: 200px; height: 200px; }
+        .radar-circle:nth-child(2) { width: 400px; height: 400px; }
+        .radar-circle:nth-child(3) { width: 600px; height: 600px; }
+        .radar-circle:nth-child(4) { width: 800px; height: 800px; }
+
+        /* Radar Sweep */
+        .radar-sweep {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 400px;
+            height: 400px;
+            transform-origin: 0 0;
+            animation: radar-rotate 4s linear infinite;
+        }
+
+        .radar-sweep::before {
+            content: '';
+            position: absolute;
+            top: -400px;
+            left: -400px;
+            width: 400px;
+            height: 400px;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                rgba(0, 255, 200, 0.1) 30deg,
+                rgba(0, 255, 200, 0.3) 60deg,
+                transparent 90deg
+            );
+            border-radius: 50%;
+            transform: rotate(-90deg);
+        }
+
+        @keyframes radar-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Radar Center */
+        .radar-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(0, 255, 200, 0.6);
+            border-radius: 50%;
+            background: rgba(0, 255, 200, 0.1);
+        }
+
+        .radar-center::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            background: #00ffc8;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.5); }
+        }
+
+        /* Crosshairs */
+        .crosshair-h {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(0, 200, 255, 0.1);
+        }
+
+        .crosshair-v {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: rgba(0, 200, 255, 0.1);
+        }
+
+        /* Location Markers */
+        .location-marker {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .location-dot {
+            width: 10px;
+            height: 10px;
+            background: #00ffc8;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 255, 200, 0.5);
+            animation: dot-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes dot-pulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 200, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(0, 255, 200, 0.8); }
+        }
+
+        /* Scanning Brackets */
+        .scan-bracket {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            opacity: 0;
+            animation: bracket-scan 4s linear infinite;
+        }
+
+        .scan-bracket::before,
+        .scan-bracket::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ff6b35;
+        }
+
+        .scan-bracket::before {
+            top: 0;
+            left: 0;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .scan-bracket::after {
+            bottom: 0;
+            right: 0;
+            border-left: none;
+            border-top: none;
+        }
+
+        @keyframes bracket-scan {
+            0%, 90%, 100% { opacity: 0; }
+            5%, 85% { opacity: 1; }
+        }
+
+        /* Ship Marker */
+        .ship-marker {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .ship-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #00c8a0, #00a080);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 0 20px rgba(0, 200, 160, 0.4);
+            animation: ship-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes ship-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 200, 160, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(0, 200, 160, 0.7); }
+        }
+
+        .ship-label {
+            background: rgba(20, 30, 45, 0.9);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            white-space: nowrap;
+        }
+
+        .ship-label .country {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 10px;
+        }
+
+        .ship-label .name {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Target Marker */
+        .target-marker {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            animation: target-move 12s linear infinite;
+        }
+
+        .target-crosshair {
+            width: 40px;
+            height: 40px;
+            position: relative;
+        }
+
+        .target-crosshair::before,
+        .target-crosshair::after {
+            content: '';
+            position: absolute;
+            border: 2px solid #ff9500;
+        }
+
+        .target-crosshair::before {
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            animation: crosshair-rotate 3s linear infinite;
+        }
+
+        .target-crosshair::after {
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ff9500;
+            margin-top: -1px;
+        }
+
+        .target-crosshair .v-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 2px;
+            background: #ff9500;
+            margin-left: -1px;
+        }
+
+        @keyframes crosshair-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .target-label {
+            background: linear-gradient(90deg, #ff9500, #ff7700);
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @keyframes target-move {
+            0% { left: 70%; top: 60%; }
+            20% { left: 20%; top: 30%; }
+            40% { left: 15%; top: 70%; }
+            60% { left: 60%; top: 25%; }
+            80% { left: 45%; top: 45%; }
+            100% { left: 70%; top: 60%; }
+        }
+
+        /* Connection Line */
+        .connection-line {
+            position: absolute;
+            top: 45%;
+            left: 55%;
+            width: 200px;
+            height: 2px;
+            background: repeating-linear-gradient(
+                90deg,
+                #00ffc8 0px,
+                #00ffc8 5px,
+                transparent 5px,
+                transparent 10px
+            );
+            transform-origin: left center;
+            transform: rotate(25deg);
+            opacity: 0.6;
+            animation: line-dash 1s linear infinite;
+        }
+
+        @keyframes line-dash {
+            from { background-position: 0 0; }
+            to { background-position: 10px 0; }
+        }
+
+        /* Blips */
+        .blip {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #ff9500;
+            border-radius: 50%;
+            animation: blip-fade 3s ease-in-out infinite;
+        }
+
+        .blip.white {
+            background: #fff;
+            width: 8px;
+            height: 8px;
+        }
+
+        @keyframes blip-fade {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Time Control */
+        .time-control {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(20, 30, 45, 0.9);
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid rgba(100, 150, 200, 0.2);
+        }
+
+        .time-btn {
+            width: 30px;
+            height: 30px;
+            background: rgba(100, 150, 200, 0.2);
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .time-btn:hover {
+            background: rgba(0, 200, 255, 0.3);
+        }
+
+        .time-display {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #00ffc8;
+            padding: 0 10px;
+        }
+
+        /* Data Points */
+        .data-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            animation: data-flicker 4s ease-in-out infinite;
+        }
+
+        @keyframes data-flicker {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Range Rings Animation */
+        .range-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid rgba(0, 200, 255, 0.1);
+            border-radius: 50%;
+            animation: range-expand 4s ease-out infinite;
+        }
+
+        @keyframes range-expand {
+            0% { width: 0; height: 0; opacity: 1; }
+            100% { width: 800px; height: 800px; opacity: 0; }
+        }
+
+        /* Scan Line Effect */
+        .scan-line-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                180deg,
+                transparent 0%,
+                rgba(0, 255, 200, 0.02) 50%,
+                transparent 100%
+            );
+            animation: scan-vertical 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scan-vertical {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        /* Noise Overlay */
+        .noise-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-icon active">⌘</div>
+            <div class="sidebar-icon">◎</div>
+            <div class="sidebar-icon">🔔</div>
+            <div class="sidebar-icon">⚙</div>
+            <div class="sidebar-icon">➤</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Info Panel -->
+            <div class="top-panel">
+                <div class="info-card">
+                    <h3>Current Position</h3>
+                    <div class="value">43°00'N 41°01'E</div>
+                    <div class="sub-value">Last Updated</div>
+                </div>
+                <div class="info-card">
+                    <h3>Expected Position (ETA)</h3>
+                    <div class="value">43°00'N 41°01'E</div>
+                    <div class="sub-value">29-07-2023 2:16:28</div>
+                </div>
+                <div class="info-card">
+                    <h3>Deviation Distance</h3>
+                    <div class="value">43°00'N 41°01'E</div>
+                </div>
+                <div class="info-card">
+                    <h3>Remaining</h3>
+                    <div class="value">117 nm</div>
+                </div>
+            </div>
+
+            <!-- Map Container -->
+            <div class="map-container">
+                <!-- Grid Overlay -->
+                <div class="grid-overlay"></div>
+                
+                <!-- Noise Overlay -->
+                <div class="noise-overlay"></div>
+
+                <!-- World Map -->
+                <div class="world-map">
+                    <svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
+                        <!-- Simplified world map paths -->
+                        <defs>
+                            <linearGradient id="landGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1a2a3a;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0d1a25;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Africa/Europe/Middle East simplified shape -->
+                        <path d="M400,100 Q450,80 500,100 L520,150 Q550,200 530,250 L500,300 Q480,350 520,400 L550,450 Q500,500 450,480 L400,450 Q350,400 380,350 L400,300 Q380,250 400,200 L380,150 Z" 
+                              fill="url(#landGradient)" stroke="rgba(0,200,255,0.1)" stroke-width="1"/>
+                        <!-- India -->
+                        <path d="M650,200 Q680,180 700,200 L720,250 Q740,300 720,350 L700,400 Q680,420 660,400 L640,350 Q620,300 640,250 Z" 
+                              fill="url(#landGradient)" stroke="rgba(0,200,255,0.1)" stroke-width="1"/>
+                        <!-- Europe -->
+                        <path d="M350,80 Q400,60 450,80 L480,120 Q500,150 480,180 L450,200 Q400,210 360,190 L330,150 Q320,120 350,80 Z" 
+                              fill="url(#landGradient)" stroke="rgba(0,200,255,0.1)" stroke-width="1"/>
+                    </svg>
+                </div>
+
+                <!-- Scan Line Overlay -->
+                <div class="scan-line-overlay"></div>
+
+                <!-- Time Control -->
+                <div class="time-control">
+                    <button class="time-btn">◀</button>
+                    <span class="time-display">2025-09-14 12:34 UTC (Past)</span>
+                    <button class="time-btn">ⓘ</button>
+                </div>
+
+                <!-- Radar Container -->
+                <div class="radar-container">
+                    <!-- Range Rings -->
+                    <div class="radar-circles">
+                        <div class="radar-circle"></div>
+                        <div class="radar-circle"></div>
+                        <div class="radar-circle"></div>
+                        <div class="radar-circle"></div>
+                    </div>
+
+                    <!-- Crosshairs -->
+                    <div class="crosshair-h"></div>
+                    <div class="crosshair-v"></div>
+
+                    <!-- Expanding Range Ring -->
+                    <div class="range-ring"></div>
+
+                    <!-- Radar Sweep -->
+                    <div class="radar-sweep"></div>
+
+                    <!-- Radar Center -->
+                    <div class="radar-center"></div>
+
+                    <!-- Location Markers -->
+                    <div class="location-marker" style="left: 15%; top: 35%;">
+                        <div class="location-dot"></div>
+                        <span>Lisbon</span>
+                    </div>
+                    <div class="location-marker" style="left: 35%; top: 25%;">
+                        <div class="location-dot"></div>
+                        <span>Marseille</span>
+                    </div>
+                    <div class="location-marker" style="right: 25%; top: 40%;">
+                        <div class="location-dot"></div>
+                        <span>Dubai</span>
+                    </div>
+                    <div class="location-marker" style="right: 15%; top: 55%;">
+                        <div class="location-dot"></div>
+                        <span>Mumbai</span>
+                    </div>
+
+                    <!-- Scanning Brackets -->
+                    <div class="scan-bracket" style="left: 12%; top: 32%; animation-delay: 0s;"></div>
+                    <div class="scan-bracket" style="left: 32%; top: 22%; animation-delay: 0.5s;"></div>
+                    <div class="scan-bracket" style="left: 48%; top: 38%; animation-delay: 1s;"></div>
+                    <div class="scan-bracket" style="right: 22%; top: 37%; animation-delay: 1.5s;"></div>
+                    <div class="scan-bracket" style="right: 12%; top: 52%; animation-delay: 2s;"></div>
+
+                    <!-- Ship Marker (Oman) -->
+                    <div class="ship-marker" style="left: 52%; top: 42%;">
+                        <div class="ship-icon">⚓</div>
+                        <div class="ship-label">
+                            <div class="country">Oman</div>
+                            <div class="name">Al Juwairiya</div>
+                        </div>
+                    </div>
+
+                    <!-- Connection Line -->
+                    <div class="connection-line"></div>
+
+                    <!-- Target Marker -->
+                    <div class="target-marker">
+                        <div class="target-crosshair">
+                            <div class="v-line"></div>
+                        </div>
+                        <div class="target-label">Target-01</div>
+                    </div>
+
+                    <!-- Blips -->
+                    <div class="blip" style="left: 45%; top: 48%;"></div>
+                    <div class="blip" style="left: 55%; top: 52%;"></div>
+                    <div class="blip" style="left: 60%; top: 45%;"></div>
+                    <div class="blip" style="left: 40%; top: 55%;"></div>
+                    <div class="blip" style="left: 65%; top: 50%;"></div>
+                    <div class="blip" style="left: 35%; top: 45%;"></div>
+                    <div class="blip" style="left: 70%; top: 55%;"></div>
+                    <div class="blip" style="left: 50%; top: 60%;"></div>
+                    <div class="blip white" style="left: 48%; top: 38%;"></div>
+                    <div class="blip white" style="left: 62%; top: 48%;"></div>
+                    <div class="blip white" style="left: 42%; top: 52%;"></div>
+                    <div class="blip white" style="left: 58%; top: 42%;"></div>
+
+                    <!-- Data Points -->
+                    <div class="data-point" style="left: 30%; top: 30%;"></div>
+                    <div class="data-point" style="left: 70%; top: 35%;"></div>
+                    <div class="data-point" style="left: 25%; top: 60%;"></div>
+                    <div class="data-point" style="left: 75%; top: 65%;"></div>
+                    <div class="data-point" style="left: 40%; top: 70%;"></div>
+                    <div class="data-point" style="left: 60%; top: 25%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dynamic blip generation
+        function createRandomBlip() {
+            const radar = document.querySelector('.radar-container');
+            const blip = document.createElement('div');
+            blip.className = 'blip';
+            if (Math.random() > 0.7) blip.classList.add('white');
+            
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 100 + Math.random() * 300;
+            const x = 50 + (Math.cos(angle) * distance / 800 * 100);
+            const y = 50 + (Math.sin(angle) * distance / 800 * 100);
+            
+            blip.style.left = x + '%';
+            blip.style.top = y + '%';
+            blip.style.animationDelay = Math.random() * 2 + 's';
+            
+            radar.appendChild(blip);
+            
+            setTimeout(() => blip.remove(), 5000);
+        }
+
+        // Create random blips periodically
+        setInterval(createRandomBlip, 2000);
+
+        // Animate info card values
+        function updateInfoCard() {
+            const cards = document.querySelectorAll('.info-card .value');
+            cards.forEach(card => {
+                card.style.opacity = '0.7';
+                setTimeout(() => card.style.opacity = '1', 200);
+            });
+        }
+
+        setInterval(updateInfoCard, 3000);
+
+        // Add hover effects to location markers
+        document.querySelectorAll('.location-marker').forEach(marker => {
+            marker.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.1)';
+                this.style.transition = 'transform 0.3s ease';
+            });
+            marker.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
