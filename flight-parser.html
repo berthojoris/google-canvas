@@ -4,675 +4,371 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flight Data Parser</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#217346",
+                        "primary-hover": "#1a5c38",
+                        "background-light": "#F8F9FA",
+                        "grid-white": "#FFFFFF",
+                        "selection-blue": "#E8F0FE",
+                        "border-subtle": "#E2E4E8",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "Segoe UI", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
         }
-        h1 {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 5px;
+            border: 2px solid #f1f1f1;
         }
-        .input-section, .result-section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
         }
-        textarea {
-            width: 100%;
-            min-height: 200px;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            resize: vertical;
-            transition: border-color 0.3s;
+        .excel-grid-header {
+            background-color: #f3f3f3;
+            color: #444;
+            font-weight: 600;
+            border-bottom: 2px solid #e0e0e0;
         }
-        textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-        .data-block {
-            background: #f8f9fa;
-            border-left: 4px solid #667eea;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 0 10px 10px 0;
-        }
-        .data-block h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-        .info-row {
-            display: flex;
-            margin-bottom: 10px;
-            align-items: flex-start;
-        }
-        .info-label {
-            font-weight: bold;
-            color: #555;
-            min-width: 150px;
-        }
-        .info-value {
-            color: #333;
-            flex: 1;
-        }
-        .flight-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+        .active-cell {
+            outline: 2px solid #217346;
+            z-index: 10;
         }
         .flight-badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #217346 0%, #1a5c38 100%);
             color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 13px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
             font-weight: 500;
-        }
-        .route-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
         }
         .route-badge {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 13px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
             font-weight: 500;
-        }
-        .class-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
         }
         .class-badge {
             background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
             color: white;
-            padding: 5px 15px;
-            border-radius: 15px;
-            font-size: 13px;
-            font-weight: 600;
-            min-width: 30px;
-            text-align: center;
-        }
-        .no-data {
-            color: #999;
-            font-style: italic;
-        }
-        .separator {
-            text-align: center;
-            color: #999;
-            margin: 20px 0;
-            font-size: 14px;
-        }
-        .separator::before, .separator::after {
-            content: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━';
-            margin: 0 10px;
-            color: #ddd;
-        }
-        .stats {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .stat-item {
-            text-align: center;
-        }
-        .stat-value {
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .stat-label {
+            padding: 4px 10px;
+            border-radius: 12px;
             font-size: 12px;
-            opacity: 0.9;
+            font-weight: 600;
+            min-width: 24px;
+            text-align: center;
         }
         .upload-section {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
-            border: 2px dashed #667eea;
-            border-radius: 15px;
-            padding: 30px;
+            background: #f8f9fa;
+            border: 2px dashed #217346;
+            border-radius: 8px;
+            padding: 40px;
             text-align: center;
-            margin-bottom: 20px;
             transition: all 0.3s;
         }
         .upload-section:hover {
-            border-color: #764ba2;
-            background: linear-gradient(135deg, #eef2f7 0%, #dde3e9 100%);
+            border-color: #1a5c38;
+            background: #f0f4f1;
         }
         .upload-section.dragover {
-            border-color: #764ba2;
-            background: linear-gradient(135deg, #e8f4f8 0%, #d4e7f0 100%);
-            transform: scale(1.02);
+            border-color: #1a5c38;
+            background: #e8f0fe;
+            transform: scale(1.01);
         }
-        .upload-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-        .upload-text {
-            color: #555;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-        .upload-hint {
-            color: #888;
-            font-size: 13px;
-        }
-        input[type="file"] {
-            display: none;
-        }
-        .upload-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 30px;
-            border-radius: 25px;
-            cursor: pointer;
-            display: inline-block;
-            margin-top: 15px;
-            transition: transform 0.2s;
-        }
-        .upload-btn:hover {
-            transform: translateY(-2px);
-        }
-        .file-info {
-            background: #e8f5e9;
-            border-left: 4px solid #4caf50;
-            padding: 15px;
-            margin-top: 15px;
-            border-radius: 0 10px 10px 0;
-            display: none;
-        }
-        .file-name {
-            font-weight: bold;
-            color: #2e7d32;
-        }
-        .file-size {
-            color: #558b2f;
-            font-size: 13px;
-        }
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .tab {
-            padding: 10px 25px;
-            border-radius: 25px;
-            cursor: pointer;
-            background: #e0e0e0;
-            color: #555;
-            transition: all 0.3s;
-            border: none;
-            font-size: 14px;
-        }
-        .tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-weight: 500;
-        }
-        tr:hover {
-            background: #f5f5f5;
-        }
-        .export-btn {
-            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
-            margin-left: 10px;
-        }
-        .search-box {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .search-box input {
-            padding: 12px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 25px;
-            font-size: 14px;
-            width: 300px;
-            transition: all 0.3s;
-        }
-        .search-box input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        .filter-count {
-            margin-left: 10px;
-            color: #667eea;
-            font-size: 13px;
-            font-weight: 500;
+        .data-block {
+            background: white;
+            border: 1px solid #E2E4E8;
+            border-left: 4px solid #217346;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
         .data-block.hidden {
             display: none;
         }
         .data-block.highlight {
             animation: highlight 0.5s ease;
-            border-left-color: #ff6b6b;
+            border-left-color: #e74c3c;
         }
         @keyframes highlight {
             0% { background: #fff3cd; }
-            100% { background: #f8f9fa; }
+            100% { background: white; }
         }
-        .no-match {
-            text-align: center;
-            padding: 40px;
-            color: #888;
-            font-size: 16px;
+        .info-row {
+            display: flex;
+            margin-bottom: 8px;
+            align-items: flex-start;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            min-width: 140px;
+            font-size: 13px;
+        }
+        .info-value {
+            color: #333;
+            flex: 1;
+            font-size: 13px;
+        }
+        .no-data {
+            color: #999;
+            font-style: italic;
+        }
+        .file-info {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 8px 8px 0;
+            display: none;
         }
         .sticky-header {
             position: sticky;
             top: 0;
             background: white;
             z-index: 100;
-            padding: 15px 0;
-            border-bottom: 2px solid #e0e0e0;
+            padding: 16px 0;
+            border-bottom: 1px solid #E2E4E8;
             margin-bottom: 20px;
         }
-        .sticky-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
+        input[type="file"] {
+            display: none;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: #217346;
+            box-shadow: 0 0 0 3px rgba(33, 115, 70, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #E2E4E8;
+            font-size: 13px;
+        }
+        th {
+            background: #f3f3f3;
+            color: #444;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .no-match {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+            font-size: 14px;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>✈️ Flight Data Parser</h1>
-        
-        <div class="input-section">
-            <h3 style="margin-bottom: 15px; color: #333;">📁 Upload File Excel</h3>
-            <p style="margin-bottom: 15px; color: #666; font-size: 14px;">
-                Upload file Excel dengan kolom <strong>Order ID</strong>, <strong>Guest Name</strong>, dan <strong>Order Detail</strong>
-            </p>
-            <div class="upload-section" id="dropZone" style="margin-bottom: 0;">
-                <div class="upload-icon">📊</div>
-                <div class="upload-text">Drag & Drop file Excel di sini</div>
-                <div class="upload-hint">atau</div>
-                <label class="upload-btn">
-                    Pilih File Excel
-                    <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event)">
-                </label>
-                <div class="upload-hint" style="margin-top: 15px;">Support: .xlsx, .xls, .csv</div>
-            </div>
-            <div id="fileInfo" class="file-info">
-                <div class="file-name" id="fileName"></div>
-                <div class="file-size" id="fileSize"></div>
-            </div>
-        </div>
-
-        <div id="statsSection" class="stats" style="display: none;">
-            <div class="stat-item">
-                <div class="stat-value" id="totalBlocks">0</div>
-                <div class="stat-label">Data Blocks</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="totalFlights">0</div>
-                <div class="stat-label">Total Flights</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="withBookingCode">0</div>
-                <div class="stat-label">With Booking Code</div>
-            </div>
-        </div>
-
-        <div id="resultSection" class="result-section" style="display: none;">
-            <div class="sticky-header">
-                <div class="sticky-content">
-                    <h3 style="color: #333; margin: 0;">📊 Hasil Parsing:</h3>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <div class="search-box">
-                            <input type="text" id="searchInput" placeholder="🔍 Cari Booking Code, Passenger, Flight, Route..." onkeyup="filterResults()">
-                            <span id="filterCount" class="filter-count"></span>
-                        </div>
-                        <button class="export-btn" onclick="exportToExcel()">📥 Export Excel</button>
-                    </div>
+<body class="bg-background-light text-slate-800 font-display antialiased h-screen flex flex-col overflow-hidden selection:bg-primary/20 selection:text-primary-hover">
+    <!-- Header -->
+    <header class="h-12 bg-[#217346] border-b border-[#1a5c38] flex items-center justify-between px-4 shrink-0 z-20 shadow-sm">
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 bg-white/20 rounded-sm flex items-center justify-center text-white backdrop-blur-sm">
+                    <span class="material-icons text-lg">flight</span>
                 </div>
+                <span class="font-semibold text-lg tracking-tight text-white">Flight<span class="opacity-80 font-light">Parser</span></span>
             </div>
-            <div id="results"></div>
-            <div id="excelTableContainer" style="margin-top: 20px;"></div>
+            <nav class="hidden md:flex items-center ml-6 text-sm font-medium text-white/90">
+                <button class="px-3 py-1 hover:bg-white/10 rounded-sm transition-colors font-bold border-b-2 border-white">Data</button>
+                <button class="px-3 py-1 hover:bg-white/10 rounded-sm transition-colors">Export</button>
+                <button class="px-3 py-1 hover:bg-white/10 rounded-sm transition-colors">Settings</button>
+            </nav>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="relative hidden sm:block">
+                <span class="material-icons absolute left-2 top-1/2 -translate-y-1/2 text-white/70 text-lg">search</span>
+                <input class="bg-white/20 border-none text-sm rounded-sm pl-8 pr-4 py-1.5 focus:ring-1 focus:ring-white/50 focus:bg-white/30 w-64 placeholder-white/60 text-white shadow-inner" placeholder="Search..." type="text"/>
+            </div>
+            <div class="h-8 w-8 rounded-full bg-white p-[2px] shadow-sm cursor-pointer">
+                <div class="rounded-full h-full w-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white text-sm font-bold">FP</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="h-14 bg-white border-b border-gray-200 flex items-center px-4 gap-4 shrink-0 shadow-sm">
+        <div class="flex items-center gap-3">
+            <label class="flex flex-col items-center justify-center gap-1 text-slate-600 hover:bg-gray-100 px-3 py-1.5 rounded transition-colors group cursor-pointer">
+                <span class="material-icons text-2xl text-primary group-hover:scale-110 transition-transform">cloud_upload</span>
+                <span class="text-[10px] font-medium">Upload</span>
+                <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event)">
+            </label>
+            <button onclick="exportToExcel()" class="flex flex-col items-center justify-center gap-1 text-slate-600 hover:bg-gray-100 px-3 py-1.5 rounded transition-colors group">
+                <span class="material-icons text-2xl text-primary group-hover:scale-110 transition-transform">download</span>
+                <span class="text-[10px] font-medium">Export</span>
+            </button>
+        </div>
+        <div class="h-8 w-px bg-gray-300 mx-2"></div>
+        <div class="flex items-center gap-1 text-slate-600">
+            <button class="p-1.5 hover:bg-gray-100 rounded transition-colors" title="Filter" onclick="document.getElementById('searchInput').focus()">
+                <span class="material-icons text-xl">filter_list</span>
+            </button>
+            <button class="p-1.5 hover:bg-gray-100 rounded transition-colors" title="Refresh" onclick="location.reload()">
+                <span class="material-icons text-xl">refresh</span>
+            </button>
+        </div>
+        <div class="ml-auto text-xs text-slate-500 font-mono bg-gray-50 px-3 py-1 rounded border border-gray-200">
+            Ready
         </div>
     </div>
 
-    <script>
-        function parseData() {
-            const input = document.getElementById('inputData').value;
-            const results = document.getElementById('results');
-            const resultSection = document.getElementById('resultSection');
-            const statsSection = document.getElementById('statsSection');
-            
-            if (!input.trim()) {
-                alert('Silakan paste data terlebih dahulu!');
-                return;
-            }
-
-            // Split data by separator (=== or ====)
-            const blocks = input.split(/={3,}/).filter(b => b.trim());
-            
-            let html = '';
-            let totalFlights = 0;
-            let withBookingCode = 0;
-
-            blocks.forEach((block, index) => {
-                const parsed = parseBlock(block.trim());
-                totalFlights += parsed.flights.length;
-                if (parsed.bookingCode && parsed.bookingCode !== '-') withBookingCode++;
-
-                html += `
-                    <div class="data-block">
-                        <h3>📦 Data Block #${index + 1}</h3>
-                        <div class="info-row">
-                            <span class="info-label">Booking Code:</span>
-                            <span class="info-value">${parsed.bookingCode ? `<strong style="color: #667eea; font-size: 18px;">${parsed.bookingCode}</strong>` : '<span class="no-data">-</span>'}</span>
+    <!-- Main Content -->
+    <div class="flex flex-1 overflow-hidden bg-background-light">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col shrink-0 hidden lg:flex shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
+            <div class="p-4">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 px-2">Statistics</h3>
+                <div class="space-y-3">
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs text-slate-600">Data Blocks</span>
+                            <span id="totalBlocks" class="text-lg font-bold text-primary">0</span>
                         </div>
-                        <div class="info-row">
-                            <span class="info-label">Flight Numbers:</span>
-                            <span class="info-value">
-                                ${parsed.flights.length > 0 
-                                    ? `<div class="flight-list">${parsed.flights.map(f => `<span class="flight-badge">${f}</span>`).join('')}</div>`
-                                    : '<span class="no-data">Tidak ditemukan</span>'
-                                }
-                            </span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Jumlah Flight:</span>
-                            <span class="info-value">${parsed.flights.length} flight(s)</span>
-                        </div>
-                        ${parsed.classes.length > 0 ? `
-                        <div class="info-row">
-                            <span class="info-label">Class:</span>
-                            <span class="info-value">
-                                <div class="class-list">
-                                    ${parsed.classes.map(c => `<span class="class-badge">${c}</span>`).join('')}
-                                </div>
-                            </span>
-                        </div>
-                        ` : ''}
-                        ${parsed.routes.length > 0 ? `
-                        <div class="info-row">
-                            <span class="info-label">Routes:</span>
-                            <span class="info-value">
-                                <div class="route-list">
-                                    ${parsed.routes.map(r => `<span class="route-badge">${r.date !== '-' ? r.date + ':' : ''} ${r.from} → ${r.to}</span>`).join('')}
-                                </div>
-                            </span>
-                        </div>
-                        ` : ''}
-                        ${parsed.passenger ? `
-                        <div class="info-row">
-                            <span class="info-label">Passenger:</span>
-                            <span class="info-value">${parsed.passenger}</span>
-                        </div>
-                        ` : ''}
                     </div>
-                `;
-            });
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs text-slate-600">Total Flights</span>
+                            <span id="totalFlights" class="text-lg font-bold text-primary">0</span>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs text-slate-600">With Booking Code</span>
+                            <span id="withBookingCode" class="text-lg font-bold text-primary">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-auto p-4 border-t border-gray-100">
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-medium text-slate-600">Storage</span>
+                        <span class="text-xs text-primary font-bold">Flight Data</span>
+                    </div>
+                    <p class="text-[10px] text-slate-500">Parse and export flight booking data</p>
+                </div>
+            </div>
+        </aside>
 
-            results.innerHTML = html;
-            resultSection.style.display = 'block';
-            statsSection.style.display = 'flex';
-            
-            document.getElementById('totalBlocks').textContent = blocks.length;
-            document.getElementById('totalFlights').textContent = totalFlights;
-            document.getElementById('withBookingCode').textContent = withBookingCode;
-        }
+        <!-- Main Area -->
+        <main class="flex-1 flex flex-col min-w-0 bg-background-light relative">
+            <div class="flex-1 overflow-auto custom-scrollbar p-6">
+                <!-- Upload Section -->
+                <div id="uploadSection" class="max-w-3xl mx-auto">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <h2 class="text-lg font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                            <span class="material-icons text-primary">upload_file</span>
+                            Upload Excel File
+                        </h2>
+                        <p class="text-sm text-slate-500 mb-6">
+                            Upload file Excel dengan kolom <strong>Order ID</strong>, <strong>Guest Name</strong>, dan <strong>Order Detail</strong>
+                        </p>
+                        <div class="upload-section" id="dropZone">
+                            <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span class="material-icons text-4xl text-primary">table_chart</span>
+                            </div>
+                            <div class="text-slate-700 font-medium mb-2">Drag & Drop file Excel di sini</div>
+                            <div class="text-slate-400 text-sm mb-4">atau</div>
+                            <label class="inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-lg cursor-pointer transition-colors">
+                                <span class="material-icons text-sm">folder_open</span>
+                                Pilih File Excel
+                                <input type="file" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event)">
+                            </label>
+                            <div class="text-slate-400 text-xs mt-4">Support: .xlsx, .xls, .csv</div>
+                        </div>
+                        <div id="fileInfo" class="file-info">
+                            <div class="flex items-center gap-2">
+                                <span class="material-icons text-green-600">check_circle</span>
+                                <div>
+                                    <div class="file-name font-medium text-green-800" id="fileName"></div>
+                                    <div class="file-size text-green-600 text-xs" id="fileSize"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        function parseBlock(block) {
-            const lines = block.split('\n').map(l => l.trim()).filter(l => l);
-            
-            let bookingCode = null;
-            const flights = [];
-            const routes = [];
-            const classes = [];
-            let passenger = null;
+                <!-- Results Section -->
+                <div id="resultSection" style="display: none;">
+                    <div class="sticky-header bg-white rounded-t-lg shadow-sm border border-gray-200 px-6">
+                        <div class="flex justify-between items-center flex-wrap gap-4">
+                            <h3 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                                <span class="material-icons text-primary">flight_takeoff</span>
+                                Hasil Parsing
+                            </h3>
+                            <div class="flex gap-3 items-center">
+                                <div class="search-box relative">
+                                    <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">search</span>
+                                    <input type="text" id="searchInput" placeholder="Cari Booking Code, Passenger, Flight..." 
+                                        class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm w-72 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                                        onkeyup="filterResults()">
+                                </div>
+                                <span id="filterCount" class="text-sm text-primary font-medium"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-b-lg shadow-sm border border-t-0 border-gray-200 p-6">
+                        <div id="results"></div>
+                        <div id="excelTableContainer" class="mt-6"></div>
+                    </div>
+                </div>
+            </div>
 
-            // Pattern untuk booking code (6 karakter alphanumeric uppercase)
-            const bookingCodePattern = /\b([A-Z0-9]{6})\b/g;
-            
-            // Pattern untuk flight number
-            // Pattern 1: SQ 967, QF 40 (di tabel PNR)
-            const flightPattern1 = /^\d*\s*\.?\s*([A-Z]{2})\s+(\d{1,4})\s+[A-Z]/;
-            // Pattern 2: 2 SQ 967 Z 04NOV (format PNR)
-            const flightPattern2 = /^\d+\s+([A-Z]{2})\s+(\d{1,4})\s+[A-Z]/;
-            // Pattern 3: Flight Airlines: Citilink (QG 164)
-            const flightPattern3 = /\(([A-Z]{2})\s+(\d{1,4})\)/;
-            // Pattern 4: QF   40 K  30JAN (format dengan spasi banyak)
-            const flightPattern4 = /^\d+\s*\.\s*([A-Z]{2})\s+(\d{1,4})\s+[A-Z]/;
+            <!-- Footer -->
+            <div class="h-7 bg-[#217346] text-white flex items-center justify-between px-4 text-[11px] shrink-0 select-none">
+                <div class="flex items-center gap-4">
+                    <span class="font-semibold uppercase tracking-wide opacity-90">Ready</span>
+                    <div class="h-4 w-px bg-white/30"></div>
+                    <span class="opacity-90">Flight Data Parser v1.0</span>
+                </div>
+                <div class="flex items-center gap-6 mr-2">
+                    <div class="flex gap-4 font-medium opacity-90">
+                        <span id="footerStats">No data loaded</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
-            lines.forEach((line, idx) => {
-                // Cari booking code di baris pertama atau yang mengandung timestamp
-                if (idx === 0 || line.includes('/') && line.match(/\d{2}[A-Z]{3}\d{2}/)) {
-                    const matches = line.match(bookingCodePattern);
-                    if (matches) {
-                        // Filter out yang kemungkinan bukan booking code (seperti TE001)
-                        const validCodes = matches.filter(m => !m.match(/^TE\d{3}$/));
-                        if (validCodes.length > 0) {
-                            bookingCode = validCodes[0];
-                        }
-                    }
-                }
-
-                // Cari passenger name - berbagai format
-                // Format: 1.INAN/KEREM MR(ADT/25JUL82) atau 1.INAN/KEREM MR
-                // Format: 1.1GUIBERTEAU/SAMUEL MR
-                console.log('Checking line for passenger:', line);
-                
-                // Pattern 1: 1.INAN/KEREM MR(ADT/25JUL82)
-                let passengerMatch = line.match(/\d+\.([A-Z]+\/[A-Z\s]+MR|MS|MRS)/);
-                
-                // Pattern 2: 1.1GUIBERTEAU/SAMUEL MR
-                if (!passengerMatch) {
-                    passengerMatch = line.match(/\d+\.\d+([A-Z]+\/[A-Z\s]+MR|MS|MRS)/);
-                }
-                
-                if (passengerMatch && !passenger) {
-                    passenger = passengerMatch[1].replace(/\//g, ' ').trim();
-                    console.log('Found passenger:', passenger);
-                }
-
-                // Cari flight numbers
-                let flightMatch;
-                
-                // Pattern 2: 2 SQ 967 Z 04NOV
-                const flightPattern2Full = /^\d+\s+([A-Z]{2})\s+(\d{1,4})\s+([A-Z])\s+(\d{2}[A-Z]{3})/;
-                flightMatch = line.match(flightPattern2Full);
-                if (flightMatch) {
-                    flights.push(`${flightMatch[1]} ${flightMatch[2]}`);
-                    classes.push(flightMatch[3]);
-                }
-
-                // Pattern 4: 1 . QF   40 K  30JAN
-                const flightPattern4Full = /^\d+\s*\.\s*([A-Z]{2})\s+(\d{1,4})\s+([A-Z])\s+(\d{2}[A-Z]{3})/;
-                flightMatch = line.match(flightPattern4Full);
-                if (flightMatch) {
-                    flights.push(`${flightMatch[1]} ${flightMatch[2]}`);
-                    classes.push(flightMatch[3]);
-                }
-
-                // Pattern 1: . SQ 967 Z 04NOV
-                const flightPattern1Full = /^\d*\s*\.?\s*([A-Z]{2})\s+(\d{1,4})\s+([A-Z])\s+(\d{2}[A-Z]{3})/;
-                flightMatch = line.match(flightPattern1Full);
-                if (flightMatch) {
-                    flights.push(`${flightMatch[1]} ${flightMatch[2]}`);
-                    classes.push(flightMatch[3]);
-                }
-
-                // Pattern 3: (QG 164)
-                flightMatch = line.match(flightPattern3);
-                if (flightMatch) {
-                    flights.push(`${flightMatch[1]} ${flightMatch[2]}`);
-                }
-
-                // Pattern untuk rute
-                // Pattern 1: 04NOV 2 CGKSIN (dengan angka setelah tanggal)
-                const routePattern1 = /(\d{2}[A-Z]{3})\s+\d+\s+([A-Z]{6})/;
-                // Pattern 2: 30JAN CGKMEL (tanpa angka setelah tanggal)
-                const routePattern2 = /(\d{2}[A-Z]{3})\s+([A-Z]{6})/;
-                // Pattern 3: Rute : MLG-HLP (format data ke-2)
-                const routePattern3 = /Rute\s*[:\-]?\s*([A-Z]{3})[-\s]+([A-Z]{3})/i;
-                
-                let routeMatch = line.match(routePattern1);
-                if (!routeMatch) {
-                    routeMatch = line.match(routePattern2);
-                }
-                
-                if (routeMatch) {
-                    routes.push({
-                        date: routeMatch[1],
-                        route: routeMatch[2],
-                        from: routeMatch[2].substring(0, 3),
-                        to: routeMatch[2].substring(3, 6)
-                    });
-                } else {
-                    // Cek pattern 3 (Rute : MLG-HLP)
-                    const routeMatch3 = line.match(routePattern3);
-                    if (routeMatch3) {
-                        routes.push({
-                            date: '-',
-                            route: routeMatch3[1] + routeMatch3[2],
-                            from: routeMatch3[1],
-                            to: routeMatch3[2]
-                        });
-                    }
-                }
-            });
-
-            // Jika tidak ada booking code ditemukan, cek lagi dengan pattern yang lebih longgar
-            if (!bookingCode) {
-                // Cek di semua baris untuk pattern 6 karakter alphanumeric
-                const allText = lines.join(' ');
-                const allMatches = allText.match(/\b([A-Z]{2}\d{2,4}|[A-Z0-9]{6})\b/g);
-                if (allMatches) {
-                    const valid = allMatches.find(m => m.length === 6 && !m.match(/^TE\d{3}$/));
-                    if (valid) bookingCode = valid;
-                }
-            }
-
-            return {
-                bookingCode: bookingCode || '-',
-                flights: [...new Set(flights)], // Remove duplicates
-                routes: routes,
-                classes: [...new Set(classes)], // Remove duplicates
-                passenger
-            };
-        }
-
-        function extractRoutes(text) {
-            if (!text) return [];
-            const routes = [];
-            const lines = text.split('\n');
-            
-            // Pattern 1: 04NOV 2 CGKSIN (dengan angka setelah tanggal)
-            const routePattern1 = /(\d{2}[A-Z]{3})\s+\d+\s+([A-Z]{6})/;
-            // Pattern 2: 30JAN CGKMEL (tanpa angka setelah tanggal)
-            const routePattern2 = /(\d{2}[A-Z]{3})\s+([A-Z]{6})/;
-            // Pattern 3: Rute : MLG-HLP (format data ke-2)
-            const routePattern3 = /Rute\s*[:\-]?\s*([A-Z]{3})[-\s]+([A-Z]{3})/i;
-            
-            lines.forEach(line => {
-                let routeMatch = line.match(routePattern1);
-                if (!routeMatch) {
-                    routeMatch = line.match(routePattern2);
-                }
-                
-                if (routeMatch) {
-                    routes.push({
-                        date: routeMatch[1],
-                        route: routeMatch[2],
-                        from: routeMatch[2].substring(0, 3),
-                        to: routeMatch[2].substring(3, 6)
-                    });
-                } else {
-                    // Cek pattern 3 (Rute : MLG-HLP)
-                    const routeMatch3 = line.match(routePattern3);
-                    if (routeMatch3) {
-                        routes.push({
-                            date: '-',
-                            route: routeMatch3[1] + routeMatch3[2],
-                            from: routeMatch3[1],
-                            to: routeMatch3[2]
-                        });
-                    }
-                }
-            });
-            
-            return routes;
-        }
-
-        function clearData() {
-            document.getElementById('inputData').value = '';
-            document.getElementById('resultSection').style.display = 'none';
-            document.getElementById('statsSection').style.display = 'none';
-        }
-
+    <script>
         // Excel parsing data storage
         let parsedExcelData = [];
-
-        // Tab switching
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            
-            document.getElementById(`tab-${tab}`).classList.add('active');
-            document.getElementById(`${tab}-tab`).classList.add('active');
-        }
 
         // Drag and drop handlers
         const dropZone = document.getElementById('dropZone');
@@ -716,15 +412,10 @@
             const fileName = document.getElementById('fileName');
             const fileSize = document.getElementById('fileSize');
             
-            console.log('Elements found:', { fileInfo: !!fileInfo, fileName: !!fileName, fileSize: !!fileSize });
-            
             if (fileName && fileSize && fileInfo) {
                 fileName.textContent = file.name;
                 fileSize.textContent = formatFileSize(file.size);
                 fileInfo.style.display = 'block';
-                console.log('File info displayed successfully');
-            } else {
-                console.error('File info elements not found!');
             }
 
             const reader = new FileReader();
@@ -752,9 +443,9 @@
         function parseExcelData(data) {
             parsedExcelData = [];
             
-            console.log('Total rows in Excel:', data.length - 1); // Minus header
+            console.log('Total rows in Excel:', data.length - 1);
             
-            // Find column indices - prioritize kolom "R" atau "Order Detail"
+            // Find column indices
             let orderDetailCol = -1;
             let guestNameCol = -1;
             let orderIdCol = -1;
@@ -762,24 +453,35 @@
             
             console.log('Headers found:', headers.map((h, i) => `${i}:${h}`).join(', '));
             
+            // Find column indices
+            let destinationCol = -1;
+            
             headers.forEach((header, idx) => {
                 const h = String(header).toLowerCase().trim();
-                // Cari kolom "r" atau "order detail"
                 if (h === 'r' || h.includes('order detail') || h.includes('orderdetail')) {
                     orderDetailCol = idx;
                     console.log('Found Order Detail column at index:', idx);
                 }
-                // Cari kolom "guest name"
                 if (h.includes('guest name') || h === 'guestname') {
                     guestNameCol = idx;
                     console.log('Found Guest Name column at index:', idx);
                 }
-                // Cari kolom "order id" atau kolom B (index 1)
                 if (h === 'order id' || h === 'orderid' || idx === 1) {
                     orderIdCol = idx;
                     console.log('Found Order ID column at index:', idx);
                 }
+                // Kolom Q (index 16) untuk Destination
+                if (h === 'q' || h.includes('destination')) {
+                    destinationCol = idx;
+                    console.log('Found Destination column at index:', idx);
+                }
             });
+            
+            // Jika tidak ditemukan dari header, coba index 16 (kolom Q)
+            if (destinationCol === -1 && headers.length > 16) {
+                destinationCol = 16;
+                console.log('Using default Destination column at index:', destinationCol);
+            }
 
             let emptyCount = 0;
             let noMatchCount = 0;
@@ -795,41 +497,37 @@
 
                 let orderDetailData = '';
 
-                // Ambil data dari kolom "R" atau "Order Detail"
                 if (orderDetailCol >= 0) {
                     orderDetailData = String(row[orderDetailCol] || '');
                 }
 
-                // Jika tidak ada di kolom spesifik, cari di semua kolom untuk pola PNR
                 if (!orderDetailData) {
                     row.forEach(cell => {
                         const cellStr = String(cell || '');
-                        // Cek apakah cell mengandung pola PNR/flight data
                         if (cellStr.match(/\d{2}[A-Z]{3}/) && cellStr.match(/[A-Z]{2}\s*\d{1,4}/)) {
                             orderDetailData = cellStr;
                         }
                     });
                 }
 
-                // Parse data dari Order Detail
                 const parsedBlock = parseBlockFromText(orderDetailData);
 
-                // Ambil passenger dari kolom Guest Name jika ada
                 let passengerName = parsedBlock.passenger;
                 if (!passengerName && guestNameCol >= 0) {
                     passengerName = String(row[guestNameCol] || '').trim();
                 }
 
-                // Ambil Order ID dari kolom B atau Order ID
                 let orderId = '';
                 if (orderIdCol >= 0) {
                     orderId = String(row[orderIdCol] || '').trim();
                 }
 
-                // Hanya terima data FLIGHT - skip hotel dan lainnya
-                // Cek apakah data mengandung pola flight (kode maskapai + nomor)
-                // Format 1: (XX 123) - dengan tanda kurung
-                // Format 2: SQ 967 - tanpa tanda kurung
+                // Ambil Destination dari kolom Q (index 16)
+                let destination = '';
+                if (destinationCol >= 0 && row[destinationCol] !== undefined) {
+                    destination = String(row[destinationCol] || '').trim();
+                }
+
                 const hasFlightPatternParen = orderDetailData.match(/\([A-Z]{2}\s+\d{1,4}/);
                 const hasFlightPatternPlain = orderDetailData.match(/\b[A-Z]{2}\s+\d{1,4}\b/);
                 const hasFlightPattern = hasFlightPatternParen || hasFlightPatternPlain;
@@ -843,6 +541,7 @@
                         routes: parsedBlock.routes,
                         classes: parsedBlock.classes,
                         passenger: passengerName,
+                        destination: destination,
                         rawData: orderDetailData
                     });
                     successCount++;
@@ -862,7 +561,6 @@
             displayExcelResults();
         }
 
-        // Parse block untuk data dari Excel (sama dengan parseBlock tapi untuk single text)
         function parseBlockFromText(text) {
             if (!text) {
                 return { bookingCode: '-', flights: [], routes: [], classes: [], passenger: null };
@@ -876,11 +574,9 @@
             const classes = [];
             let passenger = null;
 
-            // Pattern untuk booking code (6 karakter alphanumeric uppercase)
             const bookingCodePattern = /\b([A-Z0-9]{6})\b/g;
 
             lines.forEach((line, idx) => {
-                // Cari booking code di baris pertama atau yang mengandung timestamp
                 if (idx === 0 || (line.includes('/') && line.match(/\d{2}[A-Z]{3}\d{2}/))) {
                     const matches = line.match(bookingCodePattern);
                     if (matches) {
@@ -891,26 +587,15 @@
                     }
                 }
 
-                // Cari passenger name - berbagai format
-                // Format: 1.INAN/KEREM MR(ADT/25JUL82) atau 1.INAN/KEREM MR
-                // Format: 1.1GUIBERTEAU/SAMUEL MR
-                console.log('parseBlockFromText - Checking line for passenger:', line);
-                
-                // Pattern 1: 1.INAN/KEREM MR(ADT/25JUL82)
                 let passengerMatch = line.match(/\d+\.([A-Z]+\/[A-Z\s]+MR|MS|MRS)/);
-                
-                // Pattern 2: 1.1GUIBERTEAU/SAMUEL MR
                 if (!passengerMatch) {
                     passengerMatch = line.match(/\d+\.\d+([A-Z]+\/[A-Z\s]+MR|MS|MRS)/);
                 }
                 
                 if (passengerMatch && !passenger) {
                     passenger = passengerMatch[1].replace(/\//g, ' ').trim();
-                    console.log('parseBlockFromText - Found passenger:', passenger);
                 }
 
-                // Pattern untuk flight dengan class
-                // Pattern: 2 SQ 967 Z 04NOV
                 const flightPatternFull = /^\d+\s+([A-Z]{2})\s+(\d{1,4})\s+([A-Z])\s+(\d{2}[A-Z]{3})/;
                 let flightMatch = line.match(flightPatternFull);
                 if (flightMatch) {
@@ -918,7 +603,6 @@
                     classes.push(flightMatch[3]);
                 }
 
-                // Pattern: 1 . QF   40 K  30JAN
                 const flightPatternDot = /^\d+\s*\.\s*([A-Z]{2})\s+(\d{1,4})\s+([A-Z])\s+(\d{2}[A-Z]{3})/;
                 flightMatch = line.match(flightPatternDot);
                 if (flightMatch) {
@@ -926,7 +610,6 @@
                     classes.push(flightMatch[3]);
                 }
 
-                // Pattern: (QG 164) atau (JT 941/JT 662 depart)
                 const flightPatternParen = /\(([A-Z]{2})\s+(\d{1,4})\)/g;
                 let flightMatchAll;
                 while ((flightMatchAll = flightPatternParen.exec(line)) !== null) {
@@ -936,7 +619,6 @@
                     }
                 }
                 
-                // Pattern maskapai dengan format: MASKAPAI (XX 123 depart)
                 const airlinePattern = /([A-Z\s]+)\s*\(([A-Z]{2})\s+(\d{1,4})/g;
                 let airlineMatch;
                 while ((airlineMatch = airlinePattern.exec(line)) !== null) {
@@ -946,7 +628,6 @@
                     }
                 }
 
-                // Pattern untuk rute
                 const routePattern1 = /(\d{2}[A-Z]{3})\s+\d+\s+([A-Z]{6})/;
                 const routePattern2 = /(\d{2}[A-Z]{3})\s+([A-Z]{6})/;
                 const routePattern3 = /Rute\s*[:\-]?\s*([A-Z]{3})[-\s]+([A-Z]{3})/i;
@@ -976,7 +657,6 @@
                 }
             });
 
-            // Jika tidak ada booking code ditemukan, cek lagi dengan pattern yang lebih longgar
             if (!bookingCode) {
                 const allText = lines.join(' ');
                 const allMatches = allText.match(/\b([A-Z]{2}\d{2,4}|[A-Z0-9]{6})\b/g);
@@ -995,37 +675,9 @@
             };
         }
 
-        function extractBookingCode(text) {
-            if (!text) return null;
-            const match = text.match(/\b([A-Z0-9]{6})\b/);
-            if (match && !match[0].match(/^TE\d{3}$/)) {
-                return match[0];
-            }
-            return null;
-        }
-
-        function extractFlights(text) {
-            if (!text) return [];
-            const flights = [];
-            const patterns = [
-                /([A-Z]{2})\s+(\d{1,4})/g,
-                /([A-Z]{2})(\d{1,4})/g
-            ];
-            
-            patterns.forEach(pattern => {
-                let match;
-                while ((match = pattern.exec(text)) !== null) {
-                    flights.push(`${match[1]} ${match[2]}`);
-                }
-            });
-            
-            return [...new Set(flights)];
-        }
-
         function displayExcelResults() {
             const results = document.getElementById('results');
             const resultSection = document.getElementById('resultSection');
-            const statsSection = document.getElementById('statsSection');
             const tableContainer = document.getElementById('excelTableContainer');
 
             if (parsedExcelData.length === 0) {
@@ -1037,10 +689,38 @@
             // Update stats
             const totalFlights = parsedExcelData.reduce((sum, d) => sum + d.flights.length, 0);
             const withBookingCode = parsedExcelData.filter(d => d.bookingCode !== '-').length;
+            const withPassenger = parsedExcelData.filter(d => d.passenger).length;
+            const withRoutes = parsedExcelData.filter(d => d.routes.length > 0).length;
             
             document.getElementById('totalBlocks').textContent = parsedExcelData.length;
             document.getElementById('totalFlights').textContent = totalFlights;
             document.getElementById('withBookingCode').textContent = withBookingCode;
+            document.getElementById('footerStats').textContent = `${parsedExcelData.length} records | ${totalFlights} flights`;
+
+            // Summary card
+            results.innerHTML = `
+                <div class="data-block">
+                    <h3 class="text-base font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                        <span class="material-icons text-primary">info</span>
+                        Ringkasan Data
+                    </h3>
+                    <p class="text-sm text-slate-600 mb-3"><strong>Total ${parsedExcelData.length} data flight berhasil di-parse.</strong></p>
+                    <div class="grid grid-cols-3 gap-4 text-xs text-slate-500">
+                        <div class="flex items-center gap-2">
+                            <span class="material-icons text-green-600 text-sm">check_circle</span>
+                            Dengan Booking Code: ${withBookingCode}
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="material-icons text-blue-600 text-sm">person</span>
+                            Dengan Passenger: ${withPassenger}
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="material-icons text-orange-600 text-sm">route</span>
+                            Dengan Route: ${withRoutes}
+                        </div>
+                    </div>
+                </div>
+            `;
 
             // Create table
             let tableHTML = `
@@ -1051,6 +731,7 @@
                             <th>Order ID</th>
                             <th>Booking Code</th>
                             <th>Passenger</th>
+                            <th>Destination</th>
                             <th>Flight Numbers</th>
                             <th>Class</th>
                             <th>Routes</th>
@@ -1064,23 +745,24 @@
                     <tr>
                         <td>${idx + 1}</td>
                         <td>${data.orderId || '<span class="no-data">-</span>'}</td>
-                        <td><strong style="color: #667eea;">${data.bookingCode}</strong></td>
+                        <td><strong class="text-primary">${data.bookingCode}</strong></td>
                         <td>${data.passenger || '<span class="no-data">-</span>'}</td>
+                        <td>${data.destination || '<span class="no-data">-</span>'}</td>
                         <td>
                             ${data.flights.length > 0
-                                ? `<div class="flight-list">${data.flights.map(f => `<span class="flight-badge">${f}</span>`).join('')}</div>`
+                                ? `<div class="flex flex-wrap gap-1">${data.flights.map(f => `<span class="flight-badge">${f}</span>`).join('')}</div>`
                                 : '<span class="no-data">-</span>'
                             }
                         </td>
                         <td>
                             ${data.classes.length > 0
-                                ? `<div class="class-list">${data.classes.map(c => `<span class="class-badge">${c}</span>`).join('')}</div>`
+                                ? `<div class="flex flex-wrap gap-1">${data.classes.map(c => `<span class="class-badge">${c}</span>`).join('')}</div>`
                                 : '<span class="no-data">-</span>'
                             }
                         </td>
                         <td>
                             ${data.routes.length > 0
-                                ? `<div class="route-list">${data.routes.map(r => `<span class="route-badge">${r.date !== '-' ? r.date + ': ' : ''}${r.from} → ${r.to}</span>`).join('')}</div>`
+                                ? `<div class="flex flex-wrap gap-1">${data.routes.map(r => `<span class="route-badge">${r.date !== '-' ? r.date + ': ' : ''}${r.from} → ${r.to}</span>`).join('')}</div>`
                                 : '<span class="no-data">-</span>'
                             }
                         </td>
@@ -1091,24 +773,7 @@
             tableHTML += '</tbody></table>';
             tableContainer.innerHTML = tableHTML;
 
-            // Calculate stats - hanya untuk flight
-            const withPassenger = parsedExcelData.filter(d => d.passenger).length;
-            const withRoutes = parsedExcelData.filter(d => d.routes.length > 0).length;
-            
-            results.innerHTML = `
-                <div class="data-block">
-                    <h3>✈️ Data Flight dari Excel</h3>
-                    <p><strong>Total ${parsedExcelData.length} data flight berhasil di-parse.</strong></p>
-                    <div style="margin-top: 10px; font-size: 13px; color: #666;">
-                        <div>✓ Dengan Booking Code: ${withBookingCode}</div>
-                        <div>✓ Dengan Passenger: ${withPassenger}</div>
-                        <div>✓ Dengan Route: ${withRoutes}</div>
-                    </div>
-                </div>
-            `;
-
             resultSection.style.display = 'block';
-            statsSection.style.display = 'flex';
         }
 
         function exportToExcel() {
@@ -1122,6 +787,7 @@
                 'Order ID': d.orderId || '-',
                 'Booking Code': d.bookingCode,
                 'Passenger': d.passenger || '-',
+                'Destination': d.destination || '-',
                 'Flight Numbers': d.flights.join(', '),
                 'Class': d.classes.join(', '),
                 'Routes': d.routes.map(r => `${r.date !== '-' ? r.date + ': ' : ''}${r.from}-${r.to}`).join(', ')
@@ -1133,10 +799,6 @@
             XLSX.writeFile(wb, 'flight_data_parsed.xlsx');
         }
 
-        // Store parsed data for filtering
-        let currentParsedData = [];
-
-        // Filter function
         function filterResults() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const dataBlocks = document.querySelectorAll('.data-block');
@@ -1156,11 +818,8 @@
 
             let visibleCount = 0;
             
-            // Filter data blocks (paste text mode)
             dataBlocks.forEach(block => {
                 const text = block.textContent.toLowerCase();
-                
-                // Cari semua info-row untuk mendapatkan passenger
                 const infoRows = block.querySelectorAll('.info-row');
                 let passenger = '';
                 let bookingCode = '';
@@ -1180,12 +839,6 @@
                 const flights = Array.from(block.querySelectorAll('.flight-badge')).map(b => b.textContent.toLowerCase()).join(' ');
                 const routes = Array.from(block.querySelectorAll('.route-badge')).map(b => b.textContent.toLowerCase()).join(' ');
                 
-                // Debug: log passenger value
-                if (passenger && passenger.includes('inan')) {
-                    console.log('Found passenger in block:', passenger, 'Search term:', searchTerm);
-                }
-                
-                // Search in booking code, flights, routes, passenger
                 const match = bookingCode.includes(searchTerm) || 
                              flights.includes(searchTerm) || 
                              routes.includes(searchTerm) ||
@@ -1197,7 +850,6 @@
                     block.classList.add('highlight');
                     visibleCount++;
                     
-                    // Remove highlight after animation
                     setTimeout(() => {
                         block.classList.remove('highlight');
                     }, 500);
@@ -1206,19 +858,19 @@
                 }
             });
 
-            // Filter table rows (Excel upload mode)
             tableRows.forEach(row => {
                 const cells = row.querySelectorAll('td');
-                // Kolom: 0=No, 1=Booking Code, 2=Passenger, 3=Flight Numbers, 4=Class, 5=Routes
-                if (cells.length >= 6) {
-                    const bookingCode = cells[1]?.textContent.toLowerCase().trim() || '';
-                    const passenger = cells[2]?.textContent.toLowerCase().trim() || '';
-                    const flights = cells[3]?.textContent.toLowerCase().trim() || '';
-                    const classes = cells[4]?.textContent.toLowerCase().trim() || '';
-                    const routes = cells[5]?.textContent.toLowerCase().trim() || '';
+                if (cells.length >= 7) {
+                    const bookingCode = cells[2]?.textContent.toLowerCase().trim() || '';
+                    const passenger = cells[3]?.textContent.toLowerCase().trim() || '';
+                    const destination = cells[4]?.textContent.toLowerCase().trim() || '';
+                    const flights = cells[5]?.textContent.toLowerCase().trim() || '';
+                    const classes = cells[6]?.textContent.toLowerCase().trim() || '';
+                    const routes = cells[7]?.textContent.toLowerCase().trim() || '';
                     
                     const match = bookingCode.includes(searchTerm) ||
                                  passenger.includes(searchTerm) ||
+                                 destination.includes(searchTerm) ||
                                  flights.includes(searchTerm) ||
                                  classes.includes(searchTerm) ||
                                  routes.includes(searchTerm);
@@ -1234,27 +886,18 @@
 
             filterCount.textContent = visibleCount > 0 ? `(${visibleCount} ditemukan)` : '(tidak ditemukan)';
             
-            // Show no match message if all hidden
             const results = document.getElementById('results');
             const existingNoMatch = results.querySelector('.no-match');
             
             if (visibleCount === 0 && !existingNoMatch) {
                 const noMatch = document.createElement('div');
                 noMatch.className = 'no-match';
-                noMatch.innerHTML = `🔍 Tidak ada data yang cocok dengan "${searchTerm}"`;
+                noMatch.innerHTML = `Tidak ada data yang cocok dengan "${searchTerm}"`;
                 results.appendChild(noMatch);
             } else if (visibleCount > 0 && existingNoMatch) {
                 existingNoMatch.remove();
             }
         }
-
-        // Auto-parse saat load - hanya jika ada data di textarea
-        window.onload = function() {
-            const inputData = document.getElementById('inputData').value;
-            if (inputData && inputData.trim()) {
-                parseData();
-            }
-        };
     </script>
 </body>
 </html>
