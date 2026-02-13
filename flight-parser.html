@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Data Parser</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .input-section, .result-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .data-block {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 0 10px 10px 0;
+        }
+        .data-block h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .info-row {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            min-width: 150px;
+        }
+        .info-value {
+            color: #333;
+            flex: 1;
+        }
+        .flight-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .flight-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .route-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .route-badge {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .class-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .class-badge {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+        .no-data {
+            color: #999;
+            font-style: italic;
+        }
+        .separator {
+            text-align: center;
+            color: #999;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        .separator::before, .separator::after {
+            content: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━';
+            margin: 0 10px;
+            color: #ddd;
+        }
+        .stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        .upload-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            border: 2px dashed #667eea;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .upload-section:hover {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, #eef2f7 0%, #dde3e9 100%);
+        }
+        .upload-section.dragover {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, #e8f4f8 0%, #d4e7f0 100%);
+            transform: scale(1.02);
+        }
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .upload-text {
+            color: #555;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .upload-hint {
+            color: #888;
+            font-size: 13px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .upload-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 15px;
+            transition: transform 0.2s;
+        }
+        .upload-btn:hover {
+            transform: translateY(-2px);
+        }
+        .file-info {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 10px 10px 0;
+            display: none;
+        }
+        .file-name {
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        .file-size {
+            color: #558b2f;
+            font-size: 13px;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            background: #e0e0e0;
+            color: #555;
+            transition: all 0.3s;
+            border: none;
+            font-size: 14px;
+        }
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 500;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        .export-btn {
+            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+            margin-left: 10px;
+        }
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .search-box input {
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            width: 300px;
+            transition: all 0.3s;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .filter-count {
+            margin-left: 10px;
+            color: #667eea;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .data-block.hidden {
+            display: none;
+        }
+        .data-block.highlight {
+            animation: highlight 0.5s ease;
+            border-left-color: #ff6b6b;
+        }
+        @keyframes highlight {
+            0% { background: #fff3cd; }
+            100% { background: #f8f9fa; }
+        }
+        .no-match {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✈️ Flight Data Parser</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('paste')" id="tab-paste">📋 Paste Text</button>
+            <button class="tab" onclick="switchTab('upload')" id="tab-upload">📁 Upload Excel</button>
+        </div>
+
+        <div id="paste-tab" class="tab-content active">
+        <div class="input-section">
+            <h3 style="margin-bottom: 15px; color: #333;">📋 Paste Data PNR/Flight Disini:</h3>
+            <textarea id="inputData" placeholder="Paste data flight di sini...
+
+Contoh format:
+RP/JKTSQ08TE/JKTSQ08TE WS/GS 10OCT25/0420Z DK8MOK
+1.INAN/KEREM MR(ADT/25JUL82)
+2 SQ 967 Z 04NOV 2 CGKSIN HK1 3 2020 2305 *1A/E*
+...">RP/JKTSQ08TE/JKTSQ08TE WS/GS 10OCT25/0420Z DK8MOK
+1.INAN/KEREM MR(ADT/25JUL82)
+2 SQ 967 Z 04NOV 2 CGKSIN HK1 3 2020 2305 *1A/E*
+3 SQ 402 Z 05NOV 3 SINDEL HK1 3 0225 0540 *1A/E*
+4 SQ 401 Z 07NOV 5 DELSIN HK1 3 0945 1800 787 E 0 M
+5 SQ 968 Z 07NOV 5 SINCGK HK1 2 2240 2325 77W E 0 M
+
+=================================================================
+
+Reschedule Order ID #1334361309 - 1373683935 MLG-HLP/Citilink/1pax/Danone Indonesia 
+
+Flight Airlines: Citilink (QG 164)
+Rute : MLG-HLP
+Waktu Keberangkatan : 24 Januari 2026, pukul 14.45 WIB
+Waktu Kedatangan : 24 Januari 2026, pukul 16.15 WIB
+
+======================================================================
+FNQMQS / Economy class
+ 1.1GUIBERTEAU/SAMUEL MR 
+ 1 . QF   40 K  30JAN CGKMEL HK1  2000  #0630  
+ 2 . NZ  124 Y  04FEB MELAKL HK1  1035   1615    
+ 3 . NZ 5105 Y  04FEB AKLPMR HK1  1755   1910 
+ 4 . NZ  521 Y  08FEB AKLCHC HK1  0740   0905      
+ 5 . GA  713 S  10FEB SYDCGK HK1  1245   1615   
+
+ >*TE001·   GUIBERTEAU/SAMUE 0862793240623 
+ >*TE002·   GUIBERTEAU/SAMUE 0862793240622 
+ >*TE003·   GUIBERTEAU/SAMUE 0812793240621 
+ >*TE004·   GUIBERTEAU/SAMUE 1262793240624</textarea>
+            <button onclick="parseData()">🔍 Parse Data</button>
+            <button onclick="clearData()" style="background: #6c757d; margin-left: 10px;">🗑️ Clear</button>
+        </div>
+        </div>
+
+        <div id="upload-tab" class="tab-content">
+            <div class="upload-section" id="dropZone">
+                <div class="upload-icon">📊</div>
+                <div class="upload-text">Drag & Drop file Excel di sini</div>
+                <div class="upload-hint">atau</div>
+                <label class="upload-btn">
+                    Pilih File Excel
+                    <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event)">
+                </label>
+                <div class="upload-hint" style="margin-top: 15px;">Support: .xlsx, .xls, .csv</div>
+            </div>
+            <div id="fileInfo" class="file-info">
+                <div class="file-name" id="fileName"></div>
+                <div class="file-size" id="fileSize"></div>
+            </div>
+        </div>
+
+        <div id="statsSection" class="stats" style="display: none;">
+            <div class="stat-item">
+                <div class="stat-value" id="totalBlocks">0</div>
+                <div class="stat-label">Data Blocks</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalFlights">0</div>
+                <div class="stat-label">Total Flights</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="withBookingCode">0</div>
+                <div class="stat-label">With Booking Code</div>
+            </div>
+        </div>
+
+        <div id="resultSection" class="result-section" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="color: #333;">📊 Hasil Parsing:</h3>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="🔍 Cari Booking Code, Flight, Route..." onkeyup="filterResults()">
+                        <span id="filterCount" class="filter-count"></span>
+                    </div>
+                    <button class="export-btn" onclick="exportToExcel()">📥 Export Excel</button>
+                </div>
+            </div>
+            <div id="results"></div>
+            <div id="excelTableContainer" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <script>
+        function parseData() {
+            const input = document.getElementById('inputData').value;
+            const results = document.getElementById('results');
+            const resultSection = document.getElementById('resultSection');
+            const statsSection = document.getElementById('statsSection');
+            
+            if (!input.trim()) {
+                alert('Silakan paste data terlebih dahulu!');
+                return;
+            }
+
+            // Split data by separator (=== or ====)
+            const blocks = input.split(/={3,}/).filter(b => b.trim());
+            
+            let html = '';
+            let totalFlights = 0;
+            let withBookingCode = 0;
+
+            blocks.forEach((block, index) => {
+                const parsed = parseBlock(block.trim());
+                totalFlights += parsed.flights.length;
+                if (parsed.bookingCode && parsed.bookingCode !== '-') withBookingCode++;
+
+                html += `
+                    <div class="data-block">
+                        <h3>📦 Data Block #${index + 1}</h3>
+                        <div class="info-row">
+                            <span class="info-label">Booking Code:</span>
+                            <span class="info-value">${parsed.bookingCode ? `<strong style="color: #667eea; font-size: 18px;">${parsed.bookingCode}</strong>` : '<span class="no-data">-</span>'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Flight Numbers:</span>
+                            <span class="info-value">
+                                ${parsed.flights.length > 0 
+                                    ? `<div class="flight-list">${parsed.flights.map(f => `<span class="flight-badge">${f}</span>`).join('')}</div>`
+                                    : '<span class="no-data">Tidak ditemukan</span>'
+                                }
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Jumlah Flight:</span>
+                            <span class="info-value">${parsed.flights.length} flight(s)</span>
+                        </div>
+                        ${parsed.classes.length > 0 ? `
+                        <div class="info-row">
+                            <span class="info-label">Class:</span>
+                            <span class="info-value">
+                                <div class="class-list">
+                                    ${parsed.classes.map(c => `<span class="class-badge">${c}</span>`).join('')}
+                                </div>
+                            </span>
+                        </div>
+                        ` : ''}
+                        ${parsed.routes.length > 0 ? `
+                        <div class="info-row">
+                            <span class="info-label">Routes:</span>
+                            <span class="info-value">
+                                <div class="route-list">
+                                    ${parsed.routes.map(r => `<span class="route-badge">${r.date !== '-' ? r.date + ':' : ''} ${r.from} → ${r.to}</span>`).join('')}
+                                </div>
+                            </span>
+                        </div>
+                        ` : ''}
+                        ${parsed.passenger ? `
+                        <div class="info-row">
+                            <span class="info-label">Passenger:</span>
+                            <span class="info-value">${parsed.passenger}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            results.innerHTML = html;
+            resultSection.style.display = 'block';
+            statsSection.style.display = 'flex';
+            
+            document.getElementById('totalBlocks').textContent = blocks.length;
+            document.getElementById('totalFlights').textContent = totalFlights;
+            document.getElementById('withBookingCode').textContent = withBookingCode;
+        }
+
+        function parseBlock(block) {
+            const lines = block.split('\n').map(l => l.trim()).filter(l => l);
+            
+            let bookingCode = null;
+            const flights = [];
+            const routes = [];
+            const classes = [];
+            let passenger = null;
+
+            // Pattern untuk booking code (6 karakter alphanumeric uppercase)
+            const bookingCodePattern = /\b([A-Z0-9]{6})\b/g;
+            
+            // Pattern untuk flight number
+            // Pattern 1: SQ 967, QF 40 (di tabel PNR)
+            const flightPattern1 = /^\d*\s*\.?\s*([A-Z]{2})\s+(\d{1,4})\s+[A-Z]/;
+            // Pattern 2: 2 SQ 967 Z 04NOV (format PNR)
+            const flightPattern2 = /^\d+\s+([A-Z]{2})\s+(\d{1,4})\s+[A-Z]/;
+            // Pattern 3: Flight Airlines: Citilink (QG 164)
+            const flightPattern3 = /\(([A-Z]{2})\s+(\d{1,4})\)/;
+            // Pattern 4: QF   40 K  30JAN (format dengan spasi banyak)
+            const flightPattern4 = /^\d+\s*\.\s*([A-Z]{2})\s+(\d{1,4})\s+[A-Z]/;
+
+            lines.forEach((line, idx) => {
+                // Cari booking code di baris pertama atau yang mengandung timestamp
+                if (idx === 0 || line.includes('/') && line.match(/\d{2}[A-Z]{3}\d{2}/)) {
+                    const matches = line.match(bookingCodePattern);
+                    if (matches) {
+                        // Filter out yang kemungkinan bukan booking code (seperti TE001)
+                        const validCodes = matches.filter(m => !m.match(/^TE\d{3}$/));
+                        if (validCodes.length > 0) {
+                            bookingCode = validCodes[0];
+                        }
+                    }
+                }
+
+                // Cari passenger name
+                const passengerMatch = line.match(/\d+\.\d*([A-Z]+\/[A-Z\s]+MR|MS|MRS)/);
+                if (passengerMatch && !passenger) {
+                    passenger = passengerMatch[1].replace(/\//g, ' ');
+                }
+
+                // Cari flight numbers
+                let flightMatch;
+                
+                // Pattern 2: 2 SQ 967 Z 04NOV
+                const flightPattern2Full = /^\d+\s+([A-Z]{2})\s+(\d{1,4})\s+([A-Z])\s+(\d{2}[A-Z]{3})/;
+                flightMatch = line.match(flightPattern2Full);
+                if (flightMatch) {
+                    flights.push(`${flightMatch[1]} ${flightMatch[2]}`);
+                    classes.push(flightMatch[3]);
+                }
+
+                // Pattern 4: 1 . QF   40 K  30JAN
+                const flightPattern4Full = /^\d+\s*\.\s*([A-Z]{2})\s+(\d{1,4})\s+([A-Z])\s+(\d{2}[A-Z]{3})/;
+                flightMatch = line.match(flightPattern4Full);
+                if (flightMatch) {
+                    flights.push(`${flightMatch[1]} ${flightMatch[2]}`);
+                    classes.push(flightMatch[3]);
+                }
+
+                // Pattern 1: . SQ 967 Z 04NOV
+                const flightPattern1Full = /^\d*\s*\.?\s*([A-Z]{2})\s+(\d{1,4})\s+([A-Z])\s+(\d{2}[A-Z]{3})/;
+                flightMatch = line.match(flightPattern1Full);
+                if (flightMatch) {
+                    flights.push(`${flightMatch[1]} ${flightMatch[2]}`);
+                    classes.push(flightMatch[3]);
+                }
+
+                // Pattern 3: (QG 164)
+                flightMatch = line.match(flightPattern3);
+                if (flightMatch) {
+                    flights.push(`${flightMatch[1]} ${flightMatch[2]}`);
+                }
+
+                // Pattern untuk rute
+                // Pattern 1: 04NOV 2 CGKSIN (dengan angka setelah tanggal)
+                const routePattern1 = /(\d{2}[A-Z]{3})\s+\d+\s+([A-Z]{6})/;
+                // Pattern 2: 30JAN CGKMEL (tanpa angka setelah tanggal)
+                const routePattern2 = /(\d{2}[A-Z]{3})\s+([A-Z]{6})/;
+                // Pattern 3: Rute : MLG-HLP (format data ke-2)
+                const routePattern3 = /Rute\s*[:\-]?\s*([A-Z]{3})[-\s]+([A-Z]{3})/i;
+                
+                let routeMatch = line.match(routePattern1);
+                if (!routeMatch) {
+                    routeMatch = line.match(routePattern2);
+                }
+                
+                if (routeMatch) {
+                    routes.push({
+                        date: routeMatch[1],
+                        route: routeMatch[2],
+                        from: routeMatch[2].substring(0, 3),
+                        to: routeMatch[2].substring(3, 6)
+                    });
+                } else {
+                    // Cek pattern 3 (Rute : MLG-HLP)
+                    const routeMatch3 = line.match(routePattern3);
+                    if (routeMatch3) {
+                        routes.push({
+                            date: '-',
+                            route: routeMatch3[1] + routeMatch3[2],
+                            from: routeMatch3[1],
+                            to: routeMatch3[2]
+                        });
+                    }
+                }
+            });
+
+            // Jika tidak ada booking code ditemukan, cek lagi dengan pattern yang lebih longgar
+            if (!bookingCode) {
+                // Cek di semua baris untuk pattern 6 karakter alphanumeric
+                const allText = lines.join(' ');
+                const allMatches = allText.match(/\b([A-Z]{2}\d{2,4}|[A-Z0-9]{6})\b/g);
+                if (allMatches) {
+                    const valid = allMatches.find(m => m.length === 6 && !m.match(/^TE\d{3}$/));
+                    if (valid) bookingCode = valid;
+                }
+            }
+
+            return {
+                bookingCode: bookingCode || '-',
+                flights: [...new Set(flights)], // Remove duplicates
+                routes: routes,
+                classes: [...new Set(classes)], // Remove duplicates
+                passenger
+            };
+        }
+
+        function extractRoutes(text) {
+            if (!text) return [];
+            const routes = [];
+            const lines = text.split('\n');
+            
+            // Pattern 1: 04NOV 2 CGKSIN (dengan angka setelah tanggal)
+            const routePattern1 = /(\d{2}[A-Z]{3})\s+\d+\s+([A-Z]{6})/;
+            // Pattern 2: 30JAN CGKMEL (tanpa angka setelah tanggal)
+            const routePattern2 = /(\d{2}[A-Z]{3})\s+([A-Z]{6})/;
+            // Pattern 3: Rute : MLG-HLP (format data ke-2)
+            const routePattern3 = /Rute\s*[:\-]?\s*([A-Z]{3})[-\s]+([A-Z]{3})/i;
+            
+            lines.forEach(line => {
+                let routeMatch = line.match(routePattern1);
+                if (!routeMatch) {
+                    routeMatch = line.match(routePattern2);
+                }
+                
+                if (routeMatch) {
+                    routes.push({
+                        date: routeMatch[1],
+                        route: routeMatch[2],
+                        from: routeMatch[2].substring(0, 3),
+                        to: routeMatch[2].substring(3, 6)
+                    });
+                } else {
+                    // Cek pattern 3 (Rute : MLG-HLP)
+                    const routeMatch3 = line.match(routePattern3);
+                    if (routeMatch3) {
+                        routes.push({
+                            date: '-',
+                            route: routeMatch3[1] + routeMatch3[2],
+                            from: routeMatch3[1],
+                            to: routeMatch3[2]
+                        });
+                    }
+                }
+            });
+            
+            return routes;
+        }
+
+        function clearData() {
+            document.getElementById('inputData').value = '';
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('statsSection').style.display = 'none';
+        }
+
+        // Excel parsing data storage
+        let parsedExcelData = [];
+
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            document.getElementById(`${tab}-tab`).classList.add('active');
+        }
+
+        // Drag and drop handlers
+        const dropZone = document.getElementById('dropZone');
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processExcelFile(files[0]);
+            }
+        });
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                processExcelFile(file);
+            }
+        }
+
+        function processExcelFile(file) {
+            // Show file info
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            document.getElementById('fileInfo').style.display = 'block';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                // Get first sheet
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+                
+                parseExcelData(jsonData);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function parseExcelData(data) {
+            parsedExcelData = [];
+            
+            // Find column indices
+            let pnrCol = -1, flightCol = -1;
+            const headers = data[0] || [];
+            
+            headers.forEach((header, idx) => {
+                const h = String(header).toLowerCase();
+                if (h.includes('pnr') || h.includes('booking') || h.includes('code')) {
+                    pnrCol = idx;
+                }
+                if (h.includes('flight') || h.includes('maskapai') || h.includes('airline')) {
+                    flightCol = idx;
+                }
+            });
+
+            // Process each row
+            for (let i = 1; i < data.length; i++) {
+                const row = data[i];
+                if (!row || row.length === 0) continue;
+
+                let pnrData = '';
+                let flightData = '';
+
+                // If specific columns found, use them
+                if (pnrCol >= 0) pnrData = String(row[pnrCol] || '');
+                if (flightCol >= 0) flightData = String(row[flightCol] || '');
+
+                // If no specific columns, search all cells
+                if (!pnrData || !flightData) {
+                    row.forEach(cell => {
+                        const cellStr = String(cell || '');
+                        // Check for booking code pattern (6 alphanumeric)
+                        if (!pnrData && cellStr.match(/\b[A-Z0-9]{6}\b/)) {
+                            const match = cellStr.match(/\b[A-Z0-9]{6}\b/);
+                            if (match && !match[0].match(/^TE\d{3}$/)) {
+                                pnrData = match[0];
+                            }
+                        }
+                        // Check for flight number pattern
+                        if (!flightData && cellStr.match(/[A-Z]{2}\s*\d{1,4}/)) {
+                            flightData = cellStr;
+                        }
+                    });
+                }
+
+                // Parse flight numbers from flightData
+                const flights = extractFlights(flightData || pnrData);
+
+                // Parse rute
+                const routes = extractRoutes(flightData || pnrData);
+
+                // Parse booking code
+                const bookingCode = extractBookingCode(pnrData) || extractBookingCode(flightData) || '-';
+
+                if (bookingCode !== '-' || flights.length > 0 || routes.length > 0) {
+                    parsedExcelData.push({
+                        row: i,
+                        bookingCode: bookingCode,
+                        flights: flights,
+                        routes: routes,
+                        rawPnr: pnrData,
+                        rawFlight: flightData
+                    });
+                }
+            }
+
+            displayExcelResults();
+        }
+
+        function extractBookingCode(text) {
+            if (!text) return null;
+            const match = text.match(/\b([A-Z0-9]{6})\b/);
+            if (match && !match[0].match(/^TE\d{3}$/)) {
+                return match[0];
+            }
+            return null;
+        }
+
+        function extractFlights(text) {
+            if (!text) return [];
+            const flights = [];
+            const patterns = [
+                /([A-Z]{2})\s+(\d{1,4})/g,
+                /([A-Z]{2})(\d{1,4})/g
+            ];
+            
+            patterns.forEach(pattern => {
+                let match;
+                while ((match = pattern.exec(text)) !== null) {
+                    flights.push(`${match[1]} ${match[2]}`);
+                }
+            });
+            
+            return [...new Set(flights)];
+        }
+
+        function displayExcelResults() {
+            const results = document.getElementById('results');
+            const resultSection = document.getElementById('resultSection');
+            const statsSection = document.getElementById('statsSection');
+            const tableContainer = document.getElementById('excelTableContainer');
+
+            if (parsedExcelData.length === 0) {
+                results.innerHTML = '<div class="no-data">Tidak ada data flight ditemukan dalam file Excel.</div>';
+                resultSection.style.display = 'block';
+                return;
+            }
+
+            // Update stats
+            const totalFlights = parsedExcelData.reduce((sum, d) => sum + d.flights.length, 0);
+            const withBookingCode = parsedExcelData.filter(d => d.bookingCode !== '-').length;
+            
+            document.getElementById('totalBlocks').textContent = parsedExcelData.length;
+            document.getElementById('totalFlights').textContent = totalFlights;
+            document.getElementById('withBookingCode').textContent = withBookingCode;
+
+            // Create table
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Booking Code</th>
+                            <th>Flight Numbers</th>
+                            <th>Routes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            parsedExcelData.forEach((data, idx) => {
+                tableHTML += `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td><strong style="color: #667eea;">${data.bookingCode}</strong></td>
+                        <td>
+                            ${data.flights.length > 0
+                                ? `<div class="flight-list">${data.flights.map(f => `<span class="flight-badge">${f}</span>`).join('')}</div>`
+                                : '<span class="no-data">-</span>'
+                            }
+                        </td>
+                        <td>
+                            ${data.routes.length > 0
+                                ? `<div class="route-list">${data.routes.map(r => `<span class="route-badge">${r.date}: ${r.from} → ${r.to}</span>`).join('')}</div>`
+                                : '<span class="no-data">-</span>'
+                            }
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += '</tbody></table>';
+            tableContainer.innerHTML = tableHTML;
+
+            results.innerHTML = `<div class="data-block">
+                <h3>📁 Data dari Excel</h3>
+                <p>Total ${parsedExcelData.length} baris data ditemukan.</p>
+            </div>`;
+
+            resultSection.style.display = 'block';
+            statsSection.style.display = 'flex';
+        }
+
+        function exportToExcel() {
+            if (parsedExcelData.length === 0) {
+                alert('Tidak ada data untuk diexport!');
+                return;
+            }
+
+            const exportData = parsedExcelData.map((d, idx) => ({
+                'No': idx + 1,
+                'Booking Code': d.bookingCode,
+                'Flight Numbers': d.flights.join(', '),
+                'Routes': d.routes.map(r => `${r.date}: ${r.from}-${r.to}`).join(', ')
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Flight Data');
+            XLSX.writeFile(wb, 'flight_data_parsed.xlsx');
+        }
+
+        // Store parsed data for filtering
+        let currentParsedData = [];
+
+        // Filter function
+        function filterResults() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const dataBlocks = document.querySelectorAll('.data-block');
+            const filterCount = document.getElementById('filterCount');
+            
+            if (!searchTerm) {
+                dataBlocks.forEach(block => {
+                    block.classList.remove('hidden', 'highlight');
+                });
+                filterCount.textContent = '';
+                return;
+            }
+
+            let visibleCount = 0;
+            
+            dataBlocks.forEach(block => {
+                const text = block.textContent.toLowerCase();
+                const bookingCode = block.querySelector('.info-value strong')?.textContent.toLowerCase() || '';
+                const flights = Array.from(block.querySelectorAll('.flight-badge')).map(b => b.textContent.toLowerCase()).join(' ');
+                const routes = Array.from(block.querySelectorAll('.route-badge')).map(b => b.textContent.toLowerCase()).join(' ');
+                
+                // Search in booking code, flights, routes
+                const match = bookingCode.includes(searchTerm) || 
+                             flights.includes(searchTerm) || 
+                             routes.includes(searchTerm) ||
+                             text.includes(searchTerm);
+                
+                if (match) {
+                    block.classList.remove('hidden');
+                    block.classList.add('highlight');
+                    visibleCount++;
+                    
+                    // Remove highlight after animation
+                    setTimeout(() => {
+                        block.classList.remove('highlight');
+                    }, 500);
+                } else {
+                    block.classList.add('hidden');
+                }
+            });
+
+            filterCount.textContent = visibleCount > 0 ? `(${visibleCount} ditemukan)` : '(tidak ditemukan)';
+            
+            // Show no match message if all hidden
+            const results = document.getElementById('results');
+            const existingNoMatch = results.querySelector('.no-match');
+            
+            if (visibleCount === 0 && !existingNoMatch) {
+                const noMatch = document.createElement('div');
+                noMatch.className = 'no-match';
+                noMatch.innerHTML = `🔍 Tidak ada data yang cocok dengan "${searchTerm}"`;
+                results.appendChild(noMatch);
+            } else if (visibleCount > 0 && existingNoMatch) {
+                existingNoMatch.remove();
+            }
+        }
+
+        // Auto-parse saat load dengan data sample
+        window.onload = function() {
+            parseData();
+        };
+    </script>
+</body>
+</html>
