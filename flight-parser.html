@@ -757,6 +757,7 @@ Atau upload file Excel dengan kolom 'R' atau 'Order Detail'"></textarea>
             // Find column indices - prioritize kolom "R" atau "Order Detail"
             let orderDetailCol = -1;
             let guestNameCol = -1;
+            let orderIdCol = -1;
             const headers = data[0] || [];
             
             console.log('Headers found:', headers.map((h, i) => `${i}:${h}`).join(', '));
@@ -772,6 +773,11 @@ Atau upload file Excel dengan kolom 'R' atau 'Order Detail'"></textarea>
                 if (h.includes('guest name') || h === 'guestname') {
                     guestNameCol = idx;
                     console.log('Found Guest Name column at index:', idx);
+                }
+                // Cari kolom "order id" atau kolom B (index 1)
+                if (h === 'order id' || h === 'orderid' || idx === 1) {
+                    orderIdCol = idx;
+                    console.log('Found Order ID column at index:', idx);
                 }
             });
 
@@ -814,6 +820,12 @@ Atau upload file Excel dengan kolom 'R' atau 'Order Detail'"></textarea>
                     passengerName = String(row[guestNameCol] || '').trim();
                 }
 
+                // Ambil Order ID dari kolom B atau Order ID
+                let orderId = '';
+                if (orderIdCol >= 0) {
+                    orderId = String(row[orderIdCol] || '').trim();
+                }
+
                 // Hanya terima data FLIGHT - skip hotel dan lainnya
                 // Cek apakah data mengandung pola flight (kode maskapai + nomor)
                 // Format 1: (XX 123) - dengan tanda kurung
@@ -825,6 +837,7 @@ Atau upload file Excel dengan kolom 'R' atau 'Order Detail'"></textarea>
                 if (hasFlightPattern && parsedBlock.flights.length > 0) {
                     parsedExcelData.push({
                         row: i,
+                        orderId: orderId,
                         bookingCode: parsedBlock.bookingCode,
                         flights: parsedBlock.flights,
                         routes: parsedBlock.routes,
@@ -1035,6 +1048,7 @@ Atau upload file Excel dengan kolom 'R' atau 'Order Detail'"></textarea>
                     <thead>
                         <tr>
                             <th>No</th>
+                            <th>Order ID</th>
                             <th>Booking Code</th>
                             <th>Passenger</th>
                             <th>Flight Numbers</th>
@@ -1049,6 +1063,7 @@ Atau upload file Excel dengan kolom 'R' atau 'Order Detail'"></textarea>
                 tableHTML += `
                     <tr>
                         <td>${idx + 1}</td>
+                        <td>${data.orderId || '<span class="no-data">-</span>'}</td>
                         <td><strong style="color: #667eea;">${data.bookingCode}</strong></td>
                         <td>${data.passenger || '<span class="no-data">-</span>'}</td>
                         <td>
@@ -1104,6 +1119,7 @@ Atau upload file Excel dengan kolom 'R' atau 'Order Detail'"></textarea>
 
             const exportData = parsedExcelData.map((d, idx) => ({
                 'No': idx + 1,
+                'Order ID': d.orderId || '-',
                 'Booking Code': d.bookingCode,
                 'Passenger': d.passenger || '-',
                 'Flight Numbers': d.flights.join(', '),
