@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Modern Data Reporting Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#217346", 
+                        "primary-hover": "#1a5c38",
+                        "background-light": "#F8F9FA",
+                        "grid-white": "#FFFFFF",
+                        "selection-blue": "#E8F0FE",
+                        "border-subtle": "#E2E4E8",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "Segoe UI", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 5px;
+            border: 2px solid #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        .excel-grid-header {
+            background-color: #f3f3f3;
+            color: #444;
+            font-weight: 600;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .active-cell {
+            outline: 2px solid #217346;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-background-light text-slate-800 font-display antialiased h-screen flex flex-col overflow-hidden selection:bg-primary/20 selection:text-primary-hover">
+<header class="h-12 bg-[#217346] border-b border-[#1a5c38] flex items-center justify-between px-4 shrink-0 z-20 shadow-sm">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 bg-white/20 rounded-sm flex items-center justify-center text-white backdrop-blur-sm">
+<span class="material-icons text-lg">grid_on</span>
+</div>
+<span class="font-semibold text-lg tracking-tight text-white">DataReport <span class="opacity-80 font-light">Pro</span></span>
+</div>
+<nav class="hidden md:flex items-center ml-6 text-sm font-medium text-white/90">
+<button class="px-3 py-1 hover:bg-white/10 rounded-sm transition-colors">File</button>
+<button class="px-3 py-1 hover:bg-white/10 rounded-sm transition-colors">Home</button>
+<button class="px-3 py-1 hover:bg-white/10 rounded-sm transition-colors">Insert</button>
+<button class="px-3 py-1 hover:bg-white/10 rounded-sm transition-colors font-bold border-b-2 border-white">Data</button>
+<button class="px-3 py-1 hover:bg-white/10 rounded-sm transition-colors">Review</button>
+<button class="px-3 py-1 hover:bg-white/10 rounded-sm transition-colors">View</button>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-icons absolute left-2 top-1/2 -translate-y-1/2 text-white/70 text-lg">search</span>
+<input class="bg-white/20 border-none text-sm rounded-sm pl-8 pr-4 py-1.5 focus:ring-1 focus:ring-white/50 focus:bg-white/30 w-64 placeholder-white/60 text-white shadow-inner" placeholder="Search..." type="text"/>
+</div>
+<div class="h-8 w-8 rounded-full bg-white p-[2px] shadow-sm cursor-pointer">
+<img alt="User Profile Avatar" class="rounded-full h-full w-full object-cover" data-alt="User profile avatar of a smiling man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwRt8U-Dr0LitzNUjXAUS0KWL5T9eLif5cICdo4a__mGAAvmjj9g2D2wzjiguGNQQZ0Eyn0-p1vQ6ac6t1tkr8MssE9aYmhehtWMVqBXCI5PVgMEQD0O5zUQbfP0Lfv0vWRg5_7LpzpxgTKnTK20f74oWSyCranyYV-RhXmD-w6Q4A9vK-qM4pvEF_lHHTj2X2r1TCAZVOnaykVxDpYefWutsXKoD_n8trzyvAS4dIGrQbtkUJoBzgay7tkag88ZK0jdJRk1iU69U"/>
+</div>
+</div>
+</header>
+<div class="h-16 bg-white border-b border-gray-200 flex items-center px-4 gap-4 shrink-0 shadow-sm">
+<div class="flex items-center gap-3">
+<button class="flex flex-col items-center justify-center gap-1 text-slate-600 hover:bg-gray-100 px-3 py-1.5 rounded transition-colors group">
+<span class="material-icons text-2xl text-primary group-hover:scale-110 transition-transform">cloud_upload</span>
+<span class="text-[10px] font-medium">Upload</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 text-slate-600 hover:bg-gray-100 px-3 py-1.5 rounded transition-colors group">
+<span class="material-icons text-2xl text-primary group-hover:scale-110 transition-transform">settings_suggest</span>
+<span class="text-[10px] font-medium">Process</span>
+</button>
+</div>
+<div class="h-8 w-px bg-gray-300 mx-2"></div>
+<div class="flex items-center gap-1 text-slate-600">
+<div class="flex flex-col gap-0.5 border-r border-gray-200 pr-3 mr-1">
+<span class="text-[10px] text-gray-400 font-semibold uppercase">Font</span>
+<div class="flex items-center gap-1">
+<select class="text-xs border-gray-200 rounded py-0.5 pl-1 pr-6 focus:ring-primary focus:border-primary">
+<option>Inter</option>
+<option>Arial</option>
+</select>
+<select class="text-xs border-gray-200 rounded py-0.5 pl-1 pr-4 focus:ring-primary focus:border-primary w-14">
+<option>11</option>
+<option>12</option>
+</select>
+</div>
+</div>
+<div class="flex gap-0.5">
+<button class="p-1.5 hover:bg-gray-100 rounded transition-colors text-slate-700" title="Bold">
+<span class="material-icons text-lg">format_bold</span>
+</button>
+<button class="p-1.5 hover:bg-gray-100 rounded transition-colors text-slate-700" title="Italic">
+<span class="material-icons text-lg">format_italic</span>
+</button>
+<button class="p-1.5 hover:bg-gray-100 rounded transition-colors text-slate-700 border-b-4 border-primary" title="Text Color">
+<span class="material-icons text-lg text-red-600">format_color_text</span>
+</button>
+<button class="p-1.5 hover:bg-gray-100 rounded transition-colors text-slate-700 border-b-4 border-yellow-400 ml-1" title="Fill Color">
+<span class="material-icons text-lg">format_color_fill</span>
+</button>
+</div>
+</div>
+<div class="h-8 w-px bg-gray-300 mx-2"></div>
+<div class="flex items-center gap-1 text-slate-600">
+<button class="p-1.5 hover:bg-gray-100 rounded transition-colors" title="Filter">
+<span class="material-icons text-xl">filter_list</span>
+</button>
+<button class="p-1.5 hover:bg-gray-100 rounded transition-colors" title="Sort Asc">
+<span class="material-icons text-xl">arrow_upward</span>
+</button>
+<button class="p-1.5 hover:bg-gray-100 rounded transition-colors" title="Sort Desc">
+<span class="material-icons text-xl">arrow_downward</span>
+</button>
+</div>
+<div class="ml-auto text-xs text-slate-500 font-mono bg-gray-50 px-3 py-1 rounded border border-gray-200">
+            Autosaved
+        </div>
+</div>
+<div class="flex flex-1 overflow-hidden bg-background-light">
+<aside class="w-64 bg-white border-r border-gray-200 flex flex-col shrink-0 hidden lg:flex shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
+<div class="p-4">
+<h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 px-2">Recent Workbooks</h3>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded bg-primary/10 text-primary font-medium text-sm group border border-primary/20" href="#">
+<span class="material-icons text-lg">table_chart</span>
+<span>Q3_Financials_2023</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-600 hover:bg-gray-100 transition-colors text-sm group" href="#">
+<span class="material-icons text-lg text-green-600">description</span>
+<span>Inventory_Log_Oct</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-600 hover:bg-gray-100 transition-colors text-sm group" href="#">
+<span class="material-icons text-lg text-green-600">pie_chart</span>
+<span>Marketing_ROI_v2</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="p-4 pt-0">
+<h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 px-2">Templates</h3>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-600 hover:bg-gray-100 transition-colors text-sm group" href="#">
+<span class="material-icons text-lg text-slate-400">calendar_today</span>
+<span>Monthly Sales Report</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-600 hover:bg-gray-100 transition-colors text-sm group" href="#">
+<span class="material-icons text-lg text-slate-400">people_outline</span>
+<span>HR Employee Audit</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="mt-auto p-4 border-t border-gray-100">
+<div class="bg-gray-50 border border-gray-200 rounded p-3">
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs font-medium text-slate-600">Storage</span>
+<span class="text-xs text-primary font-bold">75%</span>
+</div>
+<div class="w-full bg-gray-200 rounded-full h-1.5">
+<div class="bg-primary h-1.5 rounded-full" style="width: 75%"></div>
+</div>
+<p class="text-[10px] text-slate-500 mt-2">1.2GB of 2GB used</p>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col min-w-0 bg-background-light relative">
+<div class="h-10 border-b border-gray-300 flex items-center px-2 bg-white shrink-0 gap-2">
+<div class="flex items-center bg-gray-50 border border-gray-200 rounded px-2 h-7 min-w-[80px]">
+<span class="text-xs font-semibold text-slate-600">H3</span>
+</div>
+<div class="w-px h-6 bg-gray-300 mx-1"></div>
+<div class="w-6 flex items-center justify-center">
+<span class="material-icons text-gray-400 text-sm hover:text-red-500 cursor-pointer">close</span>
+</div>
+<div class="w-6 flex items-center justify-center">
+<span class="material-icons text-gray-400 text-sm hover:text-green-600 cursor-pointer">check</span>
+</div>
+<div class="w-6 flex items-center justify-center border-r border-gray-200 mr-1">
+<span class="font-serif italic font-bold text-gray-500 text-sm cursor-pointer hover:text-primary">fx</span>
+</div>
+<input class="flex-1 bg-transparent border-none text-sm font-mono text-slate-800 focus:ring-0 px-2 h-full" type="text" value="=SUM(E2:E25)"/>
+<span class="material-icons text-gray-400 text-sm cursor-pointer hover:bg-gray-100 p-1 rounded">expand_more</span>
+</div>
+<div class="flex-1 overflow-auto custom-scrollbar relative bg-white m-4 border border-gray-300 shadow-sm rounded-sm">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 z-20 bg-[#F3F3F3] text-xs font-semibold text-slate-600">
+<tr>
+<th class="w-10 border-r border-b border-gray-300 text-center py-1.5 bg-[#f8f9fa] select-none text-[10px] text-slate-400">
+<div class="w-0 h-0 border-l-[10px] border-l-transparent border-b-[10px] border-b-gray-300 transform rotate-45 absolute top-0 left-0"></div>
+</th> 
+<th class="border-r border-b border-gray-300 px-2 py-1.5 min-w-[120px] group cursor-pointer hover:bg-gray-200 text-center select-none relative">
+                                A
+                                <div class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 cursor-col-resize w-1 h-4 bg-gray-400 rounded"></div>
+</th>
+<th class="border-r border-b border-gray-300 px-2 py-1.5 min-w-[200px] group cursor-pointer hover:bg-gray-200 text-center select-none relative">
+                                B
+                                <div class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 cursor-col-resize w-1 h-4 bg-gray-400 rounded"></div>
+</th>
+<th class="border-r border-b border-gray-300 px-2 py-1.5 min-w-[150px] group cursor-pointer hover:bg-gray-200 text-center select-none relative">
+                                C
+                                <div class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 cursor-col-resize w-1 h-4 bg-gray-400 rounded"></div>
+</th>
+<th class="border-r border-b border-gray-300 px-2 py-1.5 min-w-[100px] group cursor-pointer hover:bg-gray-200 text-center select-none relative">
+                                D
+                                <div class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 cursor-col-resize w-1 h-4 bg-gray-400 rounded"></div>
+</th>
+<th class="border-r border-b border-gray-300 px-2 py-1.5 min-w-[120px] group cursor-pointer hover:bg-gray-200 text-center select-none relative">
+                                E
+                                <div class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 cursor-col-resize w-1 h-4 bg-gray-400 rounded"></div>
+</th>
+<th class="border-r border-b border-gray-300 px-2 py-1.5 min-w-[120px] group cursor-pointer hover:bg-gray-200 text-center select-none relative">
+                                F
+                                <div class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 cursor-col-resize w-1 h-4 bg-gray-400 rounded"></div>
+</th>
+<th class="border-r border-b border-gray-300 px-2 py-1.5 min-w-[120px] group cursor-pointer hover:bg-gray-200 text-center select-none relative bg-primary/10 text-primary font-bold border-b-primary/30">
+                                G
+                                <div class="absolute bottom-0 left-0 w-full h-0.5 bg-primary"></div>
+</th>
+<th class="border-r border-b border-gray-300 px-2 py-1.5 min-w-[120px] group cursor-pointer hover:bg-gray-200 text-center select-none relative">
+                                H
+                                <div class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 cursor-col-resize w-1 h-4 bg-gray-400 rounded"></div>
+</th>
+</tr>
+</thead>
+<tbody class="text-[13px] text-slate-700 font-display">
+<tr class="bg-white hover:bg-gray-50">
+<td class="border-r border-b border-gray-300 text-center text-slate-500 bg-[#f8f9fa] select-none font-semibold w-10">1</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 font-bold bg-gray-50 text-slate-800">Report ID</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 font-bold bg-gray-50 text-slate-800">Product Name</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 font-bold bg-gray-50 text-slate-800">Category</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 font-bold bg-gray-50 text-slate-800">Region</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 font-bold bg-gray-50 text-slate-800 text-right">Quantity</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 font-bold bg-gray-50 text-slate-800 text-right">Unit Price</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 font-bold bg-primary/5 text-primary-hover text-right">Total</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 font-bold bg-gray-50 text-slate-800">Status</td>
+</tr>
+<tr class="bg-white hover:bg-gray-50">
+<td class="border-r border-b border-gray-300 text-center text-slate-500 bg-[#f8f9fa] select-none w-10">2</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">RPT-2023-001</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Enterprise Server X1</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Hardware</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">North America</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">45</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">$1,200.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right font-medium text-slate-900 bg-primary/5">$54,000.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-green-700">Approved</td>
+</tr>
+<tr class="bg-white hover:bg-gray-50">
+<td class="border-r border-b border-gray-300 text-center text-slate-500 bg-[#f8f9fa] select-none w-10">3</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">RPT-2023-002</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Cloud Storage Lic.</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Software</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Europe</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">120</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">$45.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right font-medium text-slate-900 bg-primary/5">$5,400.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-yellow-600">Pending</td>
+</tr>
+<tr class="bg-white hover:bg-gray-50">
+<td class="border-r border-b border-gray-300 text-center text-primary bg-[#e6f4ea] font-bold select-none w-10 border-r-primary">4</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">RPT-2023-003</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Maintenance Plan</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Services</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Asia Pacific</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">15</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">$500.00</td>
+<td class="border-b border-gray-200 px-2 py-1.5 text-right font-medium text-slate-900 outline-none relative cursor-text active-cell bg-white shadow-[0_0_0_1px_#217346]">
+                                $7,500.00
+                                <div class="absolute -bottom-1 -right-1 w-2 h-2 bg-primary border border-white z-20 cursor-crosshair"></div>
+</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-green-700">Approved</td>
+</tr>
+<tr class="bg-white hover:bg-gray-50">
+<td class="border-r border-b border-gray-300 text-center text-slate-500 bg-[#f8f9fa] select-none w-10">5</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">RPT-2023-004</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Network Switch 24p</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Hardware</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">South America</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">30</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">$250.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right font-medium text-slate-900 bg-primary/5">$7,500.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-red-600">Rejected</td>
+</tr>
+<tr class="bg-white hover:bg-gray-50">
+<td class="border-r border-b border-gray-300 text-center text-slate-500 bg-[#f8f9fa] select-none w-10">6</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">RPT-2023-005</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Consulting Hours</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Services</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">North America</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">80</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">$200.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right font-medium text-slate-900 bg-primary/5">$16,000.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-green-700">Approved</td>
+</tr>
+<tr class="bg-selection-blue">
+<td class="border-r border-b border-gray-300 text-center text-slate-500 bg-[#e8f0fe] select-none w-10 border-l-4 border-l-primary">7</td>
+<td class="border-r border-b border-blue-200 px-2 py-1.5">RPT-2023-006</td>
+<td class="border-r border-b border-blue-200 px-2 py-1.5">Workstation Pro</td>
+<td class="border-r border-b border-blue-200 px-2 py-1.5">Hardware</td>
+<td class="border-r border-b border-blue-200 px-2 py-1.5">Europe</td>
+<td class="border-r border-b border-blue-200 px-2 py-1.5 text-right">10</td>
+<td class="border-r border-b border-blue-200 px-2 py-1.5 text-right">$2,500.00</td>
+<td class="border-r border-b border-blue-200 px-2 py-1.5 text-right font-medium text-slate-900 bg-primary/10">$25,000.00</td>
+<td class="border-r border-b border-blue-200 px-2 py-1.5 text-yellow-600">Processing</td>
+</tr>
+<tr class="bg-white hover:bg-gray-50">
+<td class="border-r border-b border-gray-300 text-center text-slate-500 bg-[#f8f9fa] select-none w-10">8</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">RPT-2023-007</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Security Audit</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Services</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Global</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">1</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">$15,000.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right font-medium text-slate-900 bg-primary/5">$15,000.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-green-700">Complete</td>
+</tr>
+<tr class="bg-white hover:bg-gray-50">
+<td class="border-r border-b border-gray-300 text-center text-slate-500 bg-[#f8f9fa] select-none w-10">9</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">RPT-2023-008</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">VPN Gateway</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Hardware</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Asia Pacific</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">5</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">$800.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right font-medium text-slate-900 bg-primary/5">$4,000.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-green-700">Approved</td>
+</tr>
+<tr class="bg-white hover:bg-gray-50">
+<td class="border-r border-b border-gray-300 text-center text-slate-500 bg-[#f8f9fa] select-none w-10">10</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">RPT-2023-009</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Cloud Database</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Software</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">North America</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">12</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">$400.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right font-medium text-slate-900 bg-primary/5">$4,800.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-green-700">Active</td>
+</tr>
+<tr class="bg-white hover:bg-gray-50">
+<td class="border-r border-b border-gray-300 text-center text-slate-500 bg-[#f8f9fa] select-none w-10">11</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">RPT-2023-010</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Tech Support Annual</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Services</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5">Global</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">1</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right">$5,000.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-right font-medium text-slate-900 bg-primary/5">$5,000.00</td>
+<td class="border-r border-b border-gray-200 px-2 py-1.5 text-blue-700">Renewing</td>
+</tr>
+<tr class="bg-white hover:bg-gray-50 h-8">
+<td class="border-r border-b border-gray-300 text-center text-slate-500 bg-[#f8f9fa] select-none w-10">12</td>
+<td class="border-r border-b border-gray-200"></td>
+<td class="border-r border-b border-gray-200"></td>
+<td class="border-r border-b border-gray-200"></td>
+<td class="border-r border-b border-gray-200"></td>
+<td class="border-r border-b border-gray-200"></td>
+<td class="border-r border-b border-gray-200"></td>
+<td class="border-r border-b border-gray-200 bg-primary/5"></td>
+<td class="border-r border-b border-gray-200"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="h-7 bg-[#217346] text-white flex items-center justify-between px-2 text-[11px] shrink-0 select-none">
+<div class="flex items-center gap-4">
+<span class="font-semibold uppercase tracking-wide opacity-90">Ready</span>
+<div class="h-4 w-px bg-white/30"></div>
+<div class="flex items-center gap-1 opacity-90 hover:opacity-100 cursor-pointer">
+<span class="material-icons text-[14px]">accessibility_new</span>
+<span>Accessibility: Good</span>
+</div>
+</div>
+<div class="flex items-center gap-6 mr-2">
+<div class="flex gap-4 font-medium opacity-90">
+<span>Average: 14420</span>
+<span>Count: 10</span>
+<span>Sum: 144200</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1">
+<span class="material-icons text-[16px] cursor-pointer hover:bg-white/20 rounded">remove</span>
+<div class="w-20 h-1 bg-black/20 rounded-full overflow-hidden mx-1">
+<div class="bg-white h-full w-2/3"></div>
+</div>
+<span class="material-icons text-[16px] cursor-pointer hover:bg-white/20 rounded">add</span>
+</div>
+<span class="w-8 text-right font-medium">100%</span>
+</div>
+</div>
+</div>
+<div class="absolute bottom-12 right-6 lg:hidden">
+<button class="bg-primary text-white w-12 h-12 rounded-full shadow-lg shadow-green-700/40 flex items-center justify-center hover:scale-105 transition-transform">
+<span class="material-icons">add</span>
+</button>
+</div>
+</main>
+</div>
+
+</body></html>

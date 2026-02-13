@@ -315,36 +315,34 @@
             color: #888;
             font-size: 16px;
         }
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 100;
+            padding: 15px 0;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+        .sticky-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>✈️ Flight Data Parser</h1>
         
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('paste')" id="tab-paste">📋 Paste Text</button>
-            <button class="tab" onclick="switchTab('upload')" id="tab-upload">📁 Upload Excel</button>
-        </div>
-
-        <div id="paste-tab" class="tab-content active">
         <div class="input-section">
-            <h3 style="margin-bottom: 15px; color: #333;">📋 Paste Data PNR/Flight Disini:</h3>
-            <textarea id="inputData" placeholder="Paste data flight di sini...
-
-Contoh format:
-RP/JKTSQ08TE/JKTSQ08TE WS/GS 10OCT25/0420Z DK8MOK
-1.INAN/KEREM MR(ADT/25JUL82)
-2 SQ 967 Z 04NOV 2 CGKSIN HK1 3 2020 2305 *1A/E*
-...
-
-Atau upload file Excel dengan kolom 'R' atau 'Order Detail'"></textarea>
-            <button onclick="parseData()">🔍 Parse Data</button>
-            <button onclick="clearData()" style="background: #6c757d; margin-left: 10px;">🗑️ Clear</button>
-        </div>
-        </div>
-
-        <div id="upload-tab" class="tab-content">
-            <div class="upload-section" id="dropZone">
+            <h3 style="margin-bottom: 15px; color: #333;">📁 Upload File Excel</h3>
+            <p style="margin-bottom: 15px; color: #666; font-size: 14px;">
+                Upload file Excel dengan kolom <strong>Order ID</strong>, <strong>Guest Name</strong>, dan <strong>Order Detail</strong>
+            </p>
+            <div class="upload-section" id="dropZone" style="margin-bottom: 0;">
                 <div class="upload-icon">📊</div>
                 <div class="upload-text">Drag & Drop file Excel di sini</div>
                 <div class="upload-hint">atau</div>
@@ -376,14 +374,16 @@ Atau upload file Excel dengan kolom 'R' atau 'Order Detail'"></textarea>
         </div>
 
         <div id="resultSection" class="result-section" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-                <h3 style="color: #333;">📊 Hasil Parsing:</h3>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="🔍 Cari Booking Code, Passenger, Flight, Route..." onkeyup="filterResults()">
-                        <span id="filterCount" class="filter-count"></span>
+            <div class="sticky-header">
+                <div class="sticky-content">
+                    <h3 style="color: #333; margin: 0;">📊 Hasil Parsing:</h3>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="🔍 Cari Booking Code, Passenger, Flight, Route..." onkeyup="filterResults()">
+                            <span id="filterCount" class="filter-count"></span>
+                        </div>
+                        <button class="export-btn" onclick="exportToExcel()">📥 Export Excel</button>
                     </div>
-                    <button class="export-btn" onclick="exportToExcel()">📥 Export Excel</button>
                 </div>
             </div>
             <div id="results"></div>
