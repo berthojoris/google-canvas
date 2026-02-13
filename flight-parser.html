@@ -335,35 +335,9 @@ Contoh format:
 RP/JKTSQ08TE/JKTSQ08TE WS/GS 10OCT25/0420Z DK8MOK
 1.INAN/KEREM MR(ADT/25JUL82)
 2 SQ 967 Z 04NOV 2 CGKSIN HK1 3 2020 2305 *1A/E*
-...">RP/JKTSQ08TE/JKTSQ08TE WS/GS 10OCT25/0420Z DK8MOK
-1.INAN/KEREM MR(ADT/25JUL82)
-2 SQ 967 Z 04NOV 2 CGKSIN HK1 3 2020 2305 *1A/E*
-3 SQ 402 Z 05NOV 3 SINDEL HK1 3 0225 0540 *1A/E*
-4 SQ 401 Z 07NOV 5 DELSIN HK1 3 0945 1800 787 E 0 M
-5 SQ 968 Z 07NOV 5 SINCGK HK1 2 2240 2325 77W E 0 M
+...
 
-=================================================================
-
-Reschedule Order ID #1334361309 - 1373683935 MLG-HLP/Citilink/1pax/Danone Indonesia 
-
-Flight Airlines: Citilink (QG 164)
-Rute : MLG-HLP
-Waktu Keberangkatan : 24 Januari 2026, pukul 14.45 WIB
-Waktu Kedatangan : 24 Januari 2026, pukul 16.15 WIB
-
-======================================================================
-FNQMQS / Economy class
- 1.1GUIBERTEAU/SAMUEL MR 
- 1 . QF   40 K  30JAN CGKMEL HK1  2000  #0630  
- 2 . NZ  124 Y  04FEB MELAKL HK1  1035   1615    
- 3 . NZ 5105 Y  04FEB AKLPMR HK1  1755   1910 
- 4 . NZ  521 Y  08FEB AKLCHC HK1  0740   0905      
- 5 . GA  713 S  10FEB SYDCGK HK1  1245   1615   
-
- >*TE001·   GUIBERTEAU/SAMUE 0862793240623 
- >*TE002·   GUIBERTEAU/SAMUE 0862793240622 
- >*TE003·   GUIBERTEAU/SAMUE 0812793240621 
- >*TE004·   GUIBERTEAU/SAMUE 1262793240624</textarea>
+Atau upload file Excel dengan kolom 'R' atau 'Order Detail'"></textarea>
             <button onclick="parseData()">🔍 Parse Data</button>
             <button onclick="clearData()" style="background: #6c757d; margin-left: 10px;">🗑️ Clear</button>
         </div>
@@ -406,7 +380,7 @@ FNQMQS / Economy class
                 <h3 style="color: #333;">📊 Hasil Parsing:</h3>
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="🔍 Cari Booking Code, Flight, Route..." onkeyup="filterResults()">
+                        <input type="text" id="searchInput" placeholder="🔍 Cari Booking Code, Passenger, Flight, Route..." onkeyup="filterResults()">
                         <span id="filterCount" class="filter-count"></span>
                     </div>
                     <button class="export-btn" onclick="exportToExcel()">📥 Export Excel</button>
@@ -535,10 +509,22 @@ FNQMQS / Economy class
                     }
                 }
 
-                // Cari passenger name
-                const passengerMatch = line.match(/\d+\.\d*([A-Z]+\/[A-Z\s]+MR|MS|MRS)/);
+                // Cari passenger name - berbagai format
+                // Format: 1.INAN/KEREM MR(ADT/25JUL82) atau 1.INAN/KEREM MR
+                // Format: 1.1GUIBERTEAU/SAMUEL MR
+                console.log('Checking line for passenger:', line);
+                
+                // Pattern 1: 1.INAN/KEREM MR(ADT/25JUL82)
+                let passengerMatch = line.match(/\d+\.([A-Z]+\/[A-Z\s]+MR|MS|MRS)/);
+                
+                // Pattern 2: 1.1GUIBERTEAU/SAMUEL MR
+                if (!passengerMatch) {
+                    passengerMatch = line.match(/\d+\.\d+([A-Z]+\/[A-Z\s]+MR|MS|MRS)/);
+                }
+                
                 if (passengerMatch && !passenger) {
-                    passenger = passengerMatch[1].replace(/\//g, ' ');
+                    passenger = passengerMatch[1].replace(/\//g, ' ').trim();
+                    console.log('Found passenger:', passenger);
                 }
 
                 // Cari flight numbers
@@ -691,23 +677,29 @@ FNQMQS / Economy class
         // Drag and drop handlers
         const dropZone = document.getElementById('dropZone');
         
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('dragover');
-        });
-        
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('dragover');
-        });
-        
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                processExcelFile(files[0]);
-            }
-        });
+        if (dropZone) {
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('dragover');
+            });
+            
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('dragover');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    processExcelFile(files[0]);
+                }
+            });
+        }
 
         function handleFileSelect(event) {
             const file = event.target.files[0];
@@ -717,10 +709,23 @@ FNQMQS / Economy class
         }
 
         function processExcelFile(file) {
+            console.log('Processing file:', file.name, 'Size:', file.size);
+            
             // Show file info
-            document.getElementById('fileName').textContent = file.name;
-            document.getElementById('fileSize').textContent = formatFileSize(file.size);
-            document.getElementById('fileInfo').style.display = 'block';
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            
+            console.log('Elements found:', { fileInfo: !!fileInfo, fileName: !!fileName, fileSize: !!fileSize });
+            
+            if (fileName && fileSize && fileInfo) {
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.style.display = 'block';
+                console.log('File info displayed successfully');
+            } else {
+                console.error('File info elements not found!');
+            }
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -737,9 +742,9 @@ FNQMQS / Economy class
         }
 
         function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
+            if (!bytes || bytes === 0) return '0 Bytes';
             const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB'];
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
@@ -747,72 +752,234 @@ FNQMQS / Economy class
         function parseExcelData(data) {
             parsedExcelData = [];
             
-            // Find column indices
-            let pnrCol = -1, flightCol = -1;
+            console.log('Total rows in Excel:', data.length - 1); // Minus header
+            
+            // Find column indices - prioritize kolom "R" atau "Order Detail"
+            let orderDetailCol = -1;
+            let guestNameCol = -1;
             const headers = data[0] || [];
             
+            console.log('Headers found:', headers.map((h, i) => `${i}:${h}`).join(', '));
+            
             headers.forEach((header, idx) => {
-                const h = String(header).toLowerCase();
-                if (h.includes('pnr') || h.includes('booking') || h.includes('code')) {
-                    pnrCol = idx;
+                const h = String(header).toLowerCase().trim();
+                // Cari kolom "r" atau "order detail"
+                if (h === 'r' || h.includes('order detail') || h.includes('orderdetail')) {
+                    orderDetailCol = idx;
+                    console.log('Found Order Detail column at index:', idx);
                 }
-                if (h.includes('flight') || h.includes('maskapai') || h.includes('airline')) {
-                    flightCol = idx;
+                // Cari kolom "guest name"
+                if (h.includes('guest name') || h === 'guestname') {
+                    guestNameCol = idx;
+                    console.log('Found Guest Name column at index:', idx);
                 }
             });
+
+            let emptyCount = 0;
+            let noMatchCount = 0;
+            let successCount = 0;
 
             // Process each row
             for (let i = 1; i < data.length; i++) {
                 const row = data[i];
-                if (!row || row.length === 0) continue;
+                if (!row || row.length === 0) {
+                    emptyCount++;
+                    continue;
+                }
 
-                let pnrData = '';
-                let flightData = '';
+                let orderDetailData = '';
 
-                // If specific columns found, use them
-                if (pnrCol >= 0) pnrData = String(row[pnrCol] || '');
-                if (flightCol >= 0) flightData = String(row[flightCol] || '');
+                // Ambil data dari kolom "R" atau "Order Detail"
+                if (orderDetailCol >= 0) {
+                    orderDetailData = String(row[orderDetailCol] || '');
+                }
 
-                // If no specific columns, search all cells
-                if (!pnrData || !flightData) {
+                // Jika tidak ada di kolom spesifik, cari di semua kolom untuk pola PNR
+                if (!orderDetailData) {
                     row.forEach(cell => {
                         const cellStr = String(cell || '');
-                        // Check for booking code pattern (6 alphanumeric)
-                        if (!pnrData && cellStr.match(/\b[A-Z0-9]{6}\b/)) {
-                            const match = cellStr.match(/\b[A-Z0-9]{6}\b/);
-                            if (match && !match[0].match(/^TE\d{3}$/)) {
-                                pnrData = match[0];
-                            }
-                        }
-                        // Check for flight number pattern
-                        if (!flightData && cellStr.match(/[A-Z]{2}\s*\d{1,4}/)) {
-                            flightData = cellStr;
+                        // Cek apakah cell mengandung pola PNR/flight data
+                        if (cellStr.match(/\d{2}[A-Z]{3}/) && cellStr.match(/[A-Z]{2}\s*\d{1,4}/)) {
+                            orderDetailData = cellStr;
                         }
                     });
                 }
 
-                // Parse flight numbers from flightData
-                const flights = extractFlights(flightData || pnrData);
+                // Parse data dari Order Detail
+                const parsedBlock = parseBlockFromText(orderDetailData);
 
-                // Parse rute
-                const routes = extractRoutes(flightData || pnrData);
+                // Ambil passenger dari kolom Guest Name jika ada
+                let passengerName = parsedBlock.passenger;
+                if (!passengerName && guestNameCol >= 0) {
+                    passengerName = String(row[guestNameCol] || '').trim();
+                }
 
-                // Parse booking code
-                const bookingCode = extractBookingCode(pnrData) || extractBookingCode(flightData) || '-';
-
-                if (bookingCode !== '-' || flights.length > 0 || routes.length > 0) {
+                // Hanya terima data FLIGHT - skip hotel dan lainnya
+                // Cek apakah data mengandung pola flight (kode maskapai + nomor)
+                // Format 1: (XX 123) - dengan tanda kurung
+                // Format 2: SQ 967 - tanpa tanda kurung
+                const hasFlightPatternParen = orderDetailData.match(/\([A-Z]{2}\s+\d{1,4}/);
+                const hasFlightPatternPlain = orderDetailData.match(/\b[A-Z]{2}\s+\d{1,4}\b/);
+                const hasFlightPattern = hasFlightPatternParen || hasFlightPatternPlain;
+                
+                if (hasFlightPattern && parsedBlock.flights.length > 0) {
                     parsedExcelData.push({
                         row: i,
-                        bookingCode: bookingCode,
-                        flights: flights,
-                        routes: routes,
-                        rawPnr: pnrData,
-                        rawFlight: flightData
+                        bookingCode: parsedBlock.bookingCode,
+                        flights: parsedBlock.flights,
+                        routes: parsedBlock.routes,
+                        classes: parsedBlock.classes,
+                        passenger: passengerName,
+                        rawData: orderDetailData
                     });
+                    successCount++;
+                } else {
+                    noMatchCount++;
                 }
             }
 
+            console.log('Parsing summary:', {
+                totalRows: data.length - 1,
+                emptyRows: emptyCount,
+                noMatch: noMatchCount,
+                success: successCount,
+                parsedData: parsedExcelData.length
+            });
+
             displayExcelResults();
+        }
+
+        // Parse block untuk data dari Excel (sama dengan parseBlock tapi untuk single text)
+        function parseBlockFromText(text) {
+            if (!text) {
+                return { bookingCode: '-', flights: [], routes: [], classes: [], passenger: null };
+            }
+            
+            const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l);
+            
+            let bookingCode = null;
+            const flights = [];
+            const routes = [];
+            const classes = [];
+            let passenger = null;
+
+            // Pattern untuk booking code (6 karakter alphanumeric uppercase)
+            const bookingCodePattern = /\b([A-Z0-9]{6})\b/g;
+
+            lines.forEach((line, idx) => {
+                // Cari booking code di baris pertama atau yang mengandung timestamp
+                if (idx === 0 || (line.includes('/') && line.match(/\d{2}[A-Z]{3}\d{2}/))) {
+                    const matches = line.match(bookingCodePattern);
+                    if (matches) {
+                        const validCodes = matches.filter(m => !m.match(/^TE\d{3}$/));
+                        if (validCodes.length > 0) {
+                            bookingCode = validCodes[0];
+                        }
+                    }
+                }
+
+                // Cari passenger name - berbagai format
+                // Format: 1.INAN/KEREM MR(ADT/25JUL82) atau 1.INAN/KEREM MR
+                // Format: 1.1GUIBERTEAU/SAMUEL MR
+                console.log('parseBlockFromText - Checking line for passenger:', line);
+                
+                // Pattern 1: 1.INAN/KEREM MR(ADT/25JUL82)
+                let passengerMatch = line.match(/\d+\.([A-Z]+\/[A-Z\s]+MR|MS|MRS)/);
+                
+                // Pattern 2: 1.1GUIBERTEAU/SAMUEL MR
+                if (!passengerMatch) {
+                    passengerMatch = line.match(/\d+\.\d+([A-Z]+\/[A-Z\s]+MR|MS|MRS)/);
+                }
+                
+                if (passengerMatch && !passenger) {
+                    passenger = passengerMatch[1].replace(/\//g, ' ').trim();
+                    console.log('parseBlockFromText - Found passenger:', passenger);
+                }
+
+                // Pattern untuk flight dengan class
+                // Pattern: 2 SQ 967 Z 04NOV
+                const flightPatternFull = /^\d+\s+([A-Z]{2})\s+(\d{1,4})\s+([A-Z])\s+(\d{2}[A-Z]{3})/;
+                let flightMatch = line.match(flightPatternFull);
+                if (flightMatch) {
+                    flights.push(`${flightMatch[1]} ${flightMatch[2]}`);
+                    classes.push(flightMatch[3]);
+                }
+
+                // Pattern: 1 . QF   40 K  30JAN
+                const flightPatternDot = /^\d+\s*\.\s*([A-Z]{2})\s+(\d{1,4})\s+([A-Z])\s+(\d{2}[A-Z]{3})/;
+                flightMatch = line.match(flightPatternDot);
+                if (flightMatch) {
+                    flights.push(`${flightMatch[1]} ${flightMatch[2]}`);
+                    classes.push(flightMatch[3]);
+                }
+
+                // Pattern: (QG 164) atau (JT 941/JT 662 depart)
+                const flightPatternParen = /\(([A-Z]{2})\s+(\d{1,4})\)/g;
+                let flightMatchAll;
+                while ((flightMatchAll = flightPatternParen.exec(line)) !== null) {
+                    const flightCode = `${flightMatchAll[1]} ${flightMatchAll[2]}`;
+                    if (!flights.includes(flightCode)) {
+                        flights.push(flightCode);
+                    }
+                }
+                
+                // Pattern maskapai dengan format: MASKAPAI (XX 123 depart)
+                const airlinePattern = /([A-Z\s]+)\s*\(([A-Z]{2})\s+(\d{1,4})/g;
+                let airlineMatch;
+                while ((airlineMatch = airlinePattern.exec(line)) !== null) {
+                    const flightCode = `${airlineMatch[2]} ${airlineMatch[3]}`;
+                    if (!flights.includes(flightCode)) {
+                        flights.push(flightCode);
+                    }
+                }
+
+                // Pattern untuk rute
+                const routePattern1 = /(\d{2}[A-Z]{3})\s+\d+\s+([A-Z]{6})/;
+                const routePattern2 = /(\d{2}[A-Z]{3})\s+([A-Z]{6})/;
+                const routePattern3 = /Rute\s*[:\-]?\s*([A-Z]{3})[-\s]+([A-Z]{3})/i;
+                
+                let routeMatch = line.match(routePattern1);
+                if (!routeMatch) {
+                    routeMatch = line.match(routePattern2);
+                }
+                
+                if (routeMatch) {
+                    routes.push({
+                        date: routeMatch[1],
+                        route: routeMatch[2],
+                        from: routeMatch[2].substring(0, 3),
+                        to: routeMatch[2].substring(3, 6)
+                    });
+                } else {
+                    const routeMatch3 = line.match(routePattern3);
+                    if (routeMatch3) {
+                        routes.push({
+                            date: '-',
+                            route: routeMatch3[1] + routeMatch3[2],
+                            from: routeMatch3[1],
+                            to: routeMatch3[2]
+                        });
+                    }
+                }
+            });
+
+            // Jika tidak ada booking code ditemukan, cek lagi dengan pattern yang lebih longgar
+            if (!bookingCode) {
+                const allText = lines.join(' ');
+                const allMatches = allText.match(/\b([A-Z]{2}\d{2,4}|[A-Z0-9]{6})\b/g);
+                if (allMatches) {
+                    const valid = allMatches.find(m => m.length === 6 && !m.match(/^TE\d{3}$/));
+                    if (valid) bookingCode = valid;
+                }
+            }
+
+            return {
+                bookingCode: bookingCode || '-',
+                flights: [...new Set(flights)],
+                routes: routes,
+                classes: [...new Set(classes)],
+                passenger
+            };
         }
 
         function extractBookingCode(text) {
@@ -869,7 +1036,9 @@ FNQMQS / Economy class
                         <tr>
                             <th>No</th>
                             <th>Booking Code</th>
+                            <th>Passenger</th>
                             <th>Flight Numbers</th>
+                            <th>Class</th>
                             <th>Routes</th>
                         </tr>
                     </thead>
@@ -881,6 +1050,7 @@ FNQMQS / Economy class
                     <tr>
                         <td>${idx + 1}</td>
                         <td><strong style="color: #667eea;">${data.bookingCode}</strong></td>
+                        <td>${data.passenger || '<span class="no-data">-</span>'}</td>
                         <td>
                             ${data.flights.length > 0
                                 ? `<div class="flight-list">${data.flights.map(f => `<span class="flight-badge">${f}</span>`).join('')}</div>`
@@ -888,8 +1058,14 @@ FNQMQS / Economy class
                             }
                         </td>
                         <td>
+                            ${data.classes.length > 0
+                                ? `<div class="class-list">${data.classes.map(c => `<span class="class-badge">${c}</span>`).join('')}</div>`
+                                : '<span class="no-data">-</span>'
+                            }
+                        </td>
+                        <td>
                             ${data.routes.length > 0
-                                ? `<div class="route-list">${data.routes.map(r => `<span class="route-badge">${r.date}: ${r.from} → ${r.to}</span>`).join('')}</div>`
+                                ? `<div class="route-list">${data.routes.map(r => `<span class="route-badge">${r.date !== '-' ? r.date + ': ' : ''}${r.from} → ${r.to}</span>`).join('')}</div>`
                                 : '<span class="no-data">-</span>'
                             }
                         </td>
@@ -900,10 +1076,21 @@ FNQMQS / Economy class
             tableHTML += '</tbody></table>';
             tableContainer.innerHTML = tableHTML;
 
-            results.innerHTML = `<div class="data-block">
-                <h3>📁 Data dari Excel</h3>
-                <p>Total ${parsedExcelData.length} baris data ditemukan.</p>
-            </div>`;
+            // Calculate stats - hanya untuk flight
+            const withPassenger = parsedExcelData.filter(d => d.passenger).length;
+            const withRoutes = parsedExcelData.filter(d => d.routes.length > 0).length;
+            
+            results.innerHTML = `
+                <div class="data-block">
+                    <h3>✈️ Data Flight dari Excel</h3>
+                    <p><strong>Total ${parsedExcelData.length} data flight berhasil di-parse.</strong></p>
+                    <div style="margin-top: 10px; font-size: 13px; color: #666;">
+                        <div>✓ Dengan Booking Code: ${withBookingCode}</div>
+                        <div>✓ Dengan Passenger: ${withPassenger}</div>
+                        <div>✓ Dengan Route: ${withRoutes}</div>
+                    </div>
+                </div>
+            `;
 
             resultSection.style.display = 'block';
             statsSection.style.display = 'flex';
@@ -918,8 +1105,10 @@ FNQMQS / Economy class
             const exportData = parsedExcelData.map((d, idx) => ({
                 'No': idx + 1,
                 'Booking Code': d.bookingCode,
+                'Passenger': d.passenger || '-',
                 'Flight Numbers': d.flights.join(', '),
-                'Routes': d.routes.map(r => `${r.date}: ${r.from}-${r.to}`).join(', ')
+                'Class': d.classes.join(', '),
+                'Routes': d.routes.map(r => `${r.date !== '-' ? r.date + ': ' : ''}${r.from}-${r.to}`).join(', ')
             }));
 
             const ws = XLSX.utils.json_to_sheet(exportData);
@@ -935,11 +1124,15 @@ FNQMQS / Economy class
         function filterResults() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const dataBlocks = document.querySelectorAll('.data-block');
+            const tableRows = document.querySelectorAll('#excelTableContainer tbody tr');
             const filterCount = document.getElementById('filterCount');
             
             if (!searchTerm) {
                 dataBlocks.forEach(block => {
                     block.classList.remove('hidden', 'highlight');
+                });
+                tableRows.forEach(row => {
+                    row.style.display = '';
                 });
                 filterCount.textContent = '';
                 return;
@@ -947,16 +1140,40 @@ FNQMQS / Economy class
 
             let visibleCount = 0;
             
+            // Filter data blocks (paste text mode)
             dataBlocks.forEach(block => {
                 const text = block.textContent.toLowerCase();
-                const bookingCode = block.querySelector('.info-value strong')?.textContent.toLowerCase() || '';
+                
+                // Cari semua info-row untuk mendapatkan passenger
+                const infoRows = block.querySelectorAll('.info-row');
+                let passenger = '';
+                let bookingCode = '';
+                
+                infoRows.forEach(row => {
+                    const label = row.querySelector('.info-label')?.textContent.trim() || '';
+                    const value = row.querySelector('.info-value')?.textContent.trim() || '';
+                    
+                    if (label.includes('Passenger')) {
+                        passenger = value.toLowerCase();
+                    }
+                    if (label.includes('Booking Code')) {
+                        bookingCode = value.toLowerCase();
+                    }
+                });
+                
                 const flights = Array.from(block.querySelectorAll('.flight-badge')).map(b => b.textContent.toLowerCase()).join(' ');
                 const routes = Array.from(block.querySelectorAll('.route-badge')).map(b => b.textContent.toLowerCase()).join(' ');
                 
-                // Search in booking code, flights, routes
+                // Debug: log passenger value
+                if (passenger && passenger.includes('inan')) {
+                    console.log('Found passenger in block:', passenger, 'Search term:', searchTerm);
+                }
+                
+                // Search in booking code, flights, routes, passenger
                 const match = bookingCode.includes(searchTerm) || 
                              flights.includes(searchTerm) || 
                              routes.includes(searchTerm) ||
+                             passenger.includes(searchTerm) ||
                              text.includes(searchTerm);
                 
                 if (match) {
@@ -970,6 +1187,32 @@ FNQMQS / Economy class
                     }, 500);
                 } else {
                     block.classList.add('hidden');
+                }
+            });
+
+            // Filter table rows (Excel upload mode)
+            tableRows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                // Kolom: 0=No, 1=Booking Code, 2=Passenger, 3=Flight Numbers, 4=Class, 5=Routes
+                if (cells.length >= 6) {
+                    const bookingCode = cells[1]?.textContent.toLowerCase().trim() || '';
+                    const passenger = cells[2]?.textContent.toLowerCase().trim() || '';
+                    const flights = cells[3]?.textContent.toLowerCase().trim() || '';
+                    const classes = cells[4]?.textContent.toLowerCase().trim() || '';
+                    const routes = cells[5]?.textContent.toLowerCase().trim() || '';
+                    
+                    const match = bookingCode.includes(searchTerm) ||
+                                 passenger.includes(searchTerm) ||
+                                 flights.includes(searchTerm) ||
+                                 classes.includes(searchTerm) ||
+                                 routes.includes(searchTerm);
+                    
+                    if (match) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
                 }
             });
 
@@ -989,9 +1232,12 @@ FNQMQS / Economy class
             }
         }
 
-        // Auto-parse saat load dengan data sample
+        // Auto-parse saat load - hanya jika ada data di textarea
         window.onload = function() {
-            parseData();
+            const inputData = document.getElementById('inputData').value;
+            if (inputData && inputData.trim()) {
+                parseData();
+            }
         };
     </script>
 </body>
